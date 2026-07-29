@@ -1,0 +1,558 @@
+---
+import { SITE } from '@/config/site';
+
+const currentPath = Astro.url.pathname;
+
+function isCurrentPage(href: string): boolean {
+  if (href === '/') {
+    return currentPath === '/';
+  }
+
+  return currentPath.startsWith(href);
+}
+---
+
+<header class="site-header">
+  <div class="site-header__bar">
+    <a
+      href="/"
+      class="site-header__logo"
+      aria-label="ROMADI sākumlapa"
+      data-astro-prefetch
+    >
+      <span
+        class="site-header__logo-mark"
+        aria-hidden="true"
+      >
+        R
+      </span>
+
+      <span class="site-header__wordmark">
+        ROMADI
+      </span>
+    </a>
+
+    <nav
+      class="site-header__navigation"
+      aria-label="Galvenā navigācija"
+    >
+      {
+        SITE.navigation.primary.map((item) => (
+          <a
+            href={item.href}
+            class="site-header__navigation-link"
+            data-current={isCurrentPage(item.href) ? 'true' : undefined}
+            aria-current={isCurrentPage(item.href) ? 'page' : undefined}
+            data-astro-prefetch
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="site-header__actions">
+      <a
+        href={SITE.navigation.callToAction.href}
+        class="site-header__project-link"
+        data-astro-prefetch
+      >
+        {SITE.navigation.callToAction.label}
+
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M7 17L17 7M9 7H17V15"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          ></path>
+        </svg>
+      </a>
+
+      <details class="site-header__mobile-menu">
+        <summary aria-label="Atvērt navigācijas izvēlni">
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M3.5 6.5H20.5M3.5 12H20.5M3.5 17.5H20.5"
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linecap="round"
+            ></path>
+          </svg>
+        </summary>
+
+        <div class="site-header__mobile-panel">
+          <nav aria-label="Mobilā navigācija">
+            {
+              SITE.navigation.primary.map((item) => (
+                <a
+                  href={item.href}
+                  aria-current={isCurrentPage(item.href) ? 'page' : undefined}
+                  data-astro-prefetch
+                >
+                  {item.label}
+                </a>
+              ))
+            }
+          </nav>
+
+          <a
+            href={SITE.navigation.callToAction.href}
+            class="site-header__mobile-cta"
+            data-astro-prefetch
+          >
+            {SITE.navigation.callToAction.label}
+          </a>
+        </div>
+      </details>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: absolute;
+    z-index: 50;
+    top: 3.4rem;
+    left: 0;
+
+    width: 100%;
+    padding-inline: clamp(1rem, 4vw, 4rem);
+
+    pointer-events: none;
+  }
+
+    .site-header__bar {
+  position: relative;
+
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+
+  width: min(100%, 76rem);
+  min-height: 5rem;
+  margin-inline: auto;
+  padding: 0.65rem 0.8rem 0.65rem 1.25rem;
+
+  align-items: center;
+
+  border: 0;
+  border-radius: 2rem;
+
+  background:
+    radial-gradient(
+      circle at 0% 50%,
+      rgb(224 35 78 / 12%),
+      transparent 30%
+    ),
+    linear-gradient(
+      100deg,
+      rgb(30 3 10 / 96%) 0%,
+      rgb(9 3 5 / 96%) 48%,
+      rgb(14 3 6 / 96%) 100%
+    );
+
+  box-shadow:
+    0 22px 60px rgb(0 0 0 / 24%);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  pointer-events: auto;
+}
+
+  /*
+   * Very subtle highlight around the top edge.
+   * This is not a visible border.
+   */
+
+.site-header__bar::before {
+  content: none;
+
+}
+  .site-header__logo {
+    position: relative;
+    z-index: 1;
+
+    display: inline-flex;
+    justify-self: start;
+
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .site-header__logo-mark {
+    display: grid;
+
+    width: 2.65rem;
+    height: 2.65rem;
+
+    place-items: center;
+
+    border-radius: 50%;
+
+    background:
+      radial-gradient(
+        circle at 35% 28%,
+        var(--color-signal-400),
+        var(--color-signal-600) 68%,
+        var(--color-signal-800)
+      );
+
+    box-shadow:
+      0 0 22px rgb(224 35 78 / 26%);
+
+    color: white;
+
+    font-size: 0.95rem;
+    font-weight: 800;
+  }
+
+  .site-header__wordmark {
+    color: white;
+
+    font-size: 0.95rem;
+    font-weight: 750;
+    letter-spacing: -0.035em;
+  }
+
+  .site-header__navigation {
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1.75rem, 3vw, 3rem);
+  }
+
+ .site-header__navigation-link {
+  padding-block: 1rem;
+
+  color: rgb(255 255 255 / 84%);
+
+  font-size: 0.9rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+
+  transition:
+    color 180ms ease,
+    filter 220ms ease,
+    transform 220ms var(--ease-out-expo);
+}
+
+/*
+ * Keep all links equally bright.
+ * Only introduce a small blur.
+ */
+.site-header__navigation:hover
+  .site-header__navigation-link {
+  opacity: 1;
+  color: rgb(255 255 255 / 84%);
+  filter: blur(1.35px);
+}
+
+/*
+ * The item under the pointer remains completely sharp.
+ */
+.site-header__navigation
+  .site-header__navigation-link:hover {
+  opacity: 1;
+  color: white;
+  filter: blur(0);
+  transform: translateY(-1px);
+}
+
+/*
+ * Restore everything when the pointer leaves the nav.
+ */
+.site-header__navigation:not(:hover)
+  .site-header__navigation-link {
+  opacity: 1;
+  filter: blur(0);
+}
+
+.site-header__navigation-link[data-current='true'] {
+  color: white;
+}
+
+  /*
+   * Keep all links sharp when the mouse is not inside the nav.
+   */
+  .site-header__navigation:not(:hover)
+    .site-header__navigation-link {
+    opacity: 1;
+    filter: none;
+  }
+
+  .site-header__actions {
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+    justify-self: end;
+
+    align-items: center;
+    gap: 0.55rem;
+  }
+
+.site-header__project-link {
+  display: inline-flex;
+  min-height: 3.2rem;
+
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+
+  border: 0;
+  border-radius: 0.85rem;
+
+  padding-inline: 1.2rem;
+
+  background: rgb(255 255 255 / 8%);
+
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 5%);
+
+  color: white;
+
+  font-size: 0.86rem;
+  font-weight: 700;
+
+  transition:
+    background-color 200ms ease,
+    box-shadow 200ms ease,
+    color 200ms ease,
+    transform 250ms var(--ease-out-expo);
+}
+
+  .site-header__project-link:hover {
+    background: var(--accent);
+
+    box-shadow:
+      0 10px 32px rgb(224 35 78 / 22%),
+      inset 0 1px 0 rgb(255 255 255 / 16%);
+
+    color: white;
+    transform: translateY(-1px);
+  }
+
+  .site-header__project-link svg {
+    transition:
+      transform 250ms var(--ease-out-expo);
+  }
+
+  .site-header__project-link:hover svg {
+    transform: translate(2px, -2px);
+  }
+
+  .site-header__mobile-menu {
+    position: relative;
+    display: none;
+  }
+
+  .site-header__mobile-menu summary {
+    display: grid;
+
+    width: 3.75rem;
+    height: 3.75rem;
+
+    place-items: center;
+
+    border: 0;
+    border-radius: 0;
+
+    background: transparent;
+    color: rgb(255 255 255 / 94%);
+
+    cursor: pointer;
+    list-style: none;
+
+    transition:
+      color 180ms ease,
+      opacity 180ms ease,
+      transform 220ms var(--ease-out-expo);
+  }
+
+  .site-header__mobile-menu summary:hover {
+    background: transparent;
+    color: white;
+    opacity: 0.82;
+    transform: scale(1.04);
+  }
+
+  .site-header__mobile-menu summary:active {
+    transform: scale(0.97);
+  }
+
+  .site-header__mobile-menu summary svg {
+    width: 1.85rem;
+    height: 1.85rem;
+  }
+
+  .site-header__mobile-menu summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .site-header__mobile-panel {
+    position: absolute;
+    top: calc(100% + 0.8rem);
+    right: 0;
+
+    width: min(20rem, calc(100vw - 2rem));
+    padding: 0.75rem;
+
+    border-radius: 1.25rem;
+
+    background: rgb(7 5 6 / 97%);
+
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 6%),
+      0 26px 80px rgb(0 0 0 / 56%);
+
+    backdrop-filter: blur(24px);
+  }
+
+  .site-header__mobile-panel nav {
+    display: grid;
+  }
+
+  .site-header__mobile-panel nav a {
+    padding: 0.95rem 1rem;
+
+    border-radius: 0.7rem;
+
+    color: var(--text-secondary);
+    font-weight: 650;
+
+    transition:
+      color 200ms ease,
+      background-color 200ms ease;
+  }
+
+  .site-header__mobile-panel nav a:hover,
+  .site-header__mobile-panel nav a[aria-current='page'] {
+    background: rgb(255 255 255 / 6%);
+    color: white;
+  }
+
+  .site-header__mobile-cta {
+    display: flex;
+    min-height: 3.1rem;
+    margin-top: 0.5rem;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 0.75rem;
+
+    background: var(--accent);
+    color: white;
+
+    font-size: 0.9rem;
+    font-weight: 750;
+  }
+
+  @media (max-width: 960px) {
+    .site-header {
+      top: 1.5rem;
+
+      padding-inline: clamp(1.25rem, 4vw, 2rem);
+    }
+
+    .site-header__bar {
+      display: flex;
+
+      width: min(100%, 46rem);
+      min-height: 5rem;
+
+      justify-content: space-between;
+
+      padding: 0.65rem 0.8rem 0.65rem 1rem;
+
+      border-radius: 1.35rem;
+    }
+
+    .site-header__navigation,
+    .site-header__project-link {
+      display: none;
+    }
+
+    .site-header__mobile-menu {
+      display: block;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .site-header {
+      top: 1.5rem;
+
+      /*
+       * More inset than the current version, matching the
+       * narrower floating header in the reference.
+       */
+      padding-inline: clamp(1.35rem, 9vw, 2.5rem);
+    }
+
+    .site-header__bar {
+      width: min(100%, 22.5rem);
+      min-height: 5.35rem;
+
+      padding: 0.7rem 0.75rem 0.7rem 1.05rem;
+
+      border-radius: 1.15rem;
+    }
+
+    .site-header__wordmark {
+      display: none;
+    }
+
+    .site-header__logo-mark {
+      width: 2.8rem;
+      height: 2.8rem;
+
+      font-size: 1rem;
+    }
+
+    .site-header__mobile-menu summary {
+      width: 3.85rem;
+      height: 3.85rem;
+    }
+
+    .site-header__mobile-menu summary svg {
+      width: 1.95rem;
+      height: 1.95rem;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .site-header {
+      padding-inline: 1.25rem;
+    }
+
+    .site-header__bar {
+      min-height: 5.1rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-header__navigation-link {
+      filter: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+</style>

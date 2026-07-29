@@ -1,0 +1,1137 @@
+<section
+  class="home-hero"
+  data-pointer-hero
+>
+  <div
+    class="home-hero__background"
+    aria-hidden="true"
+  >
+    <div class="home-hero__base"></div>
+
+    <div class="home-hero__ambient">
+      <div class="home-hero__goo home-hero__goo--left"></div>
+      <div class="home-hero__goo home-hero__goo--bottom"></div>
+      <div class="home-hero__goo home-hero__goo--right"></div>
+
+      <div class="home-hero__goo home-hero__goo--satellite-left"></div>
+      <div class="home-hero__goo home-hero__goo--satellite-right"></div>
+    </div>
+
+    <div class="home-hero__flashlight"></div>
+
+    <div class="home-hero__color-crunch"></div>
+
+    <svg
+      class="home-hero__noise"
+      viewBox="0 0 100 100"
+      preserveAspectRatio="none"
+    >
+      <filter id="romadi-hero-noise">
+        <feTurbulence
+          type="fractalNoise"
+          baseFrequency="0.78"
+          numOctaves="4"
+          seed="24"
+          stitchTiles="stitch"
+        />
+
+        <feColorMatrix
+          type="saturate"
+          values="0"
+        />
+
+        <feComponentTransfer>
+          <feFuncA
+            type="table"
+            tableValues="0 0.58"
+          />
+        </feComponentTransfer>
+      </filter>
+
+      <rect
+        width="100%"
+        height="100%"
+        filter="url(#romadi-hero-noise)"
+      />
+    </svg>
+
+    <div class="home-hero__vignette"></div>
+  </div>
+
+  <div class="home-hero__content">
+    <h1 data-reveal>
+      Vairāk nekā tikai
+      <span>mājaslapa</span>
+    </h1>
+
+    <p
+      class="home-hero__description"
+      data-reveal
+    >
+      <strong>ROMADI</strong> — digitālais partneris mūsdienīgu,
+      ātru un pārdomātu tīmekļa risinājumu izstrādei.
+    </p>
+
+    <div
+      class="home-hero__actions"
+      data-reveal
+    >
+      <a
+        href="/kontakti"
+        class="home-hero__primary-action"
+        data-astro-prefetch
+      >
+        Sākt projektu
+      </a>
+
+      <a
+        href="/portfolio"
+        class="home-hero__secondary-action"
+        data-astro-prefetch
+      >
+        Apskatīt darbus
+
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M5 12H19M13 6L19 12L13 18"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          ></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <dl
+    class="home-hero__details"
+    data-reveal
+  >
+    <div>
+      <dt>Projekti</dt>
+      <dd>50+</dd>
+    </div>
+
+    <div>
+      <dt>Pieredze</dt>
+      <dd>5+ gadi</dd>
+    </div>
+
+    <div>
+      <dt>Lokācija</dt>
+      <dd>Liepāja / Latvija</dd>
+    </div>
+  </dl>
+</section>
+
+<script>
+  import { initHeroPointer } from '@/lib/interactions/heroPointer';
+
+  const initializeHero = (): void => {
+    initHeroPointer();
+  };
+
+  initializeHero();
+
+  document.addEventListener('astro:page-load', initializeHero);
+</script>
+
+<style>
+  /* =========================================================
+     HERO SHELL
+     ========================================================= */
+
+  .home-hero {
+    --pointer-x: 50%;
+    --pointer-y: 45%;
+    --pointer-opacity: 0;
+    --pointer-parallax-x: 0px;
+    --pointer-parallax-y: 0px;
+
+    position: relative;
+    isolation: isolate;
+
+    display: grid;
+    min-height: calc(100svh - 4rem);
+    margin: 2rem;
+
+    place-items: center;
+
+    overflow: hidden;
+
+    border: 1px solid rgb(255 255 255 / 7%);
+    border-radius: 2rem;
+
+    background: #070103;
+
+    contain: paint;
+  }
+
+  /* =========================================================
+     BACKGROUND
+     ========================================================= */
+
+  .home-hero__background {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+
+    overflow: hidden;
+
+    background: #070103;
+
+    pointer-events: none;
+  }
+
+  .home-hero__base {
+    position: absolute;
+    inset: 0;
+
+    background:
+      radial-gradient(
+        ellipse at 50% 112%,
+        rgb(118 3 37 / 80%),
+        transparent 48%
+      ),
+      radial-gradient(
+        ellipse at -5% 3%,
+        rgb(139 5 42 / 72%),
+        transparent 43%
+      ),
+      radial-gradient(
+        ellipse at 105% 0%,
+        rgb(104 2 31 / 65%),
+        transparent 43%
+      ),
+      linear-gradient(
+        116deg,
+        #32030f 0%,
+        #090104 42%,
+        #110105 68%,
+        #26020c 100%
+      );
+  }
+
+  /* =========================================================
+     LIQUID GOO FIELD
+     ========================================================= */
+
+  .home-hero__ambient {
+    position: absolute;
+    inset: -18%;
+
+    /*
+     * Blur creates soft overlap.
+     * Contrast pulls those overlaps together into liquid forms.
+     */
+    filter:
+      blur(28px)
+      contrast(10)
+      saturate(145%);
+
+    mix-blend-mode: screen;
+
+    transform:
+      translate3d(
+        var(--pointer-parallax-x),
+        var(--pointer-parallax-y),
+        0
+      );
+
+    will-change: transform;
+  }
+
+  .home-hero__goo {
+    position: absolute;
+
+    background:
+      radial-gradient(
+        circle at 36% 30%,
+        rgb(255 129 159 / 100%) 0%,
+        rgb(248 54 100 / 98%) 19%,
+        rgb(224 35 78 / 96%) 42%,
+        rgb(176 7 51 / 88%) 65%,
+        rgb(91 1 28 / 70%) 82%,
+        transparent 100%
+      );
+
+    opacity: 0.86;
+
+    transform: translate3d(0, 0, 0);
+
+    will-change:
+      transform,
+      border-radius;
+  }
+
+  /*
+   * Moving internal illumination gives each mass
+   * additional volume instead of looking flat.
+   */
+
+  .home-hero__goo::before,
+  .home-hero__goo::after {
+    position: absolute;
+
+    border-radius: inherit;
+
+    content: '';
+    pointer-events: none;
+  }
+
+  .home-hero__goo::before {
+    inset: 8% 18% 30% 8%;
+
+    background:
+      radial-gradient(
+        circle at 36% 32%,
+        rgb(255 210 221 / 65%),
+        rgb(255 122 154 / 30%) 38%,
+        transparent 68%
+      );
+
+    mix-blend-mode: screen;
+
+    animation:
+      romadi-goo-inner 4.8s
+      ease-in-out
+      infinite alternate;
+  }
+
+  .home-hero__goo::after {
+    inset: 34% 8% 8% 30%;
+
+    background:
+      radial-gradient(
+        circle,
+        rgb(255 73 118 / 55%),
+        transparent 70%
+      );
+
+    mix-blend-mode: screen;
+
+    animation:
+      romadi-goo-inner-reverse 6.2s
+      ease-in-out
+      infinite alternate;
+  }
+
+  /* Upper-left main liquid mass */
+
+  .home-hero__goo--left {
+    top: -27%;
+    left: -23%;
+
+    width: 78%;
+    height: 88%;
+
+    border-radius:
+      42% 58% 64% 36% /
+      46% 38% 62% 54%;
+
+    animation:
+      romadi-goo-left 8.5s
+      ease-in-out
+      infinite alternate;
+  }
+
+  /* Large bottom-centre liquid mass */
+
+  .home-hero__goo--bottom {
+    right: 9%;
+    bottom: -51%;
+
+    width: 72%;
+    height: 92%;
+
+    border-radius:
+      61% 39% 45% 55% /
+      40% 59% 41% 60%;
+
+    opacity: 0.9;
+
+    animation:
+      romadi-goo-bottom 10.5s
+      ease-in-out
+      infinite alternate;
+  }
+
+  /* Upper-right liquid mass */
+
+  .home-hero__goo--right {
+    top: -28%;
+    right: -22%;
+
+    width: 64%;
+    height: 77%;
+
+    border-radius:
+      38% 62% 55% 45% /
+      60% 42% 58% 40%;
+
+    opacity: 0.77;
+
+    animation:
+      romadi-goo-right 9.5s
+      ease-in-out
+      infinite alternate;
+  }
+
+  /*
+   * Smaller blobs travel between the large masses.
+   * The ambient contrast filter makes them visibly merge
+   * and separate from the larger liquid forms.
+   */
+
+  .home-hero__goo--satellite-left {
+    top: 25%;
+    left: 11%;
+
+    width: clamp(11rem, 17vw, 18rem);
+    height: clamp(11rem, 17vw, 18rem);
+
+    border-radius:
+      58% 42% 36% 64% /
+      44% 62% 38% 56%;
+
+    opacity: 0.72;
+
+    animation:
+      romadi-satellite-left 6.4s
+      ease-in-out
+      infinite alternate;
+  }
+
+  .home-hero__goo--satellite-right {
+    right: 14%;
+    bottom: 12%;
+
+    width: clamp(9rem, 14vw, 15rem);
+    height: clamp(9rem, 14vw, 15rem);
+
+    border-radius:
+      39% 61% 57% 43% /
+      63% 38% 62% 37%;
+
+    opacity: 0.66;
+
+    animation:
+      romadi-satellite-right 7.2s
+      ease-in-out
+      infinite alternate;
+  }
+
+  /* =========================================================
+     CURSOR FLASHLIGHT
+     ========================================================= */
+
+  .home-hero__flashlight {
+    position: absolute;
+    z-index: 4;
+    inset: 0;
+
+    background:
+      radial-gradient(
+        12rem circle at
+        var(--pointer-x)
+        var(--pointer-y),
+
+        rgb(255 244 247 / 28%) 0%,
+        rgb(255 217 227 / 20%) 28%,
+        transparent 72%
+      ),
+      radial-gradient(
+        31rem circle at
+        var(--pointer-x)
+        var(--pointer-y),
+
+        rgb(255 150 177 / 24%) 0%,
+        rgb(247 75 116 / 17%) 28%,
+        rgb(224 35 78 / 9%) 50%,
+        transparent 74%
+      );
+
+    mix-blend-mode: screen;
+
+    opacity: var(--pointer-opacity);
+
+    filter: saturate(125%);
+
+    transition: opacity 150ms ease;
+
+    will-change:
+      opacity,
+      background;
+  }
+
+  /* =========================================================
+     CRUNCHY COLOUR OVERLAY
+     ========================================================= */
+
+  .home-hero__color-crunch {
+    position: absolute;
+    z-index: 5;
+    inset: 0;
+
+    background:
+      radial-gradient(
+        ellipse at 6% 11%,
+        rgb(255 93 132 / 13%) 0 11%,
+        transparent 29%
+      ),
+      radial-gradient(
+        ellipse at 53% 108%,
+        rgb(249 44 92 / 13%) 0 14%,
+        transparent 34%
+      ),
+      radial-gradient(
+        ellipse at 99% 6%,
+        rgb(225 25 73 / 10%) 0 12%,
+        transparent 31%
+      ),
+      conic-gradient(
+        from 220deg at 50% 55%,
+        transparent 0deg,
+        rgb(255 58 105 / 4%) 50deg,
+        transparent 110deg,
+        rgb(189 8 54 / 5%) 190deg,
+        transparent 270deg
+      );
+
+    mix-blend-mode: color-dodge;
+
+    filter:
+      contrast(115%)
+      saturate(125%);
+
+    opacity: 0.62;
+  }
+
+  /* =========================================================
+     NOISE
+     ========================================================= */
+
+  .home-hero__noise {
+    position: absolute;
+    z-index: 6;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    mix-blend-mode: soft-light;
+
+    opacity: 0.21;
+
+    pointer-events: none;
+  }
+
+  /* =========================================================
+     VIGNETTE
+     ========================================================= */
+
+  .home-hero__vignette {
+    position: absolute;
+    z-index: 7;
+    inset: 0;
+
+    background:
+      radial-gradient(
+        ellipse at 50% 44%,
+        transparent 0%,
+        rgb(0 0 0 / 4%) 38%,
+        rgb(0 0 0 / 20%) 70%,
+        rgb(0 0 0 / 48%) 100%
+      ),
+      linear-gradient(
+        to bottom,
+        rgb(0 0 0 / 3%),
+        transparent 37%,
+        rgb(0 0 0 / 27%)
+      );
+
+    pointer-events: none;
+  }
+
+  /* =========================================================
+     HERO CONTENT
+     ========================================================= */
+
+  .home-hero__content {
+    position: relative;
+    z-index: 2;
+
+    width: min(100% - 3rem, 74rem);
+    padding-top: 8rem;
+
+    text-align: center;
+  }
+
+  .home-hero h1 {
+    max-width: 70rem;
+    margin-inline: auto;
+
+    color: white;
+
+    font-size: clamp(3.75rem, 7.25vw, 7rem);
+    font-weight: 500;
+    letter-spacing: -0.035em;
+    line-height: 1.1;
+  }
+
+  .home-hero h1 span {
+    display: block;
+  }
+
+  .home-hero__description {
+    max-width: 48rem;
+    margin: 2.4rem auto 0;
+
+    color: rgb(255 255 255 / 68%);
+
+    font-family: var(--font-mono);
+    font-size: clamp(0.78rem, 1.1vw, 0.95rem);
+    line-height: 1.75;
+  }
+
+  .home-hero__description strong {
+    color: white;
+    font-weight: 650;
+  }
+
+  .home-hero__actions {
+    display: flex;
+    margin-top: 3.5rem;
+
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+  }
+
+  .home-hero__primary-action {
+    display: inline-flex;
+    min-height: 4rem;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 1rem;
+    padding-inline: 1.7rem;
+
+    background: white;
+
+    box-shadow:
+      0 12px 40px rgb(0 0 0 / 22%),
+      inset 0 -1px 0 rgb(0 0 0 / 12%);
+
+    color: #080808;
+
+    font-size: 0.95rem;
+    font-weight: 750;
+
+    transition:
+      background-color 200ms ease,
+      transform 250ms var(--ease-out-expo),
+      box-shadow 250ms ease;
+  }
+
+  .home-hero__primary-action:hover {
+    background: var(--color-signal-100);
+
+    box-shadow:
+      0 15px 50px rgb(224 35 78 / 20%),
+      inset 0 -1px 0 rgb(0 0 0 / 10%);
+
+    transform: translateY(-2px);
+  }
+
+  .home-hero__secondary-action {
+    display: inline-flex;
+    min-height: 4rem;
+
+    align-items: center;
+    gap: 0.55rem;
+
+    color: white;
+
+    font-size: 0.95rem;
+    font-weight: 700;
+
+    transition:
+      color 200ms ease,
+      gap 250ms var(--ease-out-expo);
+  }
+
+  .home-hero__secondary-action:hover {
+    gap: 0.8rem;
+    color: var(--color-signal-200);
+  }
+  /* =========================================================
+     LOWER-RIGHT DETAILS
+     ========================================================= */
+
+  .home-hero__details {
+    position: absolute;
+    z-index: 2;
+
+    right: clamp(2.5rem, 5vw, 5.5rem);
+    bottom: clamp(2.5rem, 5vw, 4.75rem);
+
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+
+    width: max-content;
+    margin: 0;
+  }
+
+  .home-hero__details > div {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    justify-content: end;
+    align-items: baseline;
+    column-gap: clamp(1.1rem, 1.6vw, 1.45rem);
+  }
+
+  .home-hero__details dt,
+  .home-hero__details dd {
+    margin: 0;
+
+    font-family: var(--font-mono);
+    font-size: clamp(0.75rem, 0.85vw, 0.9rem);
+    line-height: 1.35;
+    white-space: nowrap;
+  }
+
+  .home-hero__details dt {
+    color: rgb(255 224 231 / 58%);
+
+    font-weight: 450;
+    text-align: right;
+  }
+
+  .home-hero__details dd {
+    color: rgb(255 255 255 / 94%);
+
+    font-weight: 650;
+    text-align: right;
+  }
+
+
+
+  /* =========================================================
+     GOO ANIMATIONS
+     ========================================================= */
+
+  @keyframes romadi-goo-left {
+    0% {
+      border-radius:
+        42% 58% 64% 36% /
+        46% 38% 62% 54%;
+
+      transform:
+        translate3d(-5%, -5%, 0)
+        rotate(-8deg)
+        scale(0.96);
+    }
+
+    25% {
+      border-radius:
+        63% 37% 41% 59% /
+        37% 65% 35% 63%;
+
+      transform:
+        translate3d(8%, 7%, 0)
+        rotate(5deg)
+        scale(1.12, 0.93);
+    }
+
+    50% {
+      border-radius:
+        35% 65% 57% 43% /
+        64% 39% 61% 36%;
+
+      transform:
+        translate3d(15%, 2%, 0)
+        rotate(-4deg)
+        scale(0.92, 1.14);
+    }
+
+    75% {
+      border-radius:
+        57% 43% 34% 66% /
+        42% 58% 68% 32%;
+
+      transform:
+        translate3d(4%, 15%, 0)
+        rotate(8deg)
+        scale(1.09, 0.95);
+    }
+
+    100% {
+      border-radius:
+        46% 54% 68% 32% /
+        58% 34% 66% 42%;
+
+      transform:
+        translate3d(13%, -2%, 0)
+        rotate(2deg)
+        scale(1.03, 1.1);
+    }
+  }
+
+  @keyframes romadi-goo-bottom {
+    0% {
+      border-radius:
+        61% 39% 45% 55% /
+        40% 59% 41% 60%;
+
+      transform:
+        translate3d(0, 10%, 0)
+        rotate(0deg)
+        scale(1);
+    }
+
+    25% {
+      border-radius:
+        42% 58% 66% 34% /
+        62% 37% 63% 38%;
+
+      transform:
+        translate3d(-12%, -3%, 0)
+        rotate(-7deg)
+        scale(1.15, 0.9);
+    }
+
+    50% {
+      border-radius:
+        68% 32% 39% 61% /
+        35% 66% 34% 65%;
+
+      transform:
+        translate3d(7%, -12%, 0)
+        rotate(6deg)
+        scale(0.9, 1.16);
+    }
+
+    75% {
+      border-radius:
+        36% 64% 58% 42% /
+        55% 43% 57% 45%;
+
+      transform:
+        translate3d(13%, -6%, 0)
+        rotate(-4deg)
+        scale(1.11, 0.94);
+    }
+
+    100% {
+      border-radius:
+        57% 43% 34% 66% /
+        46% 65% 35% 54%;
+
+      transform:
+        translate3d(-3%, -15%, 0)
+        rotate(7deg)
+        scale(0.97, 1.12);
+    }
+  }
+
+  @keyframes romadi-goo-right {
+    0% {
+      border-radius:
+        38% 62% 55% 45% /
+        60% 42% 58% 40%;
+
+      transform:
+        translate3d(7%, -4%, 0)
+        rotate(5deg)
+        scale(0.97);
+    }
+
+    30% {
+      border-radius:
+        64% 36% 42% 58% /
+        37% 61% 39% 63%;
+
+      transform:
+        translate3d(-13%, 8%, 0)
+        rotate(-9deg)
+        scale(1.13, 0.91);
+    }
+
+    60% {
+      border-radius:
+        41% 59% 69% 31% /
+        66% 35% 65% 34%;
+
+      transform:
+        translate3d(-5%, 16%, 0)
+        rotate(7deg)
+        scale(0.91, 1.14);
+    }
+
+    100% {
+      border-radius:
+        67% 33% 38% 62% /
+        44% 68% 32% 56%;
+
+      transform:
+        translate3d(-16%, 3%, 0)
+        rotate(-3deg)
+        scale(1.08, 0.96);
+    }
+  }
+
+  @keyframes romadi-satellite-left {
+    0% {
+      transform:
+        translate3d(-3rem, 3rem, 0)
+        rotate(-10deg)
+        scale(0.7);
+    }
+
+    32% {
+      transform:
+        translate3d(7rem, -3rem, 0)
+        rotate(8deg)
+        scale(1.22, 0.82);
+    }
+
+    68% {
+      transform:
+        translate3d(15rem, 5rem, 0)
+        rotate(-5deg)
+        scale(0.78, 1.27);
+    }
+
+    100% {
+      transform:
+        translate3d(5rem, 11rem, 0)
+        rotate(12deg)
+        scale(1.12);
+    }
+  }
+
+  @keyframes romadi-satellite-right {
+    0% {
+      transform:
+        translate3d(4rem, 4rem, 0)
+        rotate(8deg)
+        scale(0.65);
+    }
+
+    32% {
+      transform:
+        translate3d(-7rem, -7rem, 0)
+        rotate(-9deg)
+        scale(1.27, 0.8);
+    }
+
+    68% {
+      transform:
+        translate3d(-14rem, 1rem, 0)
+        rotate(6deg)
+        scale(0.8, 1.25);
+    }
+
+    100% {
+      transform:
+        translate3d(-4rem, -11rem, 0)
+        rotate(-12deg)
+        scale(1.1);
+    }
+  }
+
+  @keyframes romadi-goo-inner {
+    from {
+      transform:
+        translate3d(-8%, -6%, 0)
+        scale(0.88);
+    }
+
+    to {
+      transform:
+        translate3d(14%, 16%, 0)
+        scale(1.22);
+    }
+  }
+
+  @keyframes romadi-goo-inner-reverse {
+    from {
+      transform:
+        translate3d(16%, -13%, 0)
+        scale(1.16);
+    }
+
+    to {
+      transform:
+        translate3d(-12%, 19%, 0)
+        scale(0.8);
+    }
+  }
+
+  /* =========================================================
+     RESPONSIVE
+     ========================================================= */
+
+  @media (max-width: 960px) {
+    .home-hero {
+      min-height: calc(100svh - 1.5rem);
+      margin: 0.75rem;
+
+      border-radius: 1.5rem;
+    }
+
+    .home-hero__content {
+      padding-top: 9rem;
+      padding-bottom: 13rem;
+    }
+
+    .home-hero h1 {
+      max-width: 46rem;
+
+      font-size: clamp(3.5rem, 10vw, 6rem);
+      line-height: 0.97;
+    }
+
+    .home-hero__details {
+      right: 2rem;
+      bottom: 2rem;
+
+      gap: 1rem;
+    }
+
+    .home-hero__details > div {
+      column-gap: 1.15rem;
+    }
+
+    .home-hero__ambient {
+      inset: -24%;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .home-hero__goo--satellite-left,
+    .home-hero__goo--satellite-right {
+      display: none;
+    }
+
+    .home-hero__ambient {
+      filter:
+        blur(36px)
+        contrast(7)
+        saturate(130%);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .home-hero {
+      min-height: calc(100svh - 1.5rem);
+      margin: 0.75rem;
+
+      border-radius: 1.5rem;
+    }
+
+    .home-hero__content {
+      width: min(100% - 2rem, 34rem);
+
+      padding-top: 8rem;
+      padding-bottom: 15rem;
+    }
+
+    .home-hero h1 {
+      max-width: 32rem;
+
+      font-size: clamp(3.3rem, 16vw, 5.4rem);
+      letter-spacing: -0.01em;
+      line-height: 0.9;
+    }
+
+    .home-hero__description {
+      margin-top: 1.75rem;
+    }
+
+    .home-hero__actions {
+      flex-direction: column;
+
+      margin-top: 2.5rem;
+      gap: 1rem;
+    }
+
+    .home-hero__primary-action {
+      width: min(100%, 18rem);
+    }
+
+    .home-hero__secondary-action {
+      min-height: 2.75rem;
+    }
+
+    /*
+     * Centre the entire two-column block without transform.
+     */
+    .home-hero__details {
+      right: 0;
+      left: 0;
+      bottom: 1.75rem;
+
+      display: flex;
+      align-items: center;
+      gap: 0.95rem;
+
+      width: 100%;
+      max-width: calc(100% - 1.5rem);
+      margin-inline: auto;
+    }
+
+    .home-hero__details > div {
+      display: flex;
+      justify-content: center;
+      align-items: baseline;
+      gap: 0.95rem;
+    }
+
+    .home-hero__details dt,
+    .home-hero__details dd {
+      font-size: 0.72rem;
+      line-height: 1.4;
+    }
+
+    .home-hero__details dd {
+      text-align: left;
+    }
+
+    .home-hero__flashlight {
+      background:
+        radial-gradient(
+          18rem circle at
+          var(--pointer-x)
+          var(--pointer-y),
+
+          rgb(255 214 225 / 20%) 0%,
+          rgb(247 75 116 / 12%) 38%,
+          transparent 75%
+        );
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-hero__goo,
+    .home-hero__goo::before,
+    .home-hero__goo::after {
+      animation: none;
+    }
+
+    .home-hero__ambient {
+      transform: none;
+    }
+  }
+
+</style>

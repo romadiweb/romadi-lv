@@ -1,0 +1,14 @@
+Main background       #070707
+Secondary background  #0B0B0B
+Card background       #101010
+Elevated surface      #151515
+
+Primary text          #FFFFFF
+Secondary text        #A0A0A0
+Muted text            #7A7A7A
+
+Subtle border         white at 8%
+Normal border         white at 12%
+
+Primary accent:  #E92D5B
+Hover accent:    #F44B73

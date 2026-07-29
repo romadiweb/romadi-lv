@@ -1,0 +1,219 @@
+export const SITE = {
+  /**
+   * Core brand identity
+   */
+  name: 'ROMADI',
+
+  shortName: 'ROMADI',
+
+  title: 'ROMADI — mājaslapu izstrāde un digitālā izaugsme',
+
+  titleTemplate: '%s | ROMADI',
+
+  description:
+    'ROMADI izstrādā mūsdienīgas mājaslapas, interneta veikalus un digitālos risinājumus, kas palīdz uzņēmumiem augt, komunicēt un izcelties tiešsaistē.',
+
+  url: 'https://romadi.lv',
+
+  language: 'lv',
+
+  locale: 'lv_LV',
+
+  defaultOgImage: '/og/romadi-default.jpg',
+
+  /**
+   * Brand positioning
+   */
+  tagline: 'Digitāli risinājumi uzņēmuma izaugsmei.',
+
+  positioning: 'Partneris no pirmās idejas līdz gatavam digitālajam risinājumam.',
+
+  valueProposition:
+    'Mēs ne tikai izstrādājam mājaslapas — mēs palīdzam zīmoliem augt, komunicēt un izcelties tiešsaistē.',
+
+  /**
+   * Public contact information
+   */
+  contact: {
+    email: 'info@romadi.lv',
+
+    phones: [
+      {
+        label: 'Tālrunis',
+        display: '+371 26 625 125',
+        href: 'tel:+37126625125',
+      },
+      {
+        label: 'Tālrunis',
+        display: '+371 29 625 996',
+        href: 'tel:+37129625996',
+      },
+    ],
+
+    location: {
+      city: 'Liepāja',
+      country: 'Latvija',
+      countryCode: 'LV',
+    },
+  },
+
+  /**
+   * Primary website navigation
+   */
+  navigation: {
+    primary: [
+      {
+        label: 'Pakalpojumi',
+        href: '/pakalpojumi',
+      },
+      {
+        label: 'Portfolio',
+        href: '/portfolio',
+      },
+      {
+        label: 'Par mums',
+        href: '/par-mums',
+      },
+      {
+        label: 'Kontakti',
+        href: '/kontakti',
+      },
+    ],
+
+    callToAction: {
+      label: 'Pieteikt projektu',
+      href: '/kontakti',
+    },
+  },
+
+  /**
+   * ROMADI services
+   */
+  services: [
+    {
+      id: 'website-development',
+      label: 'Mājaslapu izstrāde',
+      shortLabel: 'Mājaslapas',
+      href: '/majas-lapu-izstrade',
+      description:
+        'Ātras, mūsdienīgas un individuāli izstrādātas mājaslapas uzņēmuma mērķu sasniegšanai.',
+    },
+    {
+      id: 'ecommerce-development',
+      label: 'Interneta veikalu izstrāde',
+      shortLabel: 'E-komercija',
+      href: '/interneta-veikalu-izstrade',
+      description:
+        'Pārdomāti interneta veikali ar ērtu iepirkšanās procesu, integrācijām un izaugsmes iespējām.',
+    },
+    {
+      id: 'ui-ux-design',
+      label: 'UI/UX dizains',
+      shortLabel: 'UI/UX',
+      href: '/ui-ux-dizains',
+      description: 'Lietotāju vajadzībām un biznesa mērķiem pielāgots digitālo produktu dizains.',
+    },
+    {
+      id: 'seo',
+      label: 'SEO optimizācija',
+      shortLabel: 'SEO',
+      href: '/seo-optimizacija',
+      description:
+        'Tehniskā un satura optimizācija ilgtermiņa redzamībai Google meklēšanas rezultātos.',
+    },
+    {
+      id: 'google-ads',
+      label: 'Google reklāmas',
+      shortLabel: 'Google Ads',
+      href: '/google-reklamas',
+      description:
+        'Mērķētas Google reklāmas kampaņas klientu piesaistei un izmērāmai uzņēmuma izaugsmei.',
+    },
+    {
+      id: 'social-media-ads',
+      label: 'Sociālo tīklu reklāmas',
+      shortLabel: 'Social Ads',
+      href: '/kontakti',
+      description:
+        'Mērķētas reklāmas sociālajos tīklos zīmola atpazīstamībai, auditorijas sasniegšanai un pārdošanai.',
+    },
+  ],
+
+  /**
+   * Footer navigation
+   */
+  footer: {
+    companyLinks: [
+      {
+        label: 'Par mums',
+        href: '/par-mums',
+      },
+      {
+        label: 'Portfolio',
+        href: '/portfolio',
+      },
+      {
+        label: 'Kontakti',
+        href: '/kontakti',
+      },
+    ],
+
+    legalLinks: [
+      {
+        label: 'Privātuma politika',
+        href: '/privatuma-politika',
+      },
+      {
+        label: 'Sīkdatņu politika',
+        href: '/sikdatnu-politika',
+      },
+    ],
+  },
+
+  /**
+   * Add exact profile URLs once confirmed.
+   */
+  social: {
+    facebook: '',
+    instagram: '',
+    tiktok: '',
+    linkedin: '',
+  },
+
+  /**
+   * Organization data used by JSON-LD.
+   *
+   * Replace legalName and registrationNumber with the exact
+   * registered company information before production launch.
+   */
+  organization: {
+    name: 'ROMADI',
+    legalName: '',
+    registrationNumber: '',
+    logo: '/brand/romadi-logo.svg',
+  },
+
+  /**
+   * Default SEO settings
+   */
+  seo: {
+    robots: {
+      index: true,
+      follow: true,
+    },
+
+    openGraph: {
+      type: 'website',
+      image: '/og/romadi-default.jpg',
+      imageAlt: 'ROMADI — mājaslapu izstrāde un digitālie risinājumi',
+    },
+
+    twitter: {
+      card: 'summary_large_image',
+    },
+  },
+} as const;
+
+export type SiteConfig = typeof SITE;
+export type SiteService = (typeof SITE.services)[number];
+export type NavigationItem = (typeof SITE.navigation.primary)[number];

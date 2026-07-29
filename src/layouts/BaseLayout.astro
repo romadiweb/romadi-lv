@@ -1,0 +1,98 @@
+---
+import { ClientRouter } from 'astro:transitions';
+
+import '@fontsource-variable/manrope';
+import '@/styles/global.css';
+
+import SiteHeader from '@/components/global/SiteHeader.astro';
+
+import { SITE } from '@/config/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description = SITE.description,
+  image = '/og/default.jpg',
+  noindex = false,
+} = Astro.props;
+
+const pageTitle = title ? `${title} | ${SITE.name}` : SITE.title;
+
+const siteBase = Astro.site ?? new URL(SITE.url);
+const canonicalUrl = new URL(Astro.url.pathname, siteBase);
+const socialImageUrl = new URL(image, siteBase);
+---
+
+<!doctype html>
+<html lang={SITE.language}>
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{pageTitle}</title>
+
+    <meta name="description" content={description} />
+
+    <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
+
+    <link rel="canonical" href={canonicalUrl} />
+
+    <meta property="og:type" content="website" />
+
+    <meta property="og:site_name" content={SITE.name} />
+
+    <meta property="og:locale" content={SITE.locale} />
+
+    <meta property="og:title" content={pageTitle} />
+
+    <meta property="og:description" content={description} />
+
+    <meta property="og:url" content={canonicalUrl} />
+
+    <meta property="og:image" content={socialImageUrl} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="twitter:title" content={pageTitle} />
+
+    <meta name="twitter:description" content={description} />
+
+    <meta name="twitter:image" content={socialImageUrl} />
+
+    <link rel="icon" href="/favicons/favicon.svg" />
+
+    <ClientRouter />
+  </head>
+
+  <body>
+    <a
+      href="#main-content"
+      class="fixed left-4 top-4 z-[100] -translate-y-24 rounded-full bg-white px-5 py-3 text-sm font-semibold text-black transition-transform focus:translate-y-0"
+    >
+      Pāriet uz saturu
+    </a>
+
+    <SiteHeader />
+
+    <main id="main-content">
+      <slot />
+    </main>
+
+    <script>
+      import { initRevealAnimations } from '@/lib/animations/reveal';
+
+      document.addEventListener('astro:page-load', () => {
+        initRevealAnimations();
+      });
+    </script>
+  </body>
+</html>
