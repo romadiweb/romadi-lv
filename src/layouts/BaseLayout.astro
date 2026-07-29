@@ -70,6 +70,10 @@ const socialImageUrl = new URL(image, siteBase);
 
     <link rel="icon" href="/favicons/favicon.svg" />
 
+    <script is:inline>
+      document.documentElement.dataset.motionReady = 'true';
+    </script>
+
     <ClientRouter />
   </head>
 

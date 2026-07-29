@@ -116,7 +116,15 @@
   >
     <div>
       <dt>Projekti</dt>
-      <dd>50+</dd>
+      <dd>
+        <span
+          class="home-hero__count"
+          data-count-up
+          data-count-start="1"
+          data-count-end="50"
+          data-count-duration="2500"
+        >50</span>+
+      </dd>
     </div>
 
     <div>
@@ -133,9 +141,11 @@
 
 <script>
   import { initHeroPointer } from '@/lib/interactions/heroPointer';
+  import { initCountUp } from '@/lib/animations/countUp';
 
   const initializeHero = (): void => {
     initHeroPointer();
+    initCountUp();
   };
 
   initializeHero();
@@ -189,6 +199,7 @@
 
     pointer-events: none;
   }
+
 
   .home-hero__base {
     position: absolute;
@@ -543,6 +554,11 @@
     inset: 0;
 
     background:
+    
+      linear-gradient(
+        rgb(0 0 0 / 20%),
+        rgb(0 0 0 / 20%)
+      ),
       radial-gradient(
         ellipse at 50% 44%,
         transparent 0%,
@@ -583,6 +599,7 @@
     font-size: clamp(3.75rem, 7.25vw, 7rem);
     font-weight: 500;
     letter-spacing: -0.035em;
+    word-spacing: 0.25em;
     line-height: 1.1;
   }
 
@@ -643,13 +660,7 @@
   }
 
   .home-hero__primary-action:hover {
-    background: var(--color-signal-100);
-
-    box-shadow:
-      0 15px 50px rgb(224 35 78 / 20%),
-      inset 0 -1px 0 rgb(0 0 0 / 10%);
-
-    transform: translateY(-2px);
+    transform: scale(0.95);
   }
 
   .home-hero__secondary-action {
@@ -669,10 +680,14 @@
       gap 250ms var(--ease-out-expo);
   }
 
-  .home-hero__secondary-action:hover {
-    gap: 0.8rem;
-    color: var(--color-signal-200);
-  }
+
+.home-hero__secondary-action svg {
+  transition: transform 250ms var(--ease-out-expo);
+}
+
+.home-hero__secondary-action:hover svg {
+  transform: translateX(0.2rem);
+}
   /* =========================================================
      LOWER-RIGHT DETAILS
      ========================================================= */
@@ -721,6 +736,14 @@
     color: rgb(255 255 255 / 94%);
 
     font-weight: 650;
+    text-align: right;
+  }
+
+  .home-hero__count {
+    display: inline-block;
+    min-width: 2ch;
+
+    font-variant-numeric: tabular-nums;
     text-align: right;
   }
 
@@ -1048,6 +1071,9 @@
     }
 
     .home-hero h1 {
+      position: relative;
+      top: -1.25rem;
+
       max-width: 32rem;
 
       font-size: clamp(3.3rem, 16vw, 5.4rem);
@@ -1056,6 +1082,9 @@
     }
 
     .home-hero__description {
+      position: relative;
+      top: -1.25rem;
+
       margin-top: 1.75rem;
     }
 

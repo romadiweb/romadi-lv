@@ -98,9 +98,11 @@ function setupPointerHero(hero: HTMLElement): void {
     animationFrameId = window.requestAnimationFrame(render);
   };
 
-  const moveToRestingPosition = (): void => {
-    target.x = bounds.width * 0.5;
-    target.y = bounds.height * 0.46;
+  const fadeOutPointer = (): void => {
+    /*
+     * Keep the pointer at its last position while it fades out.
+     * Moving it back to the center during the fade causes a visible streak.
+     */
     target.opacity = 0;
 
     scheduleRender();
@@ -116,7 +118,7 @@ function setupPointerHero(hero: HTMLElement): void {
       event.clientY <= bounds.bottom;
 
     if (!isInsideHero) {
-      moveToRestingPosition();
+      fadeOutPointer();
       return;
     }
 
@@ -154,7 +156,7 @@ function setupPointerHero(hero: HTMLElement): void {
 
   window.addEventListener(
     'blur',
-    moveToRestingPosition,
+    fadeOutPointer,
     {
       signal: controller.signal,
     },

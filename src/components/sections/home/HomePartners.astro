@@ -1,0 +1,299 @@
+---
+const partners = [
+  {
+    name: 'RTU LJK',
+    href: 'https://ljk.lv',
+    logo: '',
+    className: 'home-partners__logo--wide',
+  },
+  {
+    name: 'DIANA',
+    href: 'https://dianahunt.lv',
+    logo: '',
+    className: 'home-partners__logo--badge',
+  },
+  {
+    name: 'LIEPAJASTELTIS',
+    href: 'https://liepajasteltis.netlify.app',
+    logo: '',
+    className: 'home-partners__logo--soft',
+  },
+];
+---
+
+<section
+  class="home-partners"
+  aria-labelledby="home-partners-heading"
+>
+  <div class="home-partners__inner">
+    <p
+      id="home-partners-heading"
+      class="home-partners__eyebrow"
+      aria-label="Partneri, kas mums uzticas"
+    >
+      <span
+        aria-hidden="true"
+        data-typewriter
+        data-typewriter-text="{ PARTNERI, KAS MUMS UZTICAS }"
+        data-typewriter-speed="54"
+      ></span>
+      <span
+        class="home-partners__cursor"
+        aria-hidden="true"
+      >_</span>
+    </p>
+
+    <ul
+      class="home-partners__logos"
+      data-reveal
+      aria-label="ROMADI partneru logo saraksts"
+    >
+      {
+        partners.map((partner) => (
+          <li class="home-partners__logo-item">
+            <a
+              class={`home-partners__logo ${partner.className}`}
+              href={partner.href}
+              aria-label={`Atvērt ${partner.name}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {
+                partner.logo ? (
+                  <img
+                    class="home-partners__logo-image"
+                    src={partner.logo}
+                    alt={partner.name}
+                    loading="lazy"
+                  />
+                ) : (
+                  <span class="home-partners__logo-text">{partner.name}</span>
+                )
+              }
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<script>
+  import { initTypewriters } from '@/lib/animations/typewriter';
+
+  const initializePartners = (): void => {
+    initTypewriters();
+  };
+
+  initializePartners();
+
+  document.addEventListener('astro:page-load', initializePartners);
+</script>
+
+<style>
+  .home-partners {
+    position: relative;
+
+    overflow: hidden;
+    padding: clamp(2.75rem, 4vw, 4.25rem) 1.5rem clamp(7.5rem, 13vw, 12rem);
+
+    background: var(--color-ink-950);
+  }
+
+  .home-partners__inner {
+    width: min(100%, 82rem);
+    margin-inline: auto;
+  }
+
+  .home-partners__eyebrow {
+    display: flex;
+    min-height: 1.2rem;
+
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.6ch;
+
+    color: rgb(255 255 255 / 48%);
+
+    font-family: var(--font-mono);
+    font-size: clamp(0.66rem, 0.8vw, 0.78rem);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1.3;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .home-partners__cursor {
+    opacity: 0;
+
+    animation: home-partners-cursor 1.15s steps(1, end) infinite;
+  }
+
+  .home-partners__eyebrow span[data-typewriter-active='true'] + .home-partners__cursor {
+    opacity: 1;
+  }
+
+  .home-partners__logos {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(9rem, max-content));
+    justify-content: center;
+    gap: clamp(3rem, 5.5vw, 5rem) clamp(3.5rem, 8vw, 8rem);
+
+    width: min(100%, 64rem);
+    margin: clamp(3.75rem, 6vw, 5.25rem) auto 0;
+    padding: 0;
+
+    list-style: none;
+  }
+
+  .home-partners__logo-item {
+    display: flex;
+    min-height: clamp(3.3rem, 6vw, 4.8rem);
+
+    align-items: center;
+    justify-content: center;
+  }
+
+  .home-partners__logo {
+    display: inline-flex;
+    min-width: 8rem;
+    min-height: 3rem;
+
+    align-items: center;
+    justify-content: center;
+
+    color: rgb(255 255 255 / 88%);
+
+    font-size: clamp(1.35rem, 2.15vw, 2.55rem);
+    font-weight: 850;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    filter: blur(0);
+    opacity: 0.92;
+    transform: translateY(0);
+
+    transition:
+      filter 260ms ease,
+      opacity 260ms ease,
+      transform 260ms var(--ease-out-expo);
+  }
+
+  .home-partners__logo-text {
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  .home-partners__logo-image {
+    display: block;
+    width: auto;
+    max-width: min(16rem, 100%);
+    height: clamp(2rem, 4.2vw, 3.6rem);
+
+    object-fit: contain;
+  }
+
+  .home-partners__logo--wide {
+    letter-spacing: 0.1em;
+  }
+
+  .home-partners__logo--mark {
+    font-size: clamp(1.7rem, 2.6vw, 3rem);
+    letter-spacing: -0.04em;
+  }
+
+  .home-partners__logo--soft {
+    font-weight: 760;
+    letter-spacing: -0.03em;
+    text-transform: lowercase;
+  }
+
+  .home-partners__logo--badge {
+    min-width: 5.2rem;
+    min-height: 3.2rem;
+    padding-inline: 0.9rem;
+
+    border: 0.16rem solid currentColor;
+    border-radius: 999px;
+
+    font-size: clamp(1.1rem, 1.55vw, 1.65rem);
+    letter-spacing: 0.08em;
+  }
+
+  .home-partners__logo--script {
+    font-size: clamp(1.4rem, 2vw, 2.2rem);
+    font-style: italic;
+    font-weight: 720;
+    letter-spacing: -0.06em;
+  }
+
+  .home-partners__logo:hover,
+  .home-partners__logo:focus-visible {
+    opacity: 1;
+    outline: none;
+    transform: translateY(-0.18rem);
+  }
+
+  .home-partners__logo:focus-visible {
+    color: white;
+  }
+
+  .home-partners__logos:has(.home-partners__logo:is(:hover, :focus-visible))
+    .home-partners__logo:not(:hover):not(:focus-visible) {
+    filter: blur(4px);
+    opacity: 0.28;
+  }
+
+  @keyframes home-partners-cursor {
+    0%,
+    46% {
+      opacity: 1;
+    }
+
+    47%,
+    100% {
+      opacity: 0.25;
+    }
+  }
+
+  @media (max-width: 840px) {
+    .home-partners__logos {
+      grid-template-columns: repeat(3, minmax(7rem, max-content));
+      gap: 3.25rem clamp(1.5rem, 5vw, 3rem);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .home-partners {
+      padding: 2.75rem 1.25rem 7rem;
+    }
+
+    .home-partners__logos {
+      grid-template-columns: 1fr;
+      gap: 2.6rem;
+
+      margin-top: 3.25rem;
+    }
+
+    .home-partners__logo-item {
+      min-height: 3.4rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-partners__cursor {
+      animation: none;
+      opacity: 1;
+    }
+
+    .home-partners__logo {
+      transition: none;
+    }
+  }
+</style>

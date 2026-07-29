@@ -124,54 +124,57 @@ function isCurrentPage(href: string): boolean {
 
 <style>
   .site-header {
-    position: absolute;
+    position: sticky;
     z-index: 50;
-    top: 3.4rem;
+    top: 0;
     left: 0;
 
     width: 100%;
+    margin-top: 3.4rem;
+    margin-bottom: calc(-5rem - 3.4rem);
     padding-inline: clamp(1rem, 4vw, 4rem);
 
     pointer-events: none;
   }
 
-    .site-header__bar {
-  position: relative;
+  .site-header__bar {
+    position: relative;
 
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+    opacity: 0.9;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
 
-  width: min(100%, 76rem);
-  min-height: 5rem;
-  margin-inline: auto;
-  padding: 0.65rem 0.8rem 0.65rem 1.25rem;
+    width: min(100%, 76rem);
+    min-height: 5rem;
+    margin-inline: auto;
+    padding: 0.65rem 0.8rem 0.65rem 1.25rem;
 
-  align-items: center;
+    align-items: center;
 
-  border: 0;
-  border-radius: 2rem;
+    border: 0;
+    border-radius: 2rem;
 
-  background:
-    radial-gradient(
-      circle at 0% 50%,
-      rgb(224 35 78 / 12%),
-      transparent 30%
-    ),
-    linear-gradient(
-      100deg,
-      rgb(30 3 10 / 96%) 0%,
-      rgb(9 3 5 / 96%) 48%,
-      rgb(14 3 6 / 96%) 100%
-    );
+    background:
+      radial-gradient(
+        circle at 0% 50%,
+        rgb(224 35 78 / 12%),
+        transparent 30%
+      ),
+      linear-gradient(
+        100deg,
+        rgb(30 3 10 / 96%) 0%,
+        rgb(9 3 5 / 96%) 48%,
+        rgb(14 3 6 / 96%) 100%
+      );
 
-  box-shadow:
-    0 22px 60px rgb(0 0 0 / 24%);
+    box-shadow:
+      0 22px 60px rgb(0 0 0 / 24%);
 
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
 
-  pointer-events: auto;
-}
+    pointer-events: auto;
+  }
 
   /*
    * Very subtle highlight around the top edge.
@@ -468,7 +471,8 @@ function isCurrentPage(href: string): boolean {
 
   @media (max-width: 960px) {
     .site-header {
-      top: 1.5rem;
+      margin-top: 1.5rem;
+      margin-bottom: calc(-5rem - 1.5rem);
 
       padding-inline: clamp(1.25rem, 4vw, 2rem);
     }
@@ -498,7 +502,7 @@ function isCurrentPage(href: string): boolean {
 
   @media (max-width: 600px) {
     .site-header {
-      top: 1.5rem;
+      margin-bottom: calc(-5.35rem - 1.5rem);
 
       /*
        * More inset than the current version, matching the
