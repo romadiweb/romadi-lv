@@ -14,28 +14,13 @@ function isCurrentPage(href: string): boolean {
 
 <header class="site-header">
   <div class="site-header__bar">
-    <a
-      href="/"
-      class="site-header__logo"
-      aria-label="ROMADI sākumlapa"
-      data-astro-prefetch
-    >
-      <span
-        class="site-header__logo-mark"
-        aria-hidden="true"
-      >
-        R
-      </span>
+    <a href="/" class="site-header__logo" aria-label="ROMADI sākumlapa" data-astro-prefetch>
+      <span class="site-header__logo-mark" aria-hidden="true"> R </span>
 
-      <span class="site-header__wordmark">
-        ROMADI
-      </span>
+      <span class="site-header__wordmark"> ROMADI </span>
     </a>
 
-    <nav
-      class="site-header__navigation"
-      aria-label="Galvenā navigācija"
-    >
+    <nav class="site-header__navigation" aria-label="Galvenā navigācija">
       {
         SITE.navigation.primary.map((item) => (
           <a
@@ -59,38 +44,24 @@ function isCurrentPage(href: string): boolean {
       >
         {SITE.navigation.callToAction.label}
 
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          aria-hidden="true"
-        >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path
             d="M7 17L17 7M9 7H17V15"
             stroke="currentColor"
             stroke-width="1.8"
             stroke-linecap="round"
-            stroke-linejoin="round"
-          ></path>
+            stroke-linejoin="round"></path>
         </svg>
       </a>
 
       <details class="site-header__mobile-menu">
         <summary aria-label="Atvērt navigācijas izvēlni">
-          <svg
-            width="28"
-            height="28"
-            viewBox="0 0 24 24"
-            fill="none"
-            aria-hidden="true"
-          >
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path
               d="M3.5 6.5H20.5M3.5 12H20.5M3.5 17.5H20.5"
               stroke="currentColor"
               stroke-width="1.7"
-              stroke-linecap="round"
-            ></path>
+              stroke-linecap="round"></path>
           </svg>
         </summary>
 
@@ -139,8 +110,9 @@ function isCurrentPage(href: string): boolean {
 
   .site-header__bar {
     position: relative;
+    isolation: isolate;
 
-    opacity: 0.9;
+    overflow: hidden;
     display: grid;
     grid-template-columns: 1fr auto 1fr;
 
@@ -154,24 +126,9 @@ function isCurrentPage(href: string): boolean {
     border: 0;
     border-radius: 2rem;
 
-    background:
-      radial-gradient(
-        circle at 0% 50%,
-        rgb(224 35 78 / 12%),
-        transparent 30%
-      ),
-      linear-gradient(
-        100deg,
-        rgb(30 3 10 / 96%) 0%,
-        rgb(9 3 5 / 96%) 48%,
-        rgb(14 3 6 / 96%) 100%
-      );
+    background: transparent;
 
-    box-shadow:
-      0 22px 60px rgb(0 0 0 / 24%);
-
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 22px 60px rgb(0 0 0 / 24%);
 
     pointer-events: auto;
   }
@@ -181,10 +138,29 @@ function isCurrentPage(href: string): boolean {
    * This is not a visible border.
    */
 
-.site-header__bar::before {
-  content: none;
+  .site-header__bar::before {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
 
-}
+    border-radius: inherit;
+
+    /*
+     * The dark layer is intentionally semi-transparent so the hero remains
+     * visible through the header. The backdrop filter then blurs that content.
+     */
+    background:
+      radial-gradient(circle at 0% 50%, rgb(224 35 78 / 13%), transparent 34%),
+      radial-gradient(circle at 72% 0%, rgb(255 255 255 / 5%), transparent 32%),
+      linear-gradient(100deg, rgb(27 4 10 / 88%) 0%, rgb(8 4 6 / 74%) 48%, rgb(15 3 7 / 86%) 100%);
+
+    -webkit-backdrop-filter: blur(28px) saturate(115%);
+    backdrop-filter: blur(12px) saturate(115%);
+
+    content: '';
+    pointer-events: none;
+  }
+
   .site-header__logo {
     position: relative;
     z-index: 1;
@@ -206,16 +182,14 @@ function isCurrentPage(href: string): boolean {
 
     border-radius: 50%;
 
-    background:
-      radial-gradient(
-        circle at 35% 28%,
-        var(--color-signal-400),
-        var(--color-signal-600) 68%,
-        var(--color-signal-800)
-      );
+    background: radial-gradient(
+      circle at 35% 28%,
+      var(--color-signal-400),
+      var(--color-signal-600) 68%,
+      var(--color-signal-800)
+    );
 
-    box-shadow:
-      0 0 22px rgb(224 35 78 / 26%);
+    box-shadow: 0 0 22px rgb(224 35 78 / 26%);
 
     color: white;
 
@@ -242,61 +216,57 @@ function isCurrentPage(href: string): boolean {
     gap: clamp(1.75rem, 3vw, 3rem);
   }
 
- .site-header__navigation-link {
-  padding-block: 1rem;
+  .site-header__navigation-link {
+    padding-block: 1rem;
 
-  color: rgb(255 255 255 / 84%);
+    color: rgb(255 255 255 / 84%);
 
-  font-size: 0.9rem;
-  font-weight: 650;
-  letter-spacing: -0.015em;
+    font-size: 0.9rem;
+    font-weight: 650;
+    letter-spacing: -0.015em;
 
-  transition:
-    color 180ms ease,
-    filter 220ms ease,
-    transform 220ms var(--ease-out-expo);
-}
+    transition:
+      color 180ms ease,
+      filter 220ms ease,
+      transform 220ms var(--ease-out-expo);
+  }
 
-/*
+  /*
  * Keep all links equally bright.
  * Only introduce a small blur.
  */
-.site-header__navigation:hover
-  .site-header__navigation-link {
-  opacity: 1;
-  color: rgb(255 255 255 / 84%);
-  filter: blur(1.35px);
-}
+  .site-header__navigation:hover .site-header__navigation-link {
+    opacity: 1;
+    color: rgb(255 255 255 / 84%);
+    filter: blur(1.35px);
+  }
 
-/*
+  /*
  * The item under the pointer remains completely sharp.
  */
-.site-header__navigation
-  .site-header__navigation-link:hover {
-  opacity: 1;
-  color: white;
-  filter: blur(0);
-  transform: translateY(-1px);
-}
+  .site-header__navigation .site-header__navigation-link:hover {
+    opacity: 1;
+    color: white;
+    filter: blur(0);
+    transform: translateY(-1px);
+  }
 
-/*
+  /*
  * Restore everything when the pointer leaves the nav.
  */
-.site-header__navigation:not(:hover)
-  .site-header__navigation-link {
-  opacity: 1;
-  filter: blur(0);
-}
+  .site-header__navigation:not(:hover) .site-header__navigation-link {
+    opacity: 1;
+    filter: blur(0);
+  }
 
-.site-header__navigation-link[data-current='true'] {
-  color: white;
-}
+  .site-header__navigation-link[data-current='true'] {
+    color: white;
+  }
 
   /*
    * Keep all links sharp when the mouse is not inside the nav.
    */
-  .site-header__navigation:not(:hover)
-    .site-header__navigation-link {
+  .site-header__navigation:not(:hover) .site-header__navigation-link {
     opacity: 1;
     filter: none;
   }
@@ -312,35 +282,34 @@ function isCurrentPage(href: string): boolean {
     gap: 0.55rem;
   }
 
-.site-header__project-link {
-  display: inline-flex;
-  min-height: 3.2rem;
+  .site-header__project-link {
+    display: inline-flex;
+    min-height: 3.2rem;
 
-  align-items: center;
-  justify-content: center;
-  gap: 0.55rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
 
-  border: 0;
-  border-radius: 0.85rem;
+    border: 0;
+    border-radius: 0.85rem;
 
-  padding-inline: 1.2rem;
+    padding-inline: 1.2rem;
 
-  background: rgb(255 255 255 / 8%);
+    background: rgb(255 255 255 / 8%);
 
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 5%);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 5%);
 
-  color: white;
+    color: white;
 
-  font-size: 0.86rem;
-  font-weight: 700;
+    font-size: 0.86rem;
+    font-weight: 700;
 
-  transition:
-    background-color 200ms ease,
-    box-shadow 200ms ease,
-    color 200ms ease,
-    transform 250ms var(--ease-out-expo);
-}
+    transition:
+      background-color 200ms ease,
+      box-shadow 200ms ease,
+      color 200ms ease,
+      transform 250ms var(--ease-out-expo);
+  }
 
   .site-header__project-link:hover {
     background: var(--accent);
@@ -354,8 +323,7 @@ function isCurrentPage(href: string): boolean {
   }
 
   .site-header__project-link svg {
-    transition:
-      transform 250ms var(--ease-out-expo);
+    transition: transform 250ms var(--ease-out-expo);
   }
 
   .site-header__project-link:hover svg {
@@ -420,13 +388,12 @@ function isCurrentPage(href: string): boolean {
 
     border-radius: 1.25rem;
 
-    background: rgb(7 5 6 / 97%);
+    background: linear-gradient(145deg, rgb(22 5 10 / 72%), rgb(7 5 6 / 62%));
 
-    box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 6%),
-      0 26px 80px rgb(0 0 0 / 56%);
+    box-shadow: 0 26px 80px rgb(0 0 0 / 46%);
 
-    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(28px) saturate(145%);
+    backdrop-filter: blur(28px) saturate(145%);
   }
 
   .site-header__mobile-panel nav {
@@ -502,7 +469,7 @@ function isCurrentPage(href: string): boolean {
 
   @media (max-width: 600px) {
     .site-header {
-      margin-bottom: calc(-5.35rem - 1.5rem);
+      margin-bottom: calc(-4.45rem - 1.5rem);
 
       /*
        * More inset than the current version, matching the
@@ -513,9 +480,9 @@ function isCurrentPage(href: string): boolean {
 
     .site-header__bar {
       width: min(100%, 22.5rem);
-      min-height: 5.35rem;
+      min-height: 4.45rem;
 
-      padding: 0.7rem 0.75rem 0.7rem 1.05rem;
+      padding: 0.5rem 0.55rem 0.5rem 0.9rem;
 
       border-radius: 1.15rem;
     }
@@ -525,20 +492,20 @@ function isCurrentPage(href: string): boolean {
     }
 
     .site-header__logo-mark {
-      width: 2.8rem;
-      height: 2.8rem;
+      width: 2.45rem;
+      height: 2.45rem;
 
-      font-size: 1rem;
+      font-size: 0.9rem;
     }
 
     .site-header__mobile-menu summary {
-      width: 3.85rem;
-      height: 3.85rem;
+      width: 3.35rem;
+      height: 3.35rem;
     }
 
     .site-header__mobile-menu summary svg {
-      width: 1.95rem;
-      height: 1.95rem;
+      width: 1.75rem;
+      height: 1.75rem;
     }
   }
 

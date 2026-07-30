@@ -19,12 +19,11 @@ const partners = [
     className: 'home-partners__logo--soft',
   },
 ];
+
+const partnerLoop = [...partners, ...partners, ...partners];
 ---
 
-<section
-  class="home-partners"
-  aria-labelledby="home-partners-heading"
->
+<section class="home-partners" aria-labelledby="home-partners-heading">
   <div class="home-partners__inner">
     <p
       id="home-partners-heading"
@@ -35,41 +34,38 @@ const partners = [
         aria-hidden="true"
         data-typewriter
         data-typewriter-text="{ PARTNERI, KAS MUMS UZTICAS }"
-        data-typewriter-speed="54"
-      ></span>
-      <span
-        class="home-partners__cursor"
-        aria-hidden="true"
-      >_</span>
+        data-typewriter-speed="54"></span>
+      <span class="home-partners__cursor" aria-hidden="true">_</span>
     </p>
 
-    <ul
-      class="home-partners__logos"
-      data-reveal
-      aria-label="ROMADI partneru logo saraksts"
-    >
+    <ul class="home-partners__logos" data-reveal aria-label="ROMADI partneru logo saraksts">
       {
-        partners.map((partner) => (
-          <li class="home-partners__logo-item">
+        partnerLoop.map((partner, index) => (
+          <li
+            class:list={[
+              'home-partners__logo-item',
+              index >= partners.length && 'home-partners__logo-item--duplicate',
+            ]}
+            aria-hidden={index >= partners.length ? 'true' : undefined}
+          >
             <a
               class={`home-partners__logo ${partner.className}`}
               href={partner.href}
               aria-label={`Atvērt ${partner.name}`}
               target="_blank"
               rel="noopener noreferrer"
+              tabindex={index >= partners.length ? '-1' : undefined}
             >
-              {
-                partner.logo ? (
-                  <img
-                    class="home-partners__logo-image"
-                    src={partner.logo}
-                    alt={partner.name}
-                    loading="lazy"
-                  />
-                ) : (
-                  <span class="home-partners__logo-text">{partner.name}</span>
-                )
-              }
+              {partner.logo ? (
+                <img
+                  class="home-partners__logo-image"
+                  src={partner.logo}
+                  alt={partner.name}
+                  loading="lazy"
+                />
+              ) : (
+                <span class="home-partners__logo-text">{partner.name}</span>
+              )}
             </a>
           </li>
         ))
@@ -95,7 +91,7 @@ const partners = [
     position: relative;
 
     overflow: hidden;
-    padding: clamp(2.75rem, 4vw, 4.25rem) 1.5rem clamp(7.5rem, 13vw, 12rem);
+    padding: clamp(0.9rem, 1.35vw, 1.45rem) 1.5rem clamp(3.75rem, 6.5vw, 6rem);
 
     background: var(--color-ink-950);
   }
@@ -153,6 +149,10 @@ const partners = [
 
     align-items: center;
     justify-content: center;
+  }
+
+  .home-partners__logo-item--duplicate {
+    display: none;
   }
 
   .home-partners__logo {
@@ -262,6 +262,16 @@ const partners = [
     }
   }
 
+  @keyframes home-partners-mobile-loop {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+
+    to {
+      transform: translate3d(-33.333%, 0, 0);
+    }
+  }
+
   @media (max-width: 840px) {
     .home-partners__logos {
       grid-template-columns: repeat(3, minmax(7rem, max-content));
@@ -271,18 +281,49 @@ const partners = [
 
   @media (max-width: 600px) {
     .home-partners {
-      padding: 2.75rem 1.25rem 7rem;
+      padding: 0.95rem 0 3.5rem;
+    }
+
+    .home-partners__inner {
+      width: 100%;
+    }
+
+    .home-partners__eyebrow {
+      justify-content: flex-start;
+      width: min(calc(100% - 2.5rem), 24rem);
+      margin-inline: auto;
     }
 
     .home-partners__logos {
-      grid-template-columns: 1fr;
-      gap: 2.6rem;
+      display: flex;
+      grid-template-columns: none;
+      justify-content: flex-start;
+      gap: clamp(2.2rem, 11vw, 3.7rem);
 
-      margin-top: 3.25rem;
+      width: max-content;
+      margin-top: 2.6rem;
+
+      animation: home-partners-mobile-loop 18s linear infinite;
+      will-change: transform;
+    }
+
+    .home-partners__logos:hover {
+      animation-play-state: paused;
     }
 
     .home-partners__logo-item {
+      flex: 0 0 auto;
+      min-width: clamp(8.5rem, 38vw, 11rem);
       min-height: 3.4rem;
+    }
+
+    .home-partners__logo-item--duplicate {
+      display: flex;
+    }
+
+    .home-partners__logo {
+      min-width: auto;
+      font-size: clamp(1.2rem, 6vw, 1.8rem);
     }
   }
 
@@ -294,6 +335,10 @@ const partners = [
 
     .home-partners__logo {
       transition: none;
+    }
+
+    .home-partners__logos {
+      animation: none;
     }
   }
 </style>

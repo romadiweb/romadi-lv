@@ -1,11 +1,5 @@
-<section
-  class="home-hero"
-  data-pointer-hero
->
-  <div
-    class="home-hero__background"
-    aria-hidden="true"
-  >
+<section class="home-hero" data-pointer-hero>
+  <div class="home-hero__background" aria-hidden="true">
     <div class="home-hero__base"></div>
 
     <div class="home-hero__ambient">
@@ -21,38 +15,23 @@
 
     <div class="home-hero__color-crunch"></div>
 
-    <svg
-      class="home-hero__noise"
-      viewBox="0 0 100 100"
-      preserveAspectRatio="none"
-    >
+    <svg class="home-hero__noise" viewBox="0 0 100 100" preserveAspectRatio="none">
       <filter id="romadi-hero-noise">
         <feTurbulence
           type="fractalNoise"
           baseFrequency="0.78"
           numOctaves="4"
           seed="24"
-          stitchTiles="stitch"
-        />
+          stitchTiles="stitch"></feTurbulence>
 
-        <feColorMatrix
-          type="saturate"
-          values="0"
-        />
+        <feColorMatrix type="saturate" values="0"></feColorMatrix>
 
         <feComponentTransfer>
-          <feFuncA
-            type="table"
-            tableValues="0 0.58"
-          />
+          <feFuncA type="table" tableValues="0 0.58"></feFuncA>
         </feComponentTransfer>
       </filter>
 
-      <rect
-        width="100%"
-        height="100%"
-        filter="url(#romadi-hero-noise)"
-      />
+      <rect width="100%" height="100%" filter="url(#romadi-hero-noise)"></rect>
     </svg>
 
     <div class="home-hero__vignette"></div>
@@ -64,56 +43,30 @@
       <span>mājaslapa</span>
     </h1>
 
-    <p
-      class="home-hero__description"
-      data-reveal
-    >
-      <strong>ROMADI</strong> — digitālais partneris mūsdienīgu,
-      ātru un pārdomātu tīmekļa risinājumu izstrādei.
+    <p class="home-hero__description" data-reveal>
+      <strong>ROMADI</strong> — digitālais partneris mūsdienīgu, ātru un pārdomātu tīmekļa risinājumu
+      izstrādei.
     </p>
 
-    <div
-      class="home-hero__actions"
-      data-reveal
-    >
-      <a
-        href="/kontakti"
-        class="home-hero__primary-action"
-        data-astro-prefetch
-      >
-        Sākt projektu
-      </a>
+    <div class="home-hero__actions" data-reveal>
+      <a href="/kontakti" class="home-hero__primary-action" data-astro-prefetch> Sākt projektu </a>
 
-      <a
-        href="/portfolio"
-        class="home-hero__secondary-action"
-        data-astro-prefetch
-      >
+      <a href="/portfolio" class="home-hero__secondary-action" data-astro-prefetch>
         Apskatīt darbus
 
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          aria-hidden="true"
-        >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path
             d="M5 12H19M13 6L19 12L13 18"
             stroke="currentColor"
             stroke-width="1.8"
             stroke-linecap="round"
-            stroke-linejoin="round"
-          ></path>
+            stroke-linejoin="round"></path>
         </svg>
       </a>
     </div>
   </div>
 
-  <dl
-    class="home-hero__details"
-    data-reveal
-  >
+  <dl class="home-hero__details" data-reveal>
     <div>
       <dt>Projekti</dt>
       <dd>
@@ -122,8 +75,8 @@
           data-count-up
           data-count-start="1"
           data-count-end="50"
-          data-count-duration="2500"
-        >50</span>+
+          data-count-duration="2500">50</span
+        >+
       </dd>
     </div>
 
@@ -200,34 +153,15 @@
     pointer-events: none;
   }
 
-
   .home-hero__base {
     position: absolute;
     inset: 0;
 
     background:
-      radial-gradient(
-        ellipse at 50% 112%,
-        rgb(118 3 37 / 80%),
-        transparent 48%
-      ),
-      radial-gradient(
-        ellipse at -5% 3%,
-        rgb(139 5 42 / 72%),
-        transparent 43%
-      ),
-      radial-gradient(
-        ellipse at 105% 0%,
-        rgb(104 2 31 / 65%),
-        transparent 43%
-      ),
-      linear-gradient(
-        116deg,
-        #32030f 0%,
-        #090104 42%,
-        #110105 68%,
-        #26020c 100%
-      );
+      radial-gradient(ellipse at 50% 112%, rgb(118 3 37 / 80%), transparent 48%),
+      radial-gradient(ellipse at -5% 3%, rgb(139 5 42 / 72%), transparent 43%),
+      radial-gradient(ellipse at 105% 0%, rgb(104 2 31 / 65%), transparent 43%),
+      linear-gradient(116deg, #32030f 0%, #090104 42%, #110105 68%, #26020c 100%);
   }
 
   /* =========================================================
@@ -242,19 +176,11 @@
      * Blur creates soft overlap.
      * Contrast pulls those overlaps together into liquid forms.
      */
-    filter:
-      blur(28px)
-      contrast(10)
-      saturate(145%);
+    filter: blur(28px) contrast(10) saturate(145%);
 
     mix-blend-mode: screen;
 
-    transform:
-      translate3d(
-        var(--pointer-parallax-x),
-        var(--pointer-parallax-y),
-        0
-      );
+    transform: translate3d(var(--pointer-parallax-x), var(--pointer-parallax-y), 0);
 
     will-change: transform;
   }
@@ -262,24 +188,21 @@
   .home-hero__goo {
     position: absolute;
 
-    background:
-      radial-gradient(
-        circle at 36% 30%,
-        rgb(255 129 159 / 100%) 0%,
-        rgb(248 54 100 / 98%) 19%,
-        rgb(224 35 78 / 96%) 42%,
-        rgb(176 7 51 / 88%) 65%,
-        rgb(91 1 28 / 70%) 82%,
-        transparent 100%
-      );
+    background: radial-gradient(
+      circle at 36% 30%,
+      rgb(255 129 159 / 100%) 0%,
+      rgb(248 54 100 / 98%) 19%,
+      rgb(224 35 78 / 96%) 42%,
+      rgb(176 7 51 / 88%) 65%,
+      rgb(91 1 28 / 70%) 82%,
+      transparent 100%
+    );
 
     opacity: 0.86;
 
     transform: translate3d(0, 0, 0);
 
-    will-change:
-      transform,
-      border-radius;
+    will-change: transform, border-radius;
   }
 
   /*
@@ -300,38 +223,26 @@
   .home-hero__goo::before {
     inset: 8% 18% 30% 8%;
 
-    background:
-      radial-gradient(
-        circle at 36% 32%,
-        rgb(255 210 221 / 65%),
-        rgb(255 122 154 / 30%) 38%,
-        transparent 68%
-      );
+    background: radial-gradient(
+      circle at 36% 32%,
+      rgb(255 210 221 / 65%),
+      rgb(255 122 154 / 30%) 38%,
+      transparent 68%
+    );
 
     mix-blend-mode: screen;
 
-    animation:
-      romadi-goo-inner 4.8s
-      ease-in-out
-      infinite alternate;
+    animation: romadi-goo-inner 4.8s ease-in-out infinite alternate;
   }
 
   .home-hero__goo::after {
     inset: 34% 8% 8% 30%;
 
-    background:
-      radial-gradient(
-        circle,
-        rgb(255 73 118 / 55%),
-        transparent 70%
-      );
+    background: radial-gradient(circle, rgb(255 73 118 / 55%), transparent 70%);
 
     mix-blend-mode: screen;
 
-    animation:
-      romadi-goo-inner-reverse 6.2s
-      ease-in-out
-      infinite alternate;
+    animation: romadi-goo-inner-reverse 6.2s ease-in-out infinite alternate;
   }
 
   /* Upper-left main liquid mass */
@@ -343,14 +254,9 @@
     width: 78%;
     height: 88%;
 
-    border-radius:
-      42% 58% 64% 36% /
-      46% 38% 62% 54%;
+    border-radius: 42% 58% 64% 36% / 46% 38% 62% 54%;
 
-    animation:
-      romadi-goo-left 8.5s
-      ease-in-out
-      infinite alternate;
+    animation: romadi-goo-left 8.5s ease-in-out infinite alternate;
   }
 
   /* Large bottom-centre liquid mass */
@@ -362,16 +268,11 @@
     width: 72%;
     height: 92%;
 
-    border-radius:
-      61% 39% 45% 55% /
-      40% 59% 41% 60%;
+    border-radius: 61% 39% 45% 55% / 40% 59% 41% 60%;
 
     opacity: 0.9;
 
-    animation:
-      romadi-goo-bottom 10.5s
-      ease-in-out
-      infinite alternate;
+    animation: romadi-goo-bottom 10.5s ease-in-out infinite alternate;
   }
 
   /* Upper-right liquid mass */
@@ -383,16 +284,11 @@
     width: 64%;
     height: 77%;
 
-    border-radius:
-      38% 62% 55% 45% /
-      60% 42% 58% 40%;
+    border-radius: 38% 62% 55% 45% / 60% 42% 58% 40%;
 
     opacity: 0.77;
 
-    animation:
-      romadi-goo-right 9.5s
-      ease-in-out
-      infinite alternate;
+    animation: romadi-goo-right 9.5s ease-in-out infinite alternate;
   }
 
   /*
@@ -408,16 +304,11 @@
     width: clamp(11rem, 17vw, 18rem);
     height: clamp(11rem, 17vw, 18rem);
 
-    border-radius:
-      58% 42% 36% 64% /
-      44% 62% 38% 56%;
+    border-radius: 58% 42% 36% 64% / 44% 62% 38% 56%;
 
     opacity: 0.72;
 
-    animation:
-      romadi-satellite-left 6.4s
-      ease-in-out
-      infinite alternate;
+    animation: romadi-satellite-left 6.4s ease-in-out infinite alternate;
   }
 
   .home-hero__goo--satellite-right {
@@ -427,16 +318,11 @@
     width: clamp(9rem, 14vw, 15rem);
     height: clamp(9rem, 14vw, 15rem);
 
-    border-radius:
-      39% 61% 57% 43% /
-      63% 38% 62% 37%;
+    border-radius: 39% 61% 57% 43% / 63% 38% 62% 37%;
 
     opacity: 0.66;
 
-    animation:
-      romadi-satellite-right 7.2s
-      ease-in-out
-      infinite alternate;
+    animation: romadi-satellite-right 7.2s ease-in-out infinite alternate;
   }
 
   /* =========================================================
@@ -450,19 +336,13 @@
 
     background:
       radial-gradient(
-        12rem circle at
-        var(--pointer-x)
-        var(--pointer-y),
-
+        12rem circle at var(--pointer-x) var(--pointer-y),
         rgb(255 244 247 / 28%) 0%,
         rgb(255 217 227 / 20%) 28%,
         transparent 72%
       ),
       radial-gradient(
-        31rem circle at
-        var(--pointer-x)
-        var(--pointer-y),
-
+        31rem circle at var(--pointer-x) var(--pointer-y),
         rgb(255 150 177 / 24%) 0%,
         rgb(247 75 116 / 17%) 28%,
         rgb(224 35 78 / 9%) 50%,
@@ -477,9 +357,7 @@
 
     transition: opacity 150ms ease;
 
-    will-change:
-      opacity,
-      background;
+    will-change: opacity, background;
   }
 
   /* =========================================================
@@ -492,21 +370,9 @@
     inset: 0;
 
     background:
-      radial-gradient(
-        ellipse at 6% 11%,
-        rgb(255 93 132 / 13%) 0 11%,
-        transparent 29%
-      ),
-      radial-gradient(
-        ellipse at 53% 108%,
-        rgb(249 44 92 / 13%) 0 14%,
-        transparent 34%
-      ),
-      radial-gradient(
-        ellipse at 99% 6%,
-        rgb(225 25 73 / 10%) 0 12%,
-        transparent 31%
-      ),
+      radial-gradient(ellipse at 6% 11%, rgb(255 93 132 / 13%) 0 11%, transparent 29%),
+      radial-gradient(ellipse at 53% 108%, rgb(249 44 92 / 13%) 0 14%, transparent 34%),
+      radial-gradient(ellipse at 99% 6%, rgb(225 25 73 / 10%) 0 12%, transparent 31%),
       conic-gradient(
         from 220deg at 50% 55%,
         transparent 0deg,
@@ -518,9 +384,7 @@
 
     mix-blend-mode: color-dodge;
 
-    filter:
-      contrast(115%)
-      saturate(125%);
+    filter: contrast(115%) saturate(125%);
 
     opacity: 0.62;
   }
@@ -554,11 +418,7 @@
     inset: 0;
 
     background:
-    
-      linear-gradient(
-        rgb(0 0 0 / 20%),
-        rgb(0 0 0 / 20%)
-      ),
+      linear-gradient(rgb(0 0 0 / 20%), rgb(0 0 0 / 20%)),
       radial-gradient(
         ellipse at 50% 44%,
         transparent 0%,
@@ -566,12 +426,7 @@
         rgb(0 0 0 / 20%) 70%,
         rgb(0 0 0 / 48%) 100%
       ),
-      linear-gradient(
-        to bottom,
-        rgb(0 0 0 / 3%),
-        transparent 37%,
-        rgb(0 0 0 / 27%)
-      );
+      linear-gradient(to bottom, rgb(0 0 0 / 3%), transparent 37%, rgb(0 0 0 / 27%));
 
     pointer-events: none;
   }
@@ -680,14 +535,13 @@
       gap 250ms var(--ease-out-expo);
   }
 
+  .home-hero__secondary-action svg {
+    transition: transform 250ms var(--ease-out-expo);
+  }
 
-.home-hero__secondary-action svg {
-  transition: transform 250ms var(--ease-out-expo);
-}
-
-.home-hero__secondary-action:hover svg {
-  transform: translateX(0.2rem);
-}
+  .home-hero__secondary-action:hover svg {
+    transform: translateX(0.2rem);
+  }
   /* =========================================================
      LOWER-RIGHT DETAILS
      ========================================================= */
@@ -747,7 +601,13 @@
     text-align: right;
   }
 
-
+  @media (min-width: 961px) {
+    .home-hero h1,
+    .home-hero__description {
+      position: relative;
+      top: -1.4rem;
+    }
+  }
 
   /* =========================================================
      GOO ANIMATIONS
@@ -755,249 +615,147 @@
 
   @keyframes romadi-goo-left {
     0% {
-      border-radius:
-        42% 58% 64% 36% /
-        46% 38% 62% 54%;
+      border-radius: 42% 58% 64% 36% / 46% 38% 62% 54%;
 
-      transform:
-        translate3d(-5%, -5%, 0)
-        rotate(-8deg)
-        scale(0.96);
+      transform: translate3d(-5%, -5%, 0) rotate(-8deg) scale(0.96);
     }
 
     25% {
-      border-radius:
-        63% 37% 41% 59% /
-        37% 65% 35% 63%;
+      border-radius: 63% 37% 41% 59% / 37% 65% 35% 63%;
 
-      transform:
-        translate3d(8%, 7%, 0)
-        rotate(5deg)
-        scale(1.12, 0.93);
+      transform: translate3d(8%, 7%, 0) rotate(5deg) scale(1.12, 0.93);
     }
 
     50% {
-      border-radius:
-        35% 65% 57% 43% /
-        64% 39% 61% 36%;
+      border-radius: 35% 65% 57% 43% / 64% 39% 61% 36%;
 
-      transform:
-        translate3d(15%, 2%, 0)
-        rotate(-4deg)
-        scale(0.92, 1.14);
+      transform: translate3d(15%, 2%, 0) rotate(-4deg) scale(0.92, 1.14);
     }
 
     75% {
-      border-radius:
-        57% 43% 34% 66% /
-        42% 58% 68% 32%;
+      border-radius: 57% 43% 34% 66% / 42% 58% 68% 32%;
 
-      transform:
-        translate3d(4%, 15%, 0)
-        rotate(8deg)
-        scale(1.09, 0.95);
+      transform: translate3d(4%, 15%, 0) rotate(8deg) scale(1.09, 0.95);
     }
 
     100% {
-      border-radius:
-        46% 54% 68% 32% /
-        58% 34% 66% 42%;
+      border-radius: 46% 54% 68% 32% / 58% 34% 66% 42%;
 
-      transform:
-        translate3d(13%, -2%, 0)
-        rotate(2deg)
-        scale(1.03, 1.1);
+      transform: translate3d(13%, -2%, 0) rotate(2deg) scale(1.03, 1.1);
     }
   }
 
   @keyframes romadi-goo-bottom {
     0% {
-      border-radius:
-        61% 39% 45% 55% /
-        40% 59% 41% 60%;
+      border-radius: 61% 39% 45% 55% / 40% 59% 41% 60%;
 
-      transform:
-        translate3d(0, 10%, 0)
-        rotate(0deg)
-        scale(1);
+      transform: translate3d(0, 10%, 0) rotate(0deg) scale(1);
     }
 
     25% {
-      border-radius:
-        42% 58% 66% 34% /
-        62% 37% 63% 38%;
+      border-radius: 42% 58% 66% 34% / 62% 37% 63% 38%;
 
-      transform:
-        translate3d(-12%, -3%, 0)
-        rotate(-7deg)
-        scale(1.15, 0.9);
+      transform: translate3d(-12%, -3%, 0) rotate(-7deg) scale(1.15, 0.9);
     }
 
     50% {
-      border-radius:
-        68% 32% 39% 61% /
-        35% 66% 34% 65%;
+      border-radius: 68% 32% 39% 61% / 35% 66% 34% 65%;
 
-      transform:
-        translate3d(7%, -12%, 0)
-        rotate(6deg)
-        scale(0.9, 1.16);
+      transform: translate3d(7%, -12%, 0) rotate(6deg) scale(0.9, 1.16);
     }
 
     75% {
-      border-radius:
-        36% 64% 58% 42% /
-        55% 43% 57% 45%;
+      border-radius: 36% 64% 58% 42% / 55% 43% 57% 45%;
 
-      transform:
-        translate3d(13%, -6%, 0)
-        rotate(-4deg)
-        scale(1.11, 0.94);
+      transform: translate3d(13%, -6%, 0) rotate(-4deg) scale(1.11, 0.94);
     }
 
     100% {
-      border-radius:
-        57% 43% 34% 66% /
-        46% 65% 35% 54%;
+      border-radius: 57% 43% 34% 66% / 46% 65% 35% 54%;
 
-      transform:
-        translate3d(-3%, -15%, 0)
-        rotate(7deg)
-        scale(0.97, 1.12);
+      transform: translate3d(-3%, -15%, 0) rotate(7deg) scale(0.97, 1.12);
     }
   }
 
   @keyframes romadi-goo-right {
     0% {
-      border-radius:
-        38% 62% 55% 45% /
-        60% 42% 58% 40%;
+      border-radius: 38% 62% 55% 45% / 60% 42% 58% 40%;
 
-      transform:
-        translate3d(7%, -4%, 0)
-        rotate(5deg)
-        scale(0.97);
+      transform: translate3d(7%, -4%, 0) rotate(5deg) scale(0.97);
     }
 
     30% {
-      border-radius:
-        64% 36% 42% 58% /
-        37% 61% 39% 63%;
+      border-radius: 64% 36% 42% 58% / 37% 61% 39% 63%;
 
-      transform:
-        translate3d(-13%, 8%, 0)
-        rotate(-9deg)
-        scale(1.13, 0.91);
+      transform: translate3d(-13%, 8%, 0) rotate(-9deg) scale(1.13, 0.91);
     }
 
     60% {
-      border-radius:
-        41% 59% 69% 31% /
-        66% 35% 65% 34%;
+      border-radius: 41% 59% 69% 31% / 66% 35% 65% 34%;
 
-      transform:
-        translate3d(-5%, 16%, 0)
-        rotate(7deg)
-        scale(0.91, 1.14);
+      transform: translate3d(-5%, 16%, 0) rotate(7deg) scale(0.91, 1.14);
     }
 
     100% {
-      border-radius:
-        67% 33% 38% 62% /
-        44% 68% 32% 56%;
+      border-radius: 67% 33% 38% 62% / 44% 68% 32% 56%;
 
-      transform:
-        translate3d(-16%, 3%, 0)
-        rotate(-3deg)
-        scale(1.08, 0.96);
+      transform: translate3d(-16%, 3%, 0) rotate(-3deg) scale(1.08, 0.96);
     }
   }
 
   @keyframes romadi-satellite-left {
     0% {
-      transform:
-        translate3d(-3rem, 3rem, 0)
-        rotate(-10deg)
-        scale(0.7);
+      transform: translate3d(-3rem, 3rem, 0) rotate(-10deg) scale(0.7);
     }
 
     32% {
-      transform:
-        translate3d(7rem, -3rem, 0)
-        rotate(8deg)
-        scale(1.22, 0.82);
+      transform: translate3d(7rem, -3rem, 0) rotate(8deg) scale(1.22, 0.82);
     }
 
     68% {
-      transform:
-        translate3d(15rem, 5rem, 0)
-        rotate(-5deg)
-        scale(0.78, 1.27);
+      transform: translate3d(15rem, 5rem, 0) rotate(-5deg) scale(0.78, 1.27);
     }
 
     100% {
-      transform:
-        translate3d(5rem, 11rem, 0)
-        rotate(12deg)
-        scale(1.12);
+      transform: translate3d(5rem, 11rem, 0) rotate(12deg) scale(1.12);
     }
   }
 
   @keyframes romadi-satellite-right {
     0% {
-      transform:
-        translate3d(4rem, 4rem, 0)
-        rotate(8deg)
-        scale(0.65);
+      transform: translate3d(4rem, 4rem, 0) rotate(8deg) scale(0.65);
     }
 
     32% {
-      transform:
-        translate3d(-7rem, -7rem, 0)
-        rotate(-9deg)
-        scale(1.27, 0.8);
+      transform: translate3d(-7rem, -7rem, 0) rotate(-9deg) scale(1.27, 0.8);
     }
 
     68% {
-      transform:
-        translate3d(-14rem, 1rem, 0)
-        rotate(6deg)
-        scale(0.8, 1.25);
+      transform: translate3d(-14rem, 1rem, 0) rotate(6deg) scale(0.8, 1.25);
     }
 
     100% {
-      transform:
-        translate3d(-4rem, -11rem, 0)
-        rotate(-12deg)
-        scale(1.1);
+      transform: translate3d(-4rem, -11rem, 0) rotate(-12deg) scale(1.1);
     }
   }
 
   @keyframes romadi-goo-inner {
     from {
-      transform:
-        translate3d(-8%, -6%, 0)
-        scale(0.88);
+      transform: translate3d(-8%, -6%, 0) scale(0.88);
     }
 
     to {
-      transform:
-        translate3d(14%, 16%, 0)
-        scale(1.22);
+      transform: translate3d(14%, 16%, 0) scale(1.22);
     }
   }
 
   @keyframes romadi-goo-inner-reverse {
     from {
-      transform:
-        translate3d(16%, -13%, 0)
-        scale(1.16);
+      transform: translate3d(16%, -13%, 0) scale(1.16);
     }
 
     to {
-      transform:
-        translate3d(-12%, 19%, 0)
-        scale(0.8);
+      transform: translate3d(-12%, 19%, 0) scale(0.8);
     }
   }
 
@@ -1048,10 +806,7 @@
     }
 
     .home-hero__ambient {
-      filter:
-        blur(36px)
-        contrast(7)
-        saturate(130%);
+      filter: blur(36px) contrast(7) saturate(130%);
     }
   }
 
@@ -1066,24 +821,26 @@
     .home-hero__content {
       width: min(100% - 2rem, 34rem);
 
-      padding-top: 8rem;
-      padding-bottom: 15rem;
+      padding-top: 11.25rem;
+      padding-bottom: 12.5rem;
     }
 
     .home-hero h1 {
       position: relative;
-      top: -1.25rem;
+      top: 0;
 
-      max-width: 32rem;
+      max-width: 28rem;
 
-      font-size: clamp(3.3rem, 16vw, 5.4rem);
-      letter-spacing: -0.01em;
-      line-height: 0.9;
+      font-size: clamp(2.7rem, 12.6vw, 4.25rem);
+      font-weight: 430;
+      letter-spacing: 0;
+      line-height: 1.08;
+      word-spacing: 0.08em;
     }
 
     .home-hero__description {
       position: relative;
-      top: -1.25rem;
+      top: 0;
 
       margin-top: 1.75rem;
     }
@@ -1138,16 +895,12 @@
     }
 
     .home-hero__flashlight {
-      background:
-        radial-gradient(
-          18rem circle at
-          var(--pointer-x)
-          var(--pointer-y),
-
-          rgb(255 214 225 / 20%) 0%,
-          rgb(247 75 116 / 12%) 38%,
-          transparent 75%
-        );
+      background: radial-gradient(
+        18rem circle at var(--pointer-x) var(--pointer-y),
+        rgb(255 214 225 / 20%) 0%,
+        rgb(247 75 116 / 12%) 38%,
+        transparent 75%
+      );
     }
   }
 
@@ -1162,5 +915,4 @@
       transform: none;
     }
   }
-
 </style>
