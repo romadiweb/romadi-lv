@@ -78,13 +78,26 @@ const services = [
       >
         {
           services.map((service, index) => (
-            <article class="home-services__card" style={`--card-index: ${index};`} tabindex="0">
+            <article
+              class="home-services__card"
+              style={`--card-index: ${index};`}
+              tabindex="0"
+              data-service-card
+            >
+              <span class="home-services__sun" aria-hidden="true">
+                <span class="home-services__sun-rays" />
+              </span>
+
               <span class="home-services__number">{service.number}</span>
+
               <span class="home-services__icon-placeholder" aria-hidden="true">
                 <span />
               </span>
-              <h3>{service.title}</h3>
-              <p>{service.description}</p>
+
+              <div class="home-services__copy">
+                <h3>{service.title}</h3>
+                <p>{service.description}</p>
+              </div>
             </article>
           ))
         }
@@ -138,6 +151,53 @@ const services = [
 <script>
   import { initTypewriters } from '@/lib/animations/typewriter';
 
+  const DESKTOP_QUERY = '(min-width: 901px)';
+
+  const restingX = [0.02, 0.16, 0.31, 0.47, 0.62, 0.76, 0.89];
+  const restingY = [0.02, -0.09, 0.05, 0.02, -0.04, 0.11, 0.02];
+  const restingRotations = [0, 5, -5, 0, -5, 5, 0];
+  const restingLayers = [1, 4, 5, 2, 4, 6, 2];
+
+  const selectedX = [
+    [0.08, 0.31, 0.43, 0.56, 0.68, 0.79, 0.92],
+    [0.02, 0.23, 0.4, 0.54, 0.66, 0.78, 0.92],
+    [0.02, 0.14, 0.35, 0.53, 0.66, 0.78, 0.92],
+    [0.02, 0.13, 0.23, 0.51, 0.77, 0.87, 0.94],
+    [0.02, 0.14, 0.26, 0.39, 0.61, 0.78, 0.93],
+    [0.02, 0.14, 0.26, 0.39, 0.52, 0.73, 0.92],
+    [0.02, 0.14, 0.26, 0.4, 0.53, 0.65, 0.89],
+  ];
+
+  const selectedY = [
+    [0, -0.1, 0.05, 0.02, -0.08, 0.12, 0],
+    [0, 0, 0.04, 0.02, -0.08, 0.13, 0],
+    [0.02, -0.13, 0, 0.02, -0.08, 0.12, 0],
+    [0.02, -0.13, 0.1, 0, -0.08, 0.12, 0],
+    [0.02, -0.13, 0.1, 0.03, 0, 0.1, 0],
+    [0.02, -0.13, 0.1, 0.03, -0.06, 0, 0],
+    [0.02, -0.13, 0.1, 0.03, -0.06, 0.08, 0],
+  ];
+
+  const selectedRotations = [
+    [0, 5, -5, 0, -5, 5, 0],
+    [0, 0, -5, 0, -5, 5, 0],
+    [0, 5, 0, 0, -5, 5, 0],
+    [0, 5, -5, 0, -5, 5, 0],
+    [0, 5, -5, 0, 0, 5, 0],
+    [0, 5, -5, 0, -5, 0, 0],
+    [0, 5, -5, 0, -5, 5, 0],
+  ];
+
+  const selectedLayers = [
+    [50, 5, 6, 3, 7, 8, 4],
+    [2, 50, 6, 4, 7, 8, 3],
+    [1, 7, 50, 4, 8, 9, 3],
+    [1, 7, 8, 50, 9, 10, 3],
+    [1, 7, 8, 4, 50, 10, 3],
+    [1, 7, 8, 4, 9, 50, 3],
+    [1, 7, 8, 4, 9, 10, 50],
+  ];
+
   const initServicesCarousels = (): void => {
     document.querySelectorAll<HTMLElement>('.home-services').forEach((section) => {
       if (section.dataset.servicesCarouselInitialized === 'true') {
@@ -145,7 +205,7 @@ const services = [
       }
 
       const carousel = section.querySelector<HTMLElement>('[data-services-carousel]');
-      const cards = Array.from(section.querySelectorAll<HTMLElement>('.home-services__card'));
+      const cards = Array.from(section.querySelectorAll<HTMLElement>('[data-service-card]'));
       const previousButton = section.querySelector<HTMLButtonElement>(
         '[data-services-carousel-prev]',
       );
@@ -158,7 +218,12 @@ const services = [
 
       section.dataset.servicesCarouselInitialized = 'true';
 
-      const getActiveIndex = (): number => {
+      const desktopMedia = window.matchMedia(DESKTOP_QUERY);
+      let desktopActiveIndex: number | null = null;
+      let scrollFrame = 0;
+      let resizeFrame = 0;
+
+      const getMobileActiveIndex = (): number => {
         const carouselBounds = carousel.getBoundingClientRect();
         const carouselCenter = carouselBounds.left + carouselBounds.width / 2;
 
@@ -173,38 +238,204 @@ const services = [
         ).index;
       };
 
-      const updateActiveCard = (): void => {
-        const activeIndex = getActiveIndex();
+      const updateMobileActiveCard = (): void => {
+        if (desktopMedia.matches) {
+          return;
+        }
+
+        const activeIndex = getMobileActiveIndex();
         indexElement.textContent = String(activeIndex + 1);
 
         cards.forEach((card, index) => {
-          card.dataset.active = index === activeIndex ? 'true' : 'false';
+          const isActive = index === activeIndex;
+          card.dataset.active = String(isActive);
+          card.setAttribute('aria-expanded', String(isActive));
         });
       };
 
+      const applyDesktopLayout = (activeIndex: number | null): void => {
+        if (!desktopMedia.matches) {
+          carousel.removeAttribute('data-hovered');
+          cards.forEach((card) => {
+            card.style.removeProperty('--card-x');
+            card.style.removeProperty('--card-y');
+            card.style.removeProperty('--card-rotation');
+            card.style.removeProperty('--card-layer');
+            card.removeAttribute('data-side');
+          });
+          updateMobileActiveCard();
+          return;
+        }
+
+        const deckWidth = carousel.clientWidth;
+        const cardSize = cards[0]?.offsetWidth ?? 0;
+
+        if (!deckWidth || !cardSize) {
+          return;
+        }
+
+        const maxX = Math.max(deckWidth - cardSize, 0);
+
+        if (activeIndex === null) {
+          carousel.removeAttribute('data-hovered');
+        } else {
+          carousel.dataset.hovered = String(activeIndex);
+        }
+
+        const activeX = selectedX[activeIndex ?? -1];
+        const xRatios = activeX ?? restingX;
+        const rawCardXs = cards.map((_, index) => maxX * (xRatios[index] ?? restingX[index] ?? 0));
+        const spreadStart = Math.min(...rawCardXs);
+        const spreadEnd = Math.max(...rawCardXs.map((x) => x + cardSize));
+        const spreadWidth = spreadEnd - spreadStart;
+        const centerOffset = (deckWidth - spreadWidth) / 2 - spreadStart;
+
+        cards.forEach((card, index) => {
+          const activeY = selectedY[activeIndex ?? -1];
+          const activeRotations = selectedRotations[activeIndex ?? -1];
+          const activeLayers = selectedLayers[activeIndex ?? -1];
+
+          const xRatio = xRatios[index] ?? 0;
+          let yRatio = activeY?.[index] ?? restingY[index] ?? 0;
+          let rotation = activeRotations?.[index] ?? restingRotations[index] ?? 0;
+          let side = 'rest';
+          let layer = activeLayers?.[index] ?? restingLayers[index] ?? index + 1;
+          const isActive = index === activeIndex;
+          const x = maxX * xRatio + centerOffset;
+
+          if (activeIndex !== null) {
+            if (index < activeIndex) {
+              side = 'left';
+            } else if (index > activeIndex) {
+              side = 'right';
+            } else {
+              side = 'active';
+            }
+          }
+
+          card.style.setProperty('--card-x', `${x.toFixed(2)}px`);
+          card.style.setProperty('--card-y', `${(cardSize * yRatio).toFixed(2)}px`);
+          card.style.setProperty('--card-rotation', `${rotation}deg`);
+          card.style.setProperty('--card-layer', String(layer));
+          card.dataset.side = side;
+          card.dataset.active = String(isActive);
+          card.setAttribute('aria-expanded', String(isActive));
+        });
+      };
+
+      const setDesktopActiveCard = (index: number | null): void => {
+        if (!desktopMedia.matches) {
+          return;
+        }
+
+        desktopActiveIndex = index;
+        applyDesktopLayout(index);
+      };
+
       const scrollToCard = (index: number): void => {
+        const currentIndex = desktopMedia.matches
+          ? (desktopActiveIndex ?? 0)
+          : getMobileActiveIndex();
         const nextIndex = (index + cards.length) % cards.length;
+
+        if (desktopMedia.matches) {
+          setDesktopActiveCard(nextIndex);
+          cards[nextIndex]?.focus({ preventScroll: true });
+          indexElement.textContent = String(nextIndex + 1);
+          return;
+        }
+
         cards[nextIndex]?.scrollIntoView({
           behavior: 'smooth',
           block: 'nearest',
           inline: 'center',
         });
+
+        if (currentIndex === nextIndex) {
+          updateMobileActiveCard();
+        }
       };
 
       previousButton.addEventListener('click', () => {
-        scrollToCard(getActiveIndex() - 1);
+        const currentIndex = desktopMedia.matches
+          ? (desktopActiveIndex ?? 0)
+          : getMobileActiveIndex();
+        scrollToCard(currentIndex - 1);
       });
 
       nextButton.addEventListener('click', () => {
-        scrollToCard(getActiveIndex() + 1);
+        const currentIndex = desktopMedia.matches
+          ? (desktopActiveIndex ?? 0)
+          : getMobileActiveIndex();
+        scrollToCard(currentIndex + 1);
+      });
+
+      cards.forEach((card, index) => {
+        card.addEventListener('pointerenter', () => {
+          setDesktopActiveCard(index);
+        });
+
+        card.addEventListener('pointermove', (event) => {
+          if (!desktopMedia.matches || desktopActiveIndex !== index) {
+            return;
+          }
+
+          const bounds = card.getBoundingClientRect();
+          const normalizedX = (event.clientX - bounds.left) / bounds.width - 0.5;
+          const normalizedY = (event.clientY - bounds.top) / bounds.height - 0.5;
+
+          card.style.setProperty('--sun-pointer-x', `${(normalizedX * 4.5).toFixed(2)}%`);
+          card.style.setProperty('--sun-pointer-y', `${(normalizedY * 2.5).toFixed(2)}%`);
+        });
+
+        card.addEventListener('pointerleave', () => {
+          card.style.removeProperty('--sun-pointer-x');
+          card.style.removeProperty('--sun-pointer-y');
+        });
+
+        card.addEventListener('focus', () => {
+          setDesktopActiveCard(index);
+          indexElement.textContent = String(index + 1);
+        });
+      });
+
+      carousel.addEventListener('pointerleave', () => {
+        if (!desktopMedia.matches) {
+          return;
+        }
+
+        const focusedIndex = cards.findIndex((card) => card === document.activeElement);
+
+        setDesktopActiveCard(focusedIndex >= 0 ? focusedIndex : null);
+      });
+
+      carousel.addEventListener('focusout', () => {
+        window.requestAnimationFrame(() => {
+          if (!desktopMedia.matches || carousel.contains(document.activeElement)) {
+            return;
+          }
+
+          setDesktopActiveCard(null);
+        });
       });
 
       carousel.addEventListener('scroll', () => {
-        window.requestAnimationFrame(updateActiveCard);
+        window.cancelAnimationFrame(scrollFrame);
+        scrollFrame = window.requestAnimationFrame(updateMobileActiveCard);
       });
 
-      window.addEventListener('resize', updateActiveCard);
-      updateActiveCard();
+      const handleResize = (): void => {
+        window.cancelAnimationFrame(resizeFrame);
+        resizeFrame = window.requestAnimationFrame(() => {
+          applyDesktopLayout(desktopMedia.matches ? desktopActiveIndex : null);
+        });
+      };
+
+      window.addEventListener('resize', handleResize, { passive: true });
+      desktopMedia.addEventListener('change', handleResize);
+
+      applyDesktopLayout(null);
+      updateMobileActiveCard();
     });
   };
 
@@ -214,7 +445,6 @@ const services = [
   };
 
   initializeServices();
-
   document.addEventListener('astro:page-load', initializeServices);
 </script>
 
@@ -228,7 +458,8 @@ const services = [
 
   .home-services::before {
     position: absolute;
-    inset: auto -18rem 4rem auto;
+    right: -18rem;
+    bottom: 4rem;
     width: 38rem;
     height: 38rem;
     border-radius: 999px;
@@ -241,7 +472,7 @@ const services = [
   .home-services__inner {
     position: relative;
     z-index: 1;
-    width: min(100%, 96rem);
+    width: min(calc(100% - 2rem), 118.75rem);
     margin-inline: auto;
   }
 
@@ -315,28 +546,32 @@ const services = [
     --card-height: clamp(19rem, 27vw, 25rem);
 
     position: relative;
-    width: min(100%, 112rem);
+    width: min(calc(100% - 2rem), 118.75rem);
     height: calc(var(--card-height) + 3.5rem);
     margin-inline: auto;
   }
 
   .home-services__card {
+    --sun-pointer-x: 0%;
+    --sun-pointer-y: 0%;
+
     position: absolute;
+    z-index: var(--card-layer, 1);
     top: 1.6rem;
-    left: 50%;
+    left: 0;
     isolation: isolate;
     display: grid;
-    grid-template-rows: auto 1fr auto auto;
     width: var(--card-width);
     height: var(--card-height);
     overflow: hidden;
+    grid-template-rows: auto 1fr auto;
     border: 1px solid rgb(255 255 255 / 15%);
     border-radius: 1.35rem;
     padding: clamp(1.1rem, 1.8vw, 1.45rem);
     background:
-      linear-gradient(145deg, rgb(255 255 255 / 5%), transparent 38%),
-      linear-gradient(rgb(255 255 255 / 4%) 1px, transparent 1px),
-      linear-gradient(90deg, rgb(255 255 255 / 4%) 1px, transparent 1px), #171717;
+      linear-gradient(145deg, rgb(255 255 255 / 4.5%), transparent 34%),
+      linear-gradient(rgb(255 255 255 / 3.5%) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 3.5%) 1px, transparent 1px), #171717;
     background-position:
       0 0,
       50% 50%,
@@ -349,77 +584,20 @@ const services = [
       auto;
     box-shadow:
       inset 0 1px 0 rgb(255 255 255 / 10%),
-      inset 0 -1px 0 rgb(255 255 255 / 4%),
-      0 2rem 5rem rgb(0 0 0 / 42%);
+      inset 0 -1px 0 rgb(255 255 255 / 3%),
+      0 1.75rem 4.6rem rgb(0 0 0 / 44%);
     color: white;
     cursor: default;
     outline: none;
-    transform: translate3d(calc(-50% + var(--idle-x)), var(--idle-y), 0)
-      rotate(var(--idle-rotation));
+    transform: translate3d(var(--card-x, 0), var(--card-y, 0), 0) rotate(var(--card-rotation, 0deg));
+    transform-origin: center;
+    will-change: transform;
     transition:
-      transform 820ms var(--ease-out-expo),
+      transform 860ms cubic-bezier(0.16, 1, 0.3, 1),
       border-color 520ms ease,
-      background-color 520ms ease,
-      box-shadow 820ms var(--ease-out-expo),
-      filter 600ms ease,
-      opacity 500ms ease;
-    transition-delay: calc(var(--card-index) * 24ms);
-  }
-
-  .home-services__card:nth-child(1) {
-    z-index: 1;
-    --idle-x: -38.5rem;
-    --idle-y: 2.5rem;
-    --idle-rotation: 0deg;
-    --active-x: -48rem;
-  }
-
-  .home-services__card:nth-child(2) {
-    z-index: 3;
-    --idle-x: -25rem;
-    --idle-y: -0.6rem;
-    --idle-rotation: 5deg;
-    --active-x: -32rem;
-  }
-
-  .home-services__card:nth-child(3) {
-    z-index: 4;
-    --idle-x: -12.4rem;
-    --idle-y: 2.8rem;
-    --idle-rotation: -4deg;
-    --active-x: -16rem;
-  }
-
-  .home-services__card:nth-child(4) {
-    z-index: 2;
-    --idle-x: 0.8rem;
-    --idle-y: 1.6rem;
-    --idle-rotation: 0deg;
-    --active-x: 0rem;
-  }
-
-  .home-services__card:nth-child(5) {
-    z-index: 5;
-    --idle-x: 13.8rem;
-    --idle-y: 0.4rem;
-    --idle-rotation: -5deg;
-    --active-x: 16rem;
-  }
-
-  .home-services__card:nth-child(6) {
-    z-index: 6;
-    --idle-x: 26.2rem;
-    --idle-y: 2.7rem;
-    --idle-rotation: 5deg;
-    --active-x: 32rem;
-  }
-
-  .home-services__card:nth-child(7) {
-    z-index: 2;
-    --idle-x: 39rem;
-    --idle-y: 2.3rem;
-    --idle-rotation: 0deg;
-    --active-x: 48rem;
+      box-shadow 760ms cubic-bezier(0.16, 1, 0.3, 1),
+      filter 520ms ease,
+      opacity 420ms ease;
   }
 
   .home-services__card::before,
@@ -432,41 +610,127 @@ const services = [
   }
 
   .home-services__card::before {
-    z-index: -2;
+    z-index: 0;
     background:
-      radial-gradient(circle at 30% 22%, rgb(255 255 255 / 7%), transparent 0.16rem),
-      radial-gradient(circle at 70% 74%, rgb(255 255 255 / 5%), transparent 0.13rem);
+      radial-gradient(circle at 22% 29%, rgb(255 255 255 / 6%) 0 0.06rem, transparent 0.09rem),
+      radial-gradient(circle at 71% 63%, rgb(255 255 255 / 5%) 0 0.055rem, transparent 0.085rem),
+      radial-gradient(circle at 42% 81%, rgb(255 255 255 / 4%) 0 0.045rem, transparent 0.075rem);
     background-size:
-      1.7rem 1.7rem,
-      2.1rem 2.1rem;
-    opacity: 0.2;
+      1.35rem 1.35rem,
+      1.75rem 1.75rem,
+      2.2rem 2.2rem;
+    opacity: 0.26;
     mix-blend-mode: screen;
   }
 
   .home-services__card::after {
-    z-index: -1;
+    z-index: 2;
     background:
-      radial-gradient(ellipse at 86% 9%, rgb(255 255 255 / 30%) 0 8%, transparent 31%),
-      linear-gradient(124deg, transparent 0 42%, rgb(255 255 255 / 16%) 48%, transparent 60%),
-      linear-gradient(112deg, transparent 0 53%, rgb(255 255 255 / 9%) 58%, transparent 68%),
-      radial-gradient(ellipse at 66% 0%, rgb(255 255 255 / 12%), transparent 42%);
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-    filter: blur(0.35px);
+      linear-gradient(180deg, rgb(255 255 255 / 2.5%), transparent 19%),
+      radial-gradient(ellipse at center, transparent 48%, rgb(0 0 0 / 17%) 100%);
+    box-shadow: inset 0 0 4rem rgb(0 0 0 / 10%);
+  }
+
+  .home-services__sun {
+    position: absolute;
+    z-index: 1;
+    inset: -32%;
+    overflow: hidden;
+    border-radius: 40%;
     opacity: 0;
-    transform: translate3d(0.25rem, -0.25rem, 0);
-    transition:
-      opacity 420ms ease,
-      transform 900ms var(--ease-out-expo);
+    pointer-events: none;
+    transform: translate3d(calc(7% + var(--sun-pointer-x)), calc(-10% + var(--sun-pointer-y)), 0)
+      rotate(-4deg) scale(1.04);
+    transform-origin: 60% 20%;
+    transition: opacity 420ms ease;
+    will-change: transform, opacity;
+  }
+
+  .home-services__sun::before,
+  .home-services__sun::after,
+  .home-services__sun-rays {
+    position: absolute;
+    inset: 0;
+    content: '';
+    pointer-events: none;
+  }
+
+  .home-services__sun::before {
+    background:
+      radial-gradient(
+        ellipse 30% 20% at 59% 24%,
+        rgb(255 255 255 / 39%) 0%,
+        rgb(255 255 255 / 22%) 28%,
+        rgb(255 255 255 / 8%) 49%,
+        transparent 74%
+      ),
+      radial-gradient(
+        ellipse 44% 30% at 66% 17%,
+        rgb(255 255 255 / 17%) 0%,
+        rgb(255 255 255 / 6%) 44%,
+        transparent 76%
+      );
+    filter: blur(clamp(0.8rem, 1vw, 1.2rem));
+    mix-blend-mode: screen;
+  }
+
+  .home-services__sun::after {
+    background:
+      linear-gradient(
+        124deg,
+        transparent 25%,
+        rgb(255 255 255 / 3%) 34%,
+        rgb(255 255 255 / 18%) 40%,
+        rgb(255 255 255 / 5%) 46%,
+        transparent 54%
+      ),
+      linear-gradient(
+        112deg,
+        transparent 41%,
+        rgb(255 255 255 / 10%) 48%,
+        rgb(255 255 255 / 3%) 54%,
+        transparent 61%
+      );
+    filter: blur(clamp(0.55rem, 0.75vw, 0.9rem));
+    mask-image: radial-gradient(ellipse 46% 37% at 61% 25%, #000 0 38%, transparent 82%);
+    mix-blend-mode: screen;
+    opacity: 0.95;
+  }
+
+  .home-services__sun-rays {
+    background: conic-gradient(
+      from 211deg at 61% 14%,
+      transparent 0deg 9deg,
+      rgb(255 255 255 / 14%) 14deg 20deg,
+      transparent 25deg 39deg,
+      rgb(255 255 255 / 8%) 44deg 51deg,
+      transparent 57deg 78deg,
+      rgb(255 255 255 / 12%) 83deg 89deg,
+      transparent 96deg 360deg
+    );
+    filter: blur(clamp(0.8rem, 1.15vw, 1.35rem));
+    mask-image: radial-gradient(ellipse 48% 40% at 60% 24%, #000 0 30%, transparent 78%);
+    mix-blend-mode: screen;
+    opacity: 0.78;
+  }
+
+  .home-services__number,
+  .home-services__icon-placeholder,
+  .home-services__copy {
+    position: relative;
+    z-index: 3;
   }
 
   .home-services__number {
-    color: rgb(255 255 255 / 38%);
+    color: rgb(255 255 255 / 34%);
     font-family: var(--font-mono);
     font-size: 0.76rem;
     font-weight: 700;
     letter-spacing: 0.06em;
     line-height: 1;
+    transition:
+      color 380ms ease,
+      opacity 380ms ease;
   }
 
   .home-services__icon-placeholder {
@@ -476,8 +740,12 @@ const services = [
     width: clamp(4.8rem, 7vw, 6.7rem);
     aspect-ratio: 1;
     place-items: center;
-    color: rgb(255 255 255 / 64%);
-    filter: drop-shadow(0 0.6rem 1.2rem rgb(255 255 255 / 8%));
+    color: rgb(255 255 255 / 62%);
+    filter: drop-shadow(0 0.65rem 1.2rem rgb(255 255 255 / 7%));
+    transition:
+      color 420ms ease,
+      filter 520ms ease,
+      transform 760ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .home-services__icon-placeholder,
@@ -515,67 +783,91 @@ const services = [
     transform: rotate(-34deg);
   }
 
-  .home-services__card h3 {
+  .home-services__copy {
     align-self: end;
-    color: rgb(255 255 255 / 95%);
+    display: grid;
+    min-height: clamp(2.8rem, 3.6vw, 4rem);
+    align-content: end;
+    justify-items: center;
+  }
+
+  .home-services__card h3 {
+    max-width: 92%;
+    color: rgb(255 255 255 / 94%);
     font-size: clamp(1.05rem, 1.7vw, 1.4rem);
     font-weight: 820;
     letter-spacing: -0.045em;
     line-height: 1.08;
     text-align: center;
     text-wrap: balance;
+    transition: transform 620ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .home-services__card p {
-    max-width: 16.2rem;
+    max-width: min(88%, 16.2rem);
     max-height: 0;
     overflow: hidden;
-    justify-self: center;
     color: rgb(255 255 255 / 78%);
     font-family: var(--font-mono);
     font-size: clamp(0.72rem, 0.82vw, 0.82rem);
     font-weight: 600;
-    line-height: 1.65;
+    line-height: 1.6;
     text-align: center;
     opacity: 0;
-    transform: translateY(0.7rem);
+    transform: translateY(0.75rem);
     transition:
-      max-height 540ms var(--ease-out-expo),
-      margin-top 540ms var(--ease-out-expo),
-      opacity 360ms ease,
-      transform 540ms var(--ease-out-expo);
+      max-height 620ms cubic-bezier(0.16, 1, 0.3, 1),
+      margin-top 620ms cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 320ms ease 40ms,
+      transform 620ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .home-services__deck:has(.home-services__card:is(:hover, :focus-visible)) .home-services__card {
-    z-index: calc(10 + var(--card-index));
-    filter: saturate(0.96);
-    opacity: 0.96;
-    transform: translate3d(calc(-50% + var(--active-x)), 0, 0) rotate(0deg);
+  .home-services__deck[data-hovered] .home-services__card:not([data-active='true']) {
+    filter: brightness(0.92) saturate(0.9);
+    opacity: 0.94;
   }
 
-  .home-services__deck .home-services__card:is(:hover, :focus-visible) {
-    z-index: 30;
-    border-color: rgb(255 255 255 / 28%);
+  .home-services__card[data-active='true'] {
+    border-color: rgb(255 255 255 / 30%);
     box-shadow:
       inset 0 1px 0 rgb(255 255 255 / 14%),
       inset 0 -1px 0 rgb(255 255 255 / 5%),
-      0 2.6rem 6rem rgb(0 0 0 / 55%);
+      0 2.5rem 6rem rgb(0 0 0 / 58%);
+    filter: brightness(1.04);
     opacity: 1;
-    transform: translate3d(calc(-50% + var(--active-x)), -1.15rem, 0) rotate(0deg);
-    transition-delay: 0ms;
   }
 
-  .home-services__deck .home-services__card:is(:hover, :focus-visible)::after {
+  .home-services__card[data-active='true'] .home-services__sun {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
-    animation:
-      home-services-sun-drift 5.2s ease-in-out infinite,
-      home-services-sun-flicker 3.6s steps(7, end) infinite;
+    animation: home-services-sun-travel 6.8s ease-in-out infinite alternate;
   }
 
-  .home-services__deck .home-services__card:is(:hover, :focus-visible) p {
-    max-height: 9rem;
-    margin-top: 1.15rem;
+  .home-services__card[data-active='true'] .home-services__sun::before {
+    animation: home-services-sun-breathe 4.8s ease-in-out infinite;
+  }
+
+  .home-services__card[data-active='true'] .home-services__sun-rays {
+    animation: home-services-rays-drift 7.4s ease-in-out infinite alternate;
+  }
+
+  .home-services__card[data-active='true'] .home-services__number {
+    color: rgb(255 255 255 / 49%);
+  }
+
+  .home-services__card[data-active='true'] .home-services__icon-placeholder {
+    color: rgb(255 255 255 / 79%);
+    filter: drop-shadow(0 0.8rem 1.35rem rgb(0 0 0 / 24%))
+      drop-shadow(0 0 1rem rgb(255 255 255 / 8%));
+    transform: translateY(-0.15rem) scale(1.025);
+  }
+
+  .home-services__card[data-active='true'] h3 {
+    transform: translateY(-0.05rem);
+  }
+
+  .home-services__card[data-active='true'] p {
+    max-height: 8.5rem;
+    margin-top: clamp(0.72rem, 0.9vw, 1rem);
     opacity: 1;
     transform: translateY(0);
   }
@@ -592,41 +884,50 @@ const services = [
     }
   }
 
-  @keyframes home-services-sun-drift {
-    0%,
+  @keyframes home-services-sun-travel {
+    0% {
+      transform: translate3d(calc(3% + var(--sun-pointer-x)), calc(-12% + var(--sun-pointer-y)), 0)
+        rotate(-6deg) scale(1.02);
+    }
+
+    48% {
+      transform: translate3d(calc(-1% + var(--sun-pointer-x)), calc(-8% + var(--sun-pointer-y)), 0)
+        rotate(-2deg) scale(1.08);
+    }
+
     100% {
-      transform: translate3d(0, 0, 0);
-    }
-
-    40% {
-      transform: translate3d(-0.35rem, 0.22rem, 0);
-    }
-
-    68% {
-      transform: translate3d(0.18rem, -0.16rem, 0);
+      transform: translate3d(calc(7% + var(--sun-pointer-x)), calc(-5% + var(--sun-pointer-y)), 0)
+        rotate(2deg) scale(1.04);
     }
   }
 
-  @keyframes home-services-sun-flicker {
+  @keyframes home-services-sun-breathe {
     0%,
     100% {
-      opacity: 0.74;
+      opacity: 0.76;
+      transform: scale(0.96);
     }
 
-    24% {
-      opacity: 0.58;
+    52% {
+      opacity: 1;
+      transform: scale(1.055);
+    }
+  }
+
+  @keyframes home-services-rays-drift {
+    0% {
+      opacity: 0.56;
+      transform: translate3d(-2%, -1%, 0) rotate(-2deg);
     }
 
-    39% {
-      opacity: 0.88;
-    }
-
-    57% {
-      opacity: 0.63;
-    }
-
-    76% {
+    55% {
       opacity: 0.82;
+      transform: translate3d(2%, 1%, 0) rotate(2deg);
+    }
+
+    100% {
+      opacity: 0.66;
+      transform: translate3d(5%, 0, 0) rotate(4deg);
     }
   }
 
@@ -634,36 +935,6 @@ const services = [
     .home-services__deck {
       --card-width: clamp(15.5rem, 23vw, 19rem);
       --card-height: clamp(18rem, 29vw, 23rem);
-    }
-
-    .home-services__card:nth-child(1) {
-      --idle-x: -33rem;
-      --active-x: -39rem;
-    }
-
-    .home-services__card:nth-child(2) {
-      --idle-x: -21rem;
-      --active-x: -26rem;
-    }
-
-    .home-services__card:nth-child(3) {
-      --idle-x: -10.5rem;
-      --active-x: -13rem;
-    }
-
-    .home-services__card:nth-child(5) {
-      --idle-x: 11rem;
-      --active-x: 13rem;
-    }
-
-    .home-services__card:nth-child(6) {
-      --idle-x: 21.8rem;
-      --active-x: 26rem;
-    }
-
-    .home-services__card:nth-child(7) {
-      --idle-x: 33rem;
-      --active-x: 39rem;
     }
   }
 
@@ -712,9 +983,7 @@ const services = [
       display: none;
     }
 
-    .home-services__card,
-    .home-services__deck:has(.home-services__card:is(:hover, :focus-visible)) .home-services__card,
-    .home-services__deck .home-services__card:is(:hover, :focus-visible) {
+    .home-services__card {
       position: relative;
       top: auto;
       left: auto;
@@ -725,18 +994,15 @@ const services = [
     }
 
     .home-services__card p {
-      max-height: 9rem;
-      margin-top: 1rem;
+      max-height: 8.5rem;
+      margin-top: 0.9rem;
       opacity: 1;
       transform: none;
     }
 
-    .home-services__card[data-active='true']::after {
+    .home-services__card[data-active='true'] .home-services__sun {
       opacity: 1;
-      transform: translate3d(0, 0, 0);
-      animation:
-        home-services-sun-drift 5.2s ease-in-out infinite,
-        home-services-sun-flicker 3.6s steps(7, end) infinite;
+      animation: home-services-sun-travel 6.8s ease-in-out infinite alternate;
     }
 
     .home-services__controls {
@@ -804,13 +1070,17 @@ const services = [
 
   @media (prefers-reduced-motion: reduce) {
     .home-services__cursor,
-    .home-services__deck .home-services__card:is(:hover, :focus-visible)::after {
+    .home-services__card[data-active='true'] .home-services__sun,
+    .home-services__card[data-active='true'] .home-services__sun::before,
+    .home-services__card[data-active='true'] .home-services__sun-rays {
       animation: none;
     }
 
     .home-services__card,
     .home-services__card p,
-    .home-services__card::after {
+    .home-services__sun,
+    .home-services__icon-placeholder,
+    .home-services__card h3 {
       transition: none;
     }
   }
