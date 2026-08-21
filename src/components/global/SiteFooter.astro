@@ -17,6 +17,22 @@ const serviceLinks = SITE.services.slice(0, 4);
     </svg>
   </div>
 
+  <section class="site-footer__cta" aria-labelledby="footer-cta-title">
+    <div class="site-footer__cta-copy" data-reveal>
+      <h2 id="footer-cta-title">Lieliskas idejas.<br />Pārdomāti risinājumi.</h2>
+    </div>
+
+    <div class="site-footer__cta-action" data-reveal>
+      <p>
+        Pastāstiet par savu ieceri. Palīdzēsim tai kļūt par skaidru, mūsdienīgu un vērtīgu
+        digitālo risinājumu.
+      </p>
+      <a href={SITE.navigation.callToAction.href} data-astro-prefetch>
+        Pieteikt projektu
+      </a>
+    </div>
+  </section>
+
   <div class="site-footer__panel">
     <section class="site-footer__contact" aria-labelledby="footer-contact-title">
       <div class="site-footer__waves" aria-hidden="true">
@@ -97,7 +113,7 @@ const serviceLinks = SITE.services.slice(0, 4);
     position: relative;
     isolation: isolate;
     overflow: hidden;
-    padding: clamp(8rem, 15vw, 15rem) 0 2rem;
+    padding: 0 0 2rem;
     background: #050203;
   }
 
@@ -144,6 +160,87 @@ const serviceLinks = SITE.services.slice(0, 4);
   .site-footer__glow--left { bottom: -23rem; left: -11rem; }
   .site-footer__glow--right { right: -14rem; bottom: -19rem; animation-delay: -4s; }
 
+  .site-footer__cta {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    min-height: clamp(24rem, 31vw, 31rem);
+    grid-template-columns: minmax(0, 1.25fr) minmax(22rem, 0.65fr);
+    align-items: center;
+    gap: clamp(3rem, 7vw, 8rem);
+    margin-inline: 2rem;
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 8%);
+    border-bottom: 0;
+    border-radius: 2rem 2rem 0 0;
+    padding: clamp(3rem, 5vw, 5.5rem) clamp(2rem, 9vw, 10rem);
+    background:
+      radial-gradient(ellipse at 48% 102%, rgb(228 22 72 / 78%), transparent 38%),
+      radial-gradient(ellipse at 2% 12%, rgb(190 14 59 / 64%), transparent 42%),
+      radial-gradient(ellipse at 98% 13%, rgb(157 7 47 / 57%), transparent 42%),
+      linear-gradient(115deg, #620b22, #100507 44%, #190509 68%, #58091e);
+  }
+
+  .site-footer__cta::before {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    opacity: 0.28;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.86' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.58'/%3E%3C/svg%3E");
+    background-size: 8rem 8rem;
+    content: '';
+    mix-blend-mode: soft-light;
+  }
+
+  .site-footer__cta::after {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 45%, transparent 12%, rgb(0 0 0 / 40%) 100%);
+    content: '';
+  }
+
+  .site-footer__cta-copy h2 {
+    max-width: 43rem;
+    color: white;
+    font-size: clamp(2.35rem, 3.5vw, 3.75rem);
+    font-weight: 480;
+    letter-spacing: -0.06em;
+    line-height: 1.04;
+  }
+
+  .site-footer__cta-action {
+    display: grid;
+    max-width: 29rem;
+    align-content: center;
+    justify-items: start;
+    gap: 2rem;
+  }
+
+  .site-footer__cta-action > p {
+    color: rgb(255 255 255 / 68%);
+    font: 500 clamp(0.8rem, 0.95vw, 0.96rem)/1.7 var(--font-mono);
+  }
+
+  .site-footer__cta-action > a {
+    display: inline-grid;
+    min-height: 3.75rem;
+    place-items: center;
+    border: 1px solid white;
+    border-radius: 1rem;
+    padding: 0.85rem 1.6rem;
+    background: white;
+    box-shadow: 0 1.25rem 3rem rgb(0 0 0 / 24%);
+    color: #090909;
+    font-size: 0.9rem;
+    font-weight: 720;
+    line-height: 1;
+    text-align: center;
+    transition: transform 280ms var(--ease-out-expo), box-shadow 280ms ease;
+  }
+
+  .site-footer__cta-action > a:hover { box-shadow: 0 1.5rem 3.5rem rgb(0 0 0 / 34%); transform: translateY(-3px); }
+
   .site-footer__panel {
     display: grid;
     grid-template-columns: minmax(20rem, 31%) minmax(0, 1fr);
@@ -151,7 +248,7 @@ const serviceLinks = SITE.services.slice(0, 4);
     margin-inline: 2rem;
     overflow: hidden;
     border: 1px solid rgb(255 255 255 / 8%);
-    border-radius: 2rem;
+    border-radius: 0 0 2rem 2rem;
     background-color: #111;
     background-image: radial-gradient(circle, rgb(255 255 255 / 12%) 0 0.55px, transparent 0.75px);
     background-size: 4px 4px;
@@ -203,6 +300,8 @@ const serviceLinks = SITE.services.slice(0, 4);
   @keyframes footer-ambient { from { transform: translate3d(-4%, 2%, 0) scale(0.94); } to { transform: translate3d(5%, -4%, 0) scale(1.08); } }
 
   @media (max-width: 960px) {
+    .site-footer__cta { grid-template-columns: 1fr; gap: 4rem; padding-inline: clamp(2rem, 8vw, 5rem); }
+    .site-footer__cta-action { max-width: 36rem; }
     .site-footer__panel { grid-template-columns: 1fr; margin-inline: 0.75rem; border-radius: 1.5rem; }
     .site-footer__contact { border-right: 0; border-bottom: 1px solid rgb(255 255 255 / 8%); }
     .site-footer__contact-copy { min-height: 29rem; }
@@ -212,7 +311,11 @@ const serviceLinks = SITE.services.slice(0, 4);
   }
 
   @media (max-width: 650px) {
-    .site-footer { padding-top: 7rem; padding-bottom: 0.75rem; }
+    .site-footer { padding-top: 0; padding-bottom: 0.75rem; }
+    .site-footer__cta { min-height: 33rem; margin-inline: 0.75rem; border-radius: 1.5rem 1.5rem 0 0; padding: 3.5rem 1.5rem; }
+    .site-footer__cta-copy h2 { font-size: clamp(2.25rem, 10vw, 3.15rem); }
+    .site-footer__cta-action { gap: 1.5rem; }
+    .site-footer__panel { border-radius: 0 0 1.5rem 1.5rem; }
     .site-footer__contact-copy { min-height: 31rem; justify-content: flex-end; padding: 2rem 1.5rem 3rem; }
     .site-footer__waves { width: 100%; opacity: 0.34; }
     .site-footer__main { min-height: 0; padding: 3rem 1.5rem 1.5rem; }

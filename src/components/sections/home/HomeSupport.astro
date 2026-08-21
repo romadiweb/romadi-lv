@@ -1,0 +1,214 @@
+---
+const capabilities = [
+  {
+    title: 'Tehniskā virzība un arhitektūra',
+    icon: '<path d="M4 7v10M4 12h4l3-5 3 10 3-5h3" />',
+  },
+  {
+    title: 'Sadarbība ar jūsu komandu',
+    icon: '<circle cx="12" cy="8" r="3" /><path d="M6.5 19c.6-3 2.4-5 5.5-5s4.9 2 5.5 5M5 10a2 2 0 1 0 0-4M19 10a2 2 0 1 0 0-4M2.5 17c.3-2 1.3-3.5 3.5-4M21.5 17c-.3-2-1.3-3.5-3.5-4" />',
+  },
+  {
+    title: 'Praktiski ieteikumi izaugsmei',
+    icon: '<path d="M5 6h5M5 12h8M5 18h5M17 5v6M14 8h6M17 15v4M15 17h4" />',
+  },
+  {
+    title: 'Drošība, ātrums un kvalitāte',
+    icon: '<rect x="5" y="10" width="14" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v2" />',
+  },
+  {
+    title: 'Padziļināta koda un UX pārbaude',
+    icon: '<path d="m9 8-4 4 4 4M15 8l4 4-4 4M13 6l-2 12" />',
+  },
+  {
+    title: 'Ilgtermiņa attīstība un atbalsts',
+    icon: '<path d="M4 13v-1a8 8 0 0 1 16 0v1M4 13h3v6H5a1 1 0 0 1-1-1v-5ZM20 13h-3v6h2a1 1 0 0 0 1-1v-5ZM17 19c0 1-1 2-3 2" />',
+  },
+];
+---
+
+<section class="home-support" aria-labelledby="home-support-title">
+  <div class="home-support__intro">
+    <div data-reveal>
+      <p class="home-support__eyebrow" aria-label="Digitālais partneris">
+        <span
+          aria-hidden="true"
+          data-typewriter
+          data-typewriter-text="{ DIGITĀLAIS PARTNERIS }"
+          data-typewriter-speed="54"></span>
+        <span class="home-support__cursor" aria-hidden="true">_</span>
+      </p>
+      <h2 id="home-support-title">
+        Digitālais partneris jūsu uzņēmuma izaugsmei.
+      </h2>
+    </div>
+
+    <div class="home-support__statement" data-reveal>
+      <p>
+        “Labs digitālais risinājums nav tikai skaists palaišanas dienā. Tam jābūt ātram,
+        saprotamam un gatavam augt līdzi biznesam. Tāpēc skatāmies plašāk par vienu uzdevumu un
+        palīdzam pieņemt lēmumus, kas strādā ilgtermiņā.”
+      </p>
+      <div class="home-support__signature">
+        <span aria-hidden="true">R</span>
+        <div>
+          <strong>ROMADI komanda</strong>
+          <small>Digitālā izstrāde un izaugsme · Liepāja</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="home-support__grid" data-reveal>
+    {
+      capabilities.map((capability) => (
+        <article class="home-support__capability">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true" set:html={capability.icon}></svg>
+          <h3>{capability.title}</h3>
+        </article>
+      ))
+    }
+  </div>
+</section>
+
+<script>
+  import { initTypewriters } from '@/lib/animations/typewriter';
+
+  initTypewriters();
+  document.addEventListener('astro:page-load', initTypewriters);
+</script>
+
+<style>
+  .home-support {
+    position: relative;
+    isolation: isolate;
+    width: min(calc(100% - 4rem), 118rem);
+    margin: 0 auto;
+    overflow: hidden;
+    padding: clamp(5rem, 8vw, 9rem) clamp(1.5rem, 3vw, 3rem) clamp(4rem, 5vw, 6rem);
+    background: #050505;
+  }
+
+  .home-support__intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(19rem, 0.75fr);
+    gap: clamp(4rem, 9vw, 10rem);
+    max-width: 90rem;
+    margin-inline: auto;
+  }
+
+  .home-support__eyebrow {
+    display: flex;
+    min-height: 0.85rem;
+    align-items: baseline;
+    gap: 0.6ch;
+    margin-bottom: 1.15rem;
+    color: rgb(255 255 255 / 46%);
+    font: 600 0.66rem/1.2 var(--font-mono);
+    letter-spacing: 0.04em;
+  }
+
+  .home-support__cursor {
+    margin-left: 0.4ch;
+    opacity: 0;
+    animation: home-support-cursor 1.15s steps(1, end) infinite;
+  }
+
+  .home-support__eyebrow span[data-typewriter-active='true'] + .home-support__cursor {
+    opacity: 1;
+  }
+
+  .home-support h2 {
+    max-width: 36rem;
+    color: white;
+    font-size: clamp(1.75rem, 2.5vw, 2.75rem);
+    font-weight: 500;
+    letter-spacing: -0.045em;
+    line-height: 1.12;
+  }
+
+  .home-support__statement {
+    align-self: start;
+    padding-top: clamp(2rem, 3vw, 3.2rem);
+  }
+
+  .home-support__statement > p {
+    color: rgb(255 255 255 / 74%);
+    font: 500 clamp(0.76rem, 0.88vw, 0.88rem)/1.65 var(--font-mono);
+  }
+
+  .home-support__signature {
+    display: flex;
+    margin-top: 1.4rem;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .home-support__signature > span {
+    display: grid;
+    width: 2.7rem;
+    height: 2.7rem;
+    place-items: center;
+    border-radius: 0.75rem;
+    background: linear-gradient(145deg, var(--accent), #870b2c);
+    box-shadow: 0 0 22px rgb(224 35 78 / 22%);
+    color: white;
+    font-size: 0.78rem;
+    font-weight: 800;
+  }
+
+  .home-support__signature div { display: grid; gap: 0.2rem; }
+  .home-support__signature strong { color: white; font-size: 0.9rem; font-weight: 650; }
+  .home-support__signature small { color: rgb(255 255 255 / 38%); font: 500 0.64rem/1.3 var(--font-mono); }
+
+  .home-support__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    max-width: 90rem;
+    margin: clamp(5rem, 8vw, 8rem) auto 0;
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 14%);
+    border-radius: 1.25rem;
+  }
+
+  .home-support__capability {
+    display: grid;
+    min-height: clamp(10rem, 12vw, 12rem);
+    align-content: center;
+    gap: 1.2rem;
+    border-right: 1px solid rgb(255 255 255 / 12%);
+    border-bottom: 1px solid rgb(255 255 255 / 12%);
+    padding: clamp(1.6rem, 2.5vw, 2.25rem);
+    background: rgb(255 255 255 / 0%);
+    transition: background-color 260ms ease;
+  }
+
+  .home-support__capability:nth-child(3n) { border-right: 0; }
+  .home-support__capability:nth-child(n + 4) { border-bottom: 0; }
+  .home-support__capability:hover { background: rgb(255 255 255 / 2.5%); }
+  .home-support__capability svg { color: white; }
+  .home-support__capability svg :global(*) { stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .home-support__capability h3 { max-width: 19rem; color: rgb(255 255 255 / 90%); font-size: clamp(1rem, 1.25vw, 1.25rem); font-weight: 580; letter-spacing: -0.035em; line-height: 1.4; }
+
+  @keyframes home-support-cursor {
+    0%, 46% { opacity: 1; }
+    47%, 100% { opacity: 0.25; }
+  }
+
+  @media (max-width: 900px) {
+    .home-support__intro { grid-template-columns: 1fr; gap: 1.5rem; }
+    .home-support__statement { max-width: 37rem; padding-top: 0; }
+    .home-support__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .home-support__capability:nth-child(3n) { border-right: 1px solid rgb(255 255 255 / 12%); }
+    .home-support__capability:nth-child(2n) { border-right: 0; }
+    .home-support__capability:nth-child(4) { border-bottom: 1px solid rgb(255 255 255 / 12%); }
+  }
+
+  @media (max-width: 600px) {
+    .home-support { width: calc(100% - 1.5rem); padding: 5rem 0 3.5rem; }
+    .home-support__intro { padding-inline: 0.75rem; }
+    .home-support__grid { grid-template-columns: 1fr; margin-top: 4rem; border-radius: 1rem; }
+    .home-support__capability { min-height: 11rem; border-right: 0 !important; border-bottom: 1px solid rgb(255 255 255 / 12%) !important; padding: 2rem; gap: 1.5rem; }
+    .home-support__capability:last-child { border-bottom: 0 !important; }
+  }
+</style>
