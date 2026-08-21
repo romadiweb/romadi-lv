@@ -5,6 +5,7 @@ import '@fontsource-variable/manrope';
 import '@/styles/global.css';
 
 import SiteHeader from '@/components/global/SiteHeader.astro';
+import SiteFooter from '@/components/global/SiteFooter.astro';
 
 import { SITE } from '@/config/site';
 
@@ -90,6 +91,8 @@ const socialImageUrl = new URL(image, siteBase);
     <main id="main-content">
       <slot />
     </main>
+
+    <SiteFooter />
 
     <script>
       import { initRevealAnimations } from '@/lib/animations/reveal';
