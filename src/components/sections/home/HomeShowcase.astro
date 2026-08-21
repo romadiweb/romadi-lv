@@ -1,0 +1,327 @@
+---
+const concepts = [
+  {
+    id: 'impact',
+    number: '01',
+    title: 'Iespaidīga pieredze',
+    description: 'Drosmīgs vizuālais stāsts, kas rada sajūtu un paliek atmiņā.',
+  },
+  {
+    id: 'commerce',
+    number: '02',
+    title: 'Nevainojama plūsma',
+    description: 'Skaidra struktūra, kas dabiski aizved lietotāju līdz izvēlei.',
+  },
+  {
+    id: 'detail',
+    number: '03',
+    title: 'Detaļas ar raksturu',
+    description: 'Tipogrāfija un mikrointerakcijas, kas zīmolam piešķir savu balsi.',
+  },
+];
+---
+
+<section class="showcase" aria-labelledby="showcase-title" data-showcase>
+  <div class="showcase__visual">
+    <div class="showcase__noise" aria-hidden="true"></div>
+
+    <header class="showcase__header" data-reveal>
+      <p class="showcase__eyebrow">&#123; IESPĒJAS &#125;</p>
+      <h2 id="showcase-title">Dizains bez “pietiekami labi”.</h2>
+      <p>
+        Veidojam digitālu pieredzi, kuru gribas izpētīt — no drosmīgas idejas līdz pēdējai
+        mikrointerakcijai.
+      </p>
+    </header>
+
+    <div class="showcase__previews" aria-label="Dizaina virzienu piemēri" data-reveal>
+      <article class="preview preview--impact" id="showcase-impact" data-showcase-preview="impact">
+        <div class="preview__top"><b>R / 01</b><span>EXPLORE&nbsp;&nbsp; MENU</span></div>
+        <div class="preview__orbit"></div>
+        <div class="preview__machine"><i></i><i></i></div>
+        <p>BEYOND THE EXPECTED</p>
+        <h3>Radīts,<br />lai izceltos.</h3>
+      </article>
+
+      <article class="preview preview--commerce" id="showcase-commerce" data-showcase-preview="commerce" hidden>
+        <div class="preview__top"><b>FORM / 02</b><span>BAG (0)</span></div>
+        <div class="preview__product"><i></i></div>
+        <p>SCULPTED FOR EVERY DAY</p>
+        <h3>Klusā<br />pārliecība.</h3>
+      </article>
+
+      <article class="preview preview--detail" id="showcase-detail" data-showcase-preview="detail" hidden>
+        <div class="preview__grid" aria-hidden="true"></div>
+        <div class="preview__top"><b>STUDIO / 03</b><span>RIGA</span></div>
+        <div class="preview__stamp">PLAY<br />WITH<br />DETAIL</div>
+        <p>DIGITAL CRAFT</p>
+        <h3>Idejas<br /><em>kustībā.</em></h3>
+      </article>
+    </div>
+  </div>
+
+  <div class="showcase__details" role="tablist" aria-label="Dizaina virzieni" data-reveal>
+    {
+      concepts.map((concept) => (
+        <button
+          class="showcase__detail"
+          type="button"
+          role="tab"
+          aria-selected={concept.id === 'impact' ? 'true' : 'false'}
+          aria-controls={`showcase-${concept.id}`}
+          data-showcase-tab={concept.id}
+        >
+          <div>
+            <h3>{concept.title}</h3>
+            <p>{concept.description}</p>
+          </div>
+        </button>
+      ))
+    }
+  </div>
+</section>
+
+<script>
+  const initShowcase = (): void => {
+    document.querySelectorAll<HTMLElement>('[data-showcase]').forEach((section) => {
+      if (section.dataset.showcaseReady === 'true') return;
+      section.dataset.showcaseReady = 'true';
+
+      const tabs = Array.from(section.querySelectorAll<HTMLButtonElement>('[data-showcase-tab]'));
+      const previews = Array.from(section.querySelectorAll<HTMLElement>('[data-showcase-preview]'));
+
+      const select = (id: string): void => {
+        tabs.forEach((tab) => tab.setAttribute('aria-selected', String(tab.dataset.showcaseTab === id)));
+        previews.forEach((preview) => { preview.hidden = preview.dataset.showcasePreview !== id; });
+      };
+
+      tabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => select(tab.dataset.showcaseTab ?? 'impact'));
+        tab.addEventListener('keydown', (event) => {
+          if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+          event.preventDefault();
+          const direction = event.key === 'ArrowRight' ? 1 : -1;
+          const next = tabs[(index + direction + tabs.length) % tabs.length];
+          next?.focus();
+          select(next?.dataset.showcaseTab ?? 'impact');
+        });
+      });
+    });
+  };
+
+  initShowcase();
+  document.addEventListener('astro:page-load', initShowcase);
+</script>
+
+<style>
+  .showcase {
+    position: relative;
+    width: auto;
+    margin: 0 2rem clamp(4rem, 8vw, 8rem);
+    overflow: hidden;
+    border-radius: clamp(1.35rem, 2.2vw, 2.25rem);
+    background: #191919;
+    box-shadow: 0 3rem 8rem rgb(0 0 0 / 38%);
+  }
+
+  .showcase__visual {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding: clamp(3rem, 5vw, 5.25rem) clamp(1.25rem, 4vw, 4.5rem) clamp(2.5rem, 4vw, 4.25rem);
+    background:
+      radial-gradient(ellipse at 50% 105%, rgb(255 181 198 / 56%), transparent 43%),
+      radial-gradient(circle at 7% 12%, rgb(90 0 22 / 42%), transparent 32%),
+      radial-gradient(circle at 94% 20%, rgb(255 79 116 / 22%), transparent 29%),
+      linear-gradient(128deg, #a3072c 0%, #df244f 51%, #a6082e 100%);
+  }
+
+  .showcase__visual::after {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background: linear-gradient(100deg, transparent 15%, rgb(255 255 255 / 8%) 48%, transparent 72%);
+    filter: blur(28px);
+    content: '';
+    transform: skewX(-15deg);
+  }
+
+  .showcase__noise {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    width: 120%;
+    height: 120%;
+    opacity: 0.52;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.52'/%3E%3C/svg%3E");
+    background-size: 7rem 7rem;
+    filter: contrast(180%) brightness(110%);
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    transform: translate(-8%, -8%);
+    animation: showcase-static 0.22s steps(2, jump-none) infinite;
+  }
+
+  .showcase__header,
+  .showcase__previews {
+    position: relative;
+    z-index: 1;
+  }
+
+  .showcase__header {
+    display: grid;
+    justify-items: center;
+    max-width: 54rem;
+    margin: 0 auto clamp(2.5rem, 4vw, 3.75rem);
+    text-align: center;
+  }
+
+  .showcase__eyebrow {
+    margin-bottom: 0.85rem;
+    font: 650 0.68rem/1.2 var(--font-mono);
+    letter-spacing: 0.12em;
+    opacity: 0.72;
+  }
+
+  .showcase__header h2 {
+    color: white;
+    font-size: clamp(2.3rem, 4.25vw, 4.5rem);
+    font-weight: 520;
+    line-height: 1.02;
+  }
+
+  .showcase__header > p:last-child {
+    max-width: 43rem;
+    margin-top: 1.15rem;
+    color: rgb(255 255 255 / 76%);
+    font: 500 clamp(0.76rem, 0.9vw, 0.9rem)/1.6 var(--font-mono);
+  }
+
+  .showcase__previews {
+    display: grid;
+    width: clamp(16rem, 22vw, 22rem);
+    margin-inline: auto;
+  }
+
+  .preview {
+    grid-area: 1 / 1;
+    position: relative;
+    isolation: isolate;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 13%);
+    border-radius: clamp(0.85rem, 1.25vw, 1.25rem);
+    box-shadow: 0 1.6rem 3rem rgb(60 0 14 / 30%);
+    transition: transform 450ms var(--ease-out-expo), box-shadow 450ms var(--ease-out-expo);
+  }
+
+  .preview[hidden] { display: none; }
+
+  .preview:hover {
+    z-index: 2;
+    box-shadow: 0 2rem 4rem rgb(52 0 13 / 44%);
+    transform: translateY(-0.4rem);
+  }
+
+  .preview__top {
+    position: absolute;
+    z-index: 5;
+    top: 7%;
+    right: 7%;
+    left: 7%;
+    display: flex;
+    justify-content: space-between;
+    color: currentColor;
+    font: 600 clamp(0.38rem, 0.55vw, 0.55rem)/1 var(--font-mono);
+    letter-spacing: 0.06em;
+  }
+
+  .preview__top span { opacity: 0.55; }
+  .preview > p { position: absolute; z-index: 4; bottom: 29%; left: 7%; font: 600 clamp(0.38rem, 0.55vw, 0.55rem)/1 var(--font-mono); letter-spacing: 0.1em; opacity: 0.55; }
+  .preview > h3 { position: absolute; z-index: 4; bottom: 7%; left: 7%; color: currentColor; font-size: clamp(1.6rem, 3.15vw, 3.5rem); font-weight: 530; letter-spacing: -0.065em; line-height: 0.82; }
+
+  .preview--impact {
+    color: white;
+    background: radial-gradient(circle at 67% 44%, #ba173e, #3e0717 28%, #080808 67%);
+  }
+
+  .preview__orbit { position: absolute; top: -23%; right: -24%; width: 82%; aspect-ratio: 1; border: 1px solid rgb(255 255 255 / 17%); border-radius: 50%; box-shadow: 0 0 0 2.5rem rgb(255 255 255 / 1.5%), 0 0 0 5rem rgb(255 255 255 / 1.5%); }
+  .preview__machine { position: absolute; top: 23%; right: 3%; width: 62%; height: 42%; transform: rotate(-9deg); }
+  .preview__machine i { position: absolute; inset: 0; background: linear-gradient(145deg, #f1aabd, #84132f 42%, #22050c 74%); clip-path: polygon(2% 46%, 23% 10%, 81% 3%, 100% 43%, 78% 91%, 17% 84%); }
+  .preview__machine i:last-child { inset: 48% 5% 0 55%; border: 1px solid #ee829c; border-radius: 50%; background: #180209; clip-path: none; }
+
+  .preview--commerce {
+    color: #fff8f2;
+    background: linear-gradient(140deg, #15100e 0 54%, #c8a396 54%);
+  }
+
+  .preview__product { position: absolute; top: 16%; right: 5%; width: 58%; height: 58%; border-radius: 48% 48% 39% 39%; background: radial-gradient(circle at 38% 22%, #f7e5db, #a27669 46%, #56342d 72%); box-shadow: inset -1.5rem -1rem 3rem rgb(42 16 10 / 38%), 0 2rem 3rem rgb(42 16 10 / 28%); transform: rotate(8deg); }
+  .preview__product::before { position: absolute; top: -7%; left: 39%; width: 22%; height: 13%; border-radius: 0.5rem; background: #30201b; content: ''; }
+  .preview__product i { position: absolute; inset: 37%; border-radius: 50%; background: #d9bab0; }
+
+  .preview--detail { color: #111; background: #e9e4dc; }
+  .preview--detail > h3 em { color: #d21d43; font-family: Georgia, serif; font-weight: 400; }
+  .preview__grid { position: absolute; inset: 0; opacity: 0.12; background-image: linear-gradient(#111 1px, transparent 1px), linear-gradient(90deg, #111 1px, transparent 1px); background-size: 20% 20%; }
+  .preview__stamp { position: absolute; top: 22%; right: 9%; display: grid; width: 37%; aspect-ratio: 1; place-content: center; border: 1px solid #111; border-radius: 50%; font: 600 clamp(0.48rem, 0.8vw, 0.8rem)/1.2 var(--font-mono); text-align: center; transform: rotate(10deg); }
+
+  .showcase__details {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    background:
+      radial-gradient(circle at 50% 0, rgb(255 255 255 / 5%), transparent 48%),
+      linear-gradient(115deg, #151515, #202020 52%, #171717);
+  }
+
+  .showcase__detail {
+    position: relative;
+    display: block;
+    min-height: clamp(9.5rem, 12vw, 12rem);
+    appearance: none;
+    border: 0 !important;
+    border-inline: 0 !important;
+    border-radius: 0;
+    padding: clamp(1.4rem, 2.5vw, 2.5rem);
+    background: transparent;
+    box-shadow: none !important;
+    color: rgb(255 255 255 / 46%);
+    text-align: left;
+    cursor: pointer;
+    outline-offset: -0.35rem;
+    transition: color 250ms ease;
+  }
+
+  .showcase__detail::before,
+  .showcase__detail::after { display: none !important; content: none !important; }
+  .showcase__detail:hover { background: transparent; color: white; }
+  .showcase__detail[aria-selected='true'] { color: white; }
+  .showcase__detail > div { width: 100%; text-align: left; }
+  .showcase__detail h3 { color: inherit; font-size: clamp(1rem, 1.25vw, 1.25rem); font-weight: 600; letter-spacing: -0.035em; }
+  .showcase__detail p { max-width: 22rem; margin-top: 0.65rem; font: 500 clamp(0.68rem, 0.8vw, 0.8rem)/1.55 var(--font-mono); }
+
+  @keyframes showcase-static {
+    0% { transform: translate(-8%, -8%); }
+    25% { transform: translate(-10%, -6%); }
+    50% { transform: translate(-6%, -10%); }
+    75% { transform: translate(-9%, -7%); }
+    100% { transform: translate(-7%, -9%); }
+  }
+
+  @media (max-width: 700px) {
+    .showcase { width: auto; margin-inline: 0.75rem; border-radius: 1.5rem; }
+    .showcase__visual { padding-inline: 0.75rem; }
+    .showcase__header { padding-inline: 0.65rem; }
+    .showcase__previews { width: min(68vw, 18rem); }
+    .preview__top { font-size: 0.42rem; }
+    .preview > p { font-size: 0.42rem; }
+    .preview > h3 { font-size: clamp(2rem, 10vw, 2.7rem); }
+    .preview__stamp { font-size: 0.56rem; }
+    .showcase__details { grid-template-columns: 1fr; }
+    .showcase__detail { min-height: 7.5rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .showcase__noise { animation: none; }
+  }
+</style>
