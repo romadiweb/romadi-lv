@@ -27,7 +27,7 @@ import { SERVICES } from '@/data/services';
     <nav class="services-overview__list" aria-label="Visi ROMADI pakalpojumi">
       {
         SERVICES.map((service) => (
-          <a href={service.href} class="services-overview__item" data-astro-prefetch>
+          <a href={service.href} class="services-overview__item" data-astro-reload>
             <span class="services-overview__number">{service.number}</span>
             <span class="services-overview__copy">
               <strong>{service.label}</strong>

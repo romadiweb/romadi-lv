@@ -1,4 +1,5 @@
 ---
+import { Icon } from 'astro-icon/components';
 import ServiceVisual from '@/components/sections/services/ServiceVisual.astro';
 import { SERVICES, type ServiceDefinition } from '@/data/services';
 
@@ -7,6 +8,10 @@ interface Props {
 }
 
 const { service } = Astro.props;
+const contactHref = `/kontakti?pakalpojums=${encodeURIComponent(service.slug)}`;
+const whatsappHref = `https://wa.me/37126625125?text=${encodeURIComponent(
+  `Labdien! Vēlos uzzināt vairāk par pakalpojumu “${service.label}”.`,
+)}`;
 ---
 
 <article class="service-page">
@@ -36,6 +41,25 @@ const { service } = Astro.props;
         </h1>
 
         <p class="service-hero__intro">{service.intro}</p>
+
+        <div class="service-hero__actions">
+          <a
+            class="service-hero__action service-hero__action--primary"
+            href={contactHref}
+            data-astro-reload
+          >
+            Pieteikt projektu
+          </a>
+          <a
+            class="service-hero__action service-hero__action--whatsapp"
+            href={whatsappHref}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Icon name="simple-icons:whatsapp" aria-hidden="true" />
+            Sazināties WhatsApp
+          </a>
+        </div>
       </div>
 
       <div class="service-hero__visual" data-reveal>
@@ -49,7 +73,7 @@ const { service } = Astro.props;
           <a
             href={item.href}
             aria-current={item.slug === service.slug ? 'page' : undefined}
-            data-astro-prefetch
+            data-astro-reload
           >
             <span>{item.number}</span>
             {item.shortLabel}
@@ -95,7 +119,7 @@ const { service } = Astro.props;
     position: relative;
     isolation: isolate;
     width: min(calc(100% - 2rem), 118rem);
-    min-height: clamp(52rem, 70vw, 65rem);
+    min-height: 100svh;
     margin-inline: auto;
     overflow: hidden;
     background: #030303;
@@ -111,44 +135,41 @@ const { service } = Astro.props;
 
   .service-hero__atmosphere::before {
     position: absolute;
-    right: 24%;
-    bottom: -36%;
-    width: min(54rem, 62vw);
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: radial-gradient(
-      circle,
-      rgb(224 35 78 / 42%) 0%,
-      rgb(98 11 34 / 28%) 32%,
-      transparent 70%
-    );
-    filter: blur(44px);
+    top: 8%;
+    right: 18%;
+    bottom: -54%;
+    width: min(25rem, 29vw);
+    background: linear-gradient(90deg, transparent, rgb(133 15 47 / 58%), transparent);
+    filter: blur(46px);
+    transform: rotate(34deg);
     content: '';
   }
 
   .service-hero__atmosphere::after {
     position: absolute;
-    top: -18%;
-    right: -12%;
-    width: 58%;
-    height: 70%;
-    background: radial-gradient(ellipse, rgb(255 255 255 / 6%), transparent 68%);
+    top: 6%;
+    right: -16%;
+    width: 62%;
+    height: 36%;
+    background: linear-gradient(118deg, transparent 25%, rgb(255 255 255 / 5%), transparent 72%);
+    filter: blur(28px);
     content: '';
   }
 
   .service-hero__inner {
+    --service-content-offset: clamp(3.5rem, 8svh, 6rem);
+
     display: grid;
-    width: min(100%, 102rem);
-    min-height: clamp(45rem, 61vw, 57rem);
+    width: min(100%, 108rem);
     margin-inline: auto;
-    grid-template-columns: minmax(22rem, 0.78fr) minmax(34rem, 1.42fr);
-    align-items: center;
-    gap: clamp(4rem, 7vw, 8rem);
-    padding: clamp(9rem, 13vw, 13rem) clamp(1.5rem, 4vw, 4rem) 5rem;
+    grid-template-columns: minmax(25rem, 0.76fr) minmax(0, 1.24fr);
+    align-items: start;
+    gap: clamp(3rem, 5vw, 5.5rem);
+    padding: clamp(7.5rem, 14svh, 9rem) clamp(1.5rem, 4vw, 4rem) 5rem;
   }
 
   .service-hero__copy {
-    align-self: center;
+    margin-top: var(--service-content-offset);
   }
 
   .service-hero__eyebrow {
@@ -175,7 +196,7 @@ const { service } = Astro.props;
   .service-hero h1 {
     max-width: 14ch;
     color: white;
-    font-size: clamp(3rem, 4.65vw, 5rem);
+    font-size: clamp(3rem, 4vw, 4.4rem);
     font-weight: 440;
     letter-spacing: -0.04em;
     line-height: 1.02;
@@ -190,17 +211,80 @@ const { service } = Astro.props;
     text-wrap: pretty;
   }
 
+  .service-hero__actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.8rem;
+  }
+
+  .service-hero__action {
+    display: inline-flex;
+    min-height: 3.25rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    border-radius: 0.75rem;
+    padding-inline: 1.3rem;
+    font-size: 0.82rem;
+    font-weight: 680;
+    line-height: 1;
+    transition:
+      background-color 180ms ease,
+      color 180ms ease,
+      border-color 180ms ease,
+      transform 180ms ease;
+  }
+
+  .service-hero__action--primary {
+    background: white;
+    color: #090909;
+  }
+
+  .service-hero__action--whatsapp {
+    border: 1px solid rgb(255 255 255 / 18%);
+    color: rgb(255 255 255 / 78%);
+  }
+
+  .service-hero__action--whatsapp :global(svg) {
+    width: 1rem;
+    height: 1rem;
+    flex: none;
+  }
+
+  .service-hero__action:hover,
+  .service-hero__action:focus-visible {
+    transform: translateY(-1px);
+  }
+
+  .service-hero__action--primary:hover,
+  .service-hero__action--primary:focus-visible {
+    background: rgb(255 255 255 / 88%);
+  }
+
+  .service-hero__action--whatsapp:hover,
+  .service-hero__action--whatsapp:focus-visible {
+    border-color: rgb(255 255 255 / 34%);
+    color: white;
+  }
+
   .service-hero__visual {
+    width: clamp(48rem, 59vw, 72rem);
     min-width: 0;
-    margin-right: max(-5rem, calc((100vw - 102rem) / -2));
+    margin-right: max(-12rem, calc((100vw - 108rem) / -2));
+    margin-top: var(--service-content-offset);
   }
 
   .service-hero__navigation {
+    position: relative;
+    z-index: 2;
     display: grid;
     width: min(calc(100% - 3rem), 94rem);
     margin-inline: auto;
     grid-template-columns: repeat(7, minmax(0, 1fr));
     border-top: 1px solid rgb(255 255 255 / 11%);
+    background: #030303;
   }
 
   .service-hero__navigation a {
@@ -305,11 +389,12 @@ const { service } = Astro.props;
 
   @media (max-width: 1050px) {
     .service-hero__inner {
-      grid-template-columns: minmax(19rem, 0.8fr) minmax(28rem, 1.2fr);
+      grid-template-columns: minmax(20rem, 0.82fr) minmax(0, 1.18fr);
       gap: 3rem;
     }
     .service-hero__visual {
-      margin-right: -2rem;
+      width: clamp(42rem, 61vw, 54rem);
+      margin-right: -10rem;
     }
     .service-hero__navigation {
       grid-template-columns: repeat(4, 1fr);
@@ -331,6 +416,9 @@ const { service } = Astro.props;
       gap: 4rem;
       padding: 9rem 0.75rem 4rem;
     }
+    .service-hero__copy {
+      margin-top: 0;
+    }
     .service-hero h1 {
       max-width: 12ch;
       font-size: clamp(2.8rem, 12vw, 4.35rem);
@@ -339,7 +427,9 @@ const { service } = Astro.props;
       max-width: 48ch;
     }
     .service-hero__visual {
+      width: 100%;
       margin-right: 0;
+      margin-top: 0;
     }
     .service-hero__navigation {
       width: calc(100% - 1.5rem);
@@ -362,6 +452,13 @@ const { service } = Astro.props;
   }
 
   @media (max-width: 560px) {
+    .service-hero__actions {
+      align-items: stretch;
+      flex-direction: column;
+    }
+    .service-hero__action {
+      width: 100%;
+    }
     .service-details__grid li {
       grid-template-columns: 2rem minmax(0, 1fr);
       gap: 0.6rem 0.9rem;
@@ -376,6 +473,9 @@ const { service } = Astro.props;
     .service-hero__cursor {
       animation: none;
       opacity: 1;
+    }
+    .service-hero__action {
+      transition: none;
     }
   }
 </style>

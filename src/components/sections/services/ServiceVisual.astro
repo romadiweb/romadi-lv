@@ -13,304 +13,333 @@ const { service } = Astro.props;
   data-kind={service.visual}
   aria-label={`${service.label} vizuāls piemērs`}
 >
-  <div class="service-visual__chrome" aria-hidden="true">
-    {
-      service.visualTabs.map((tab, index) => (
-        <span data-active={index === 0 ? 'true' : undefined}>{tab}</span>
-      ))
-    }
-  </div>
+  <div class="service-visual__surface">
+    <div class="service-visual__chrome" aria-hidden="true">
+      {
+        service.visualTabs.map((tab, index) => (
+          <span data-active={index === 0 ? 'true' : undefined}>{tab}</span>
+        ))
+      }
+    </div>
 
-  <div class="service-visual__canvas" aria-hidden="true">
-    {
-      service.visual === 'website' && (
-        <div class="visual-website">
-          <div class="visual-website__bar">
-            <>
-              <i />
-              <span>romadi.lv / pieredze</span>
-              <b>LV</b>
-            </>
-          </div>
-          <div class="visual-website__hero">
-            <small>DIGITĀLA PIEREDZE</small>
-            <strong>
-              Ideja kļūst
-              <br />
-              par rezultātu.
-            </strong>
-            <i />
-          </div>
-          <div class="visual-website__cards">
-            <>
-              <span />
-              <span />
-              <span />
-            </>
-          </div>
-        </div>
-      )
-    }
-
-    {
-      service.visual === 'commerce' && (
-        <div class="visual-commerce">
-          <div class="visual-commerce__catalog">
-            <small>JAUNĀ KOLEKCIJA</small>
-            <strong>Atlasīts jums</strong>
-            <div>
+    <div class="service-visual__canvas" aria-hidden="true">
+      {
+        service.visual === 'website' && (
+          <div class="visual-website">
+            <div class="visual-website__bar">
               <>
+                <i />
+                <span>romadi.lv / pieredze</span>
+                <b>LV</b>
+              </>
+            </div>
+            <div class="visual-website__hero">
+              <small>DIGITĀLA PIEREDZE</small>
+              <strong>
+                Ideja kļūst
+                <br />
+                par rezultātu.
+              </strong>
+              <i />
+            </div>
+            <div class="visual-website__cards">
+              <>
+                <span />
+                <span />
+                <span />
+              </>
+            </div>
+          </div>
+        )
+      }
+
+      {
+        service.visual === 'commerce' && (
+          <div class="visual-commerce">
+            <div class="visual-commerce__catalog">
+              <small>JAUNĀ KOLEKCIJA</small>
+              <strong>Atlasīts jums</strong>
+              <div>
+                <>
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                </>
+              </div>
+            </div>
+            <div class="visual-commerce__order">
+              <span>PASŪTĪJUMS · 0248</span>
+              <>
+                <i />
+                <i />
+                <i />
+              </>
+              <strong>€ 186,00</strong>
+              <b>APMAKSĀTS</b>
+            </div>
+          </div>
+        )
+      }
+
+      {
+        service.visual === 'product' && (
+          <div class="visual-product">
+            <aside>
+              <>
+                <b>R / SYS</b>
                 <i />
                 <i />
                 <i />
                 <i />
               </>
+            </aside>
+            <div class="visual-product__main">
+              <header>
+                <>
+                  <span>Vadības panelis</span>
+                  <b>ŠODIEN</b>
+                </>
+              </header>
+              <div class="visual-product__stats">
+                <>
+                  <i />
+                  <i />
+                  <i />
+                </>
+              </div>
+              <svg viewBox="0 0 620 210" preserveAspectRatio="none">
+                <path d="M0 180 C70 175 94 120 158 138 S253 72 318 92 S415 30 478 57 S558 22 620 8" />
+                <path d="M0 198 H620" />
+              </svg>
+              <div class="visual-product__rows">
+                <>
+                  <i />
+                  <i />
+                  <i />
+                </>
+              </div>
             </div>
           </div>
-          <div class="visual-commerce__order">
-            <span>PASŪTĪJUMS · 0248</span>
-            <>
-              <i />
-              <i />
-              <i />
-            </>
-            <strong>€ 186,00</strong>
-            <b>APMAKSĀTS</b>
-          </div>
-        </div>
-      )
-    }
+        )
+      }
 
-    {
-      service.visual === 'product' && (
-        <div class="visual-product">
-          <aside>
-            <>
-              <b>R / SYS</b>
-              <i />
-              <i />
-              <i />
-              <i />
-            </>
-          </aside>
-          <div class="visual-product__main">
+      {
+        service.visual === 'design' && (
+          <div class="visual-design">
+            <div class="visual-design__type">
+              <>
+                <small>ROMADI / 01</small>
+                <strong>R</strong>
+                <span>
+                  Manrope
+                  <br />
+                  JetBrains Mono
+                </span>
+              </>
+            </div>
+            <div class="visual-design__system">
+              <div class="visual-design__swatches">
+                <>
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                </>
+              </div>
+              <b>Veidots, lai izceltos.</b>
+              <>
+                <span />
+                <span />
+                <span />
+              </>
+            </div>
+          </div>
+        )
+      }
+
+      {
+        service.visual === 'automation' && (
+          <div class="visual-automation">
+            <svg viewBox="0 0 760 520" preserveAspectRatio="none">
+              <path d="M135 260 C240 260 228 125 344 125 S454 260 555 260" />
+              <path d="M135 260 C240 260 228 395 344 395 S454 260 555 260" />
+            </svg>
+            <span class="visual-automation__node visual-automation__node--source">
+              IEVADES DATI<small>CRM + E-PASTS</small>
+            </span>
+            <span class="visual-automation__node visual-automation__node--ai">
+              AI<small>APSTRĀDE</small>
+            </span>
+            <span class="visual-automation__node visual-automation__node--review">
+              PĀRBAUDE<small>CILVĒKA LĒMUMS</small>
+            </span>
+            <span class="visual-automation__node visual-automation__node--result">
+              REZULTĀTS<small>GATAVS DARBĪBAI</small>
+            </span>
+          </div>
+        )
+      }
+
+      {
+        service.visual === 'growth' && (
+          <div class="visual-growth">
+            <div class="visual-growth__metrics">
+              <span>
+                <>
+                  <small>ORGANISKĀ PLŪSMA</small>
+                  <strong>+38%</strong>
+                </>
+              </span>
+              <span>
+                <>
+                  <small>KONVERSIJA</small>
+                  <strong>4.82%</strong>
+                </>
+              </span>
+            </div>
+            <svg viewBox="0 0 760 360" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="growth-area" x1="0" y1="0" x2="0" y2="1">
+                  <>
+                    <stop stop-color="#e0234e" stop-opacity=".34" />
+                    <stop offset="1" stop-color="#e0234e" stop-opacity="0" />
+                  </>
+                </linearGradient>
+              </defs>
+              <path
+                class="area"
+                d="M0 320 C74 310 82 264 150 278 S246 205 316 222 S410 132 482 158 S580 62 642 95 S706 35 760 24 V360 H0 Z"
+              />
+              <path
+                class="line"
+                d="M0 320 C74 310 82 264 150 278 S246 205 316 222 S410 132 482 158 S580 62 642 95 S706 35 760 24"
+              />
+            </svg>
+            <div class="visual-growth__legend">
+              <>
+                <span>REDZAMĪBA</span>
+                <span>IESAISTE</span>
+                <span>REZULTĀTS</span>
+              </>
+            </div>
+          </div>
+        )
+      }
+
+      {
+        service.visual === 'support' && (
+          <div class="visual-support">
             <header>
               <>
-                <span>Vadības panelis</span>
-                <b>ŠODIEN</b>
+                <span>SISTĒMAS STĀVOKLIS</span>
+                <strong>VISI SERVISI DARBOJAS</strong>
               </>
             </header>
-            <div class="visual-product__stats">
+            <div class="visual-support__score">
               <>
-                <i />
-                <i />
-                <i />
+                <i>98</i>
+                <span>
+                  <>
+                    <b>Veiktspēja</b>
+                    <small>Pēdējā pārbaude pirms 4 min.</small>
+                  </>
+                </span>
               </>
             </div>
-            <svg viewBox="0 0 620 210" preserveAspectRatio="none">
-              <path d="M0 180 C70 175 94 120 158 138 S253 72 318 92 S415 30 478 57 S558 22 620 8" />
-              <path d="M0 198 H620" />
-            </svg>
-            <div class="visual-product__rows">
-              <>
-                <i />
-                <i />
-                <i />
-              </>
-            </div>
-          </div>
-        </div>
-      )
-    }
-
-    {
-      service.visual === 'design' && (
-        <div class="visual-design">
-          <div class="visual-design__type">
-            <>
-              <small>ROMADI / 01</small>
-              <strong>R</strong>
-              <span>
-                Manrope
-                <br />
-                JetBrains Mono
-              </span>
-            </>
-          </div>
-          <div class="visual-design__system">
-            <div class="visual-design__swatches">
-              <>
-                <i />
-                <i />
-                <i />
-                <i />
-              </>
-            </div>
-            <b>Veidots, lai izceltos.</b>
-            <>
-              <span />
-              <span />
-              <span />
-            </>
-          </div>
-        </div>
-      )
-    }
-
-    {
-      service.visual === 'automation' && (
-        <div class="visual-automation">
-          <svg viewBox="0 0 760 520" preserveAspectRatio="none">
-            <path d="M135 260 C240 260 228 125 344 125 S454 260 555 260" />
-            <path d="M135 260 C240 260 228 395 344 395 S454 260 555 260" />
-          </svg>
-          <span class="visual-automation__node visual-automation__node--source">
-            IEVADES DATI<small>CRM + E-PASTS</small>
-          </span>
-          <span class="visual-automation__node visual-automation__node--ai">
-            AI<small>APSTRĀDE</small>
-          </span>
-          <span class="visual-automation__node visual-automation__node--review">
-            PĀRBAUDE<small>CILVĒKA LĒMUMS</small>
-          </span>
-          <span class="visual-automation__node visual-automation__node--result">
-            REZULTĀTS<small>GATAVS DARBĪBAI</small>
-          </span>
-        </div>
-      )
-    }
-
-    {
-      service.visual === 'growth' && (
-        <div class="visual-growth">
-          <div class="visual-growth__metrics">
-            <span>
-              <>
-                <small>ORGANISKĀ PLŪSMA</small>
-                <strong>+38%</strong>
-              </>
-            </span>
-            <span>
-              <>
-                <small>KONVERSIJA</small>
-                <strong>4.82%</strong>
-              </>
-            </span>
-          </div>
-          <svg viewBox="0 0 760 360" preserveAspectRatio="none">
-            <defs>
-              <linearGradient id="growth-area" x1="0" y1="0" x2="0" y2="1">
-                <>
-                  <stop stop-color="#e0234e" stop-opacity=".34" />
-                  <stop offset="1" stop-color="#e0234e" stop-opacity="0" />
-                </>
-              </linearGradient>
-            </defs>
-            <path
-              class="area"
-              d="M0 320 C74 310 82 264 150 278 S246 205 316 222 S410 132 482 158 S580 62 642 95 S706 35 760 24 V360 H0 Z"
-            />
-            <path
-              class="line"
-              d="M0 320 C74 310 82 264 150 278 S246 205 316 222 S410 132 482 158 S580 62 642 95 S706 35 760 24"
-            />
-          </svg>
-          <div class="visual-growth__legend">
-            <>
-              <span>REDZAMĪBA</span>
-              <span>IESAISTE</span>
-              <span>REZULTĀTS</span>
-            </>
-          </div>
-        </div>
-      )
-    }
-
-    {
-      service.visual === 'support' && (
-        <div class="visual-support">
-          <header>
-            <>
-              <span>SISTĒMAS STĀVOKLIS</span>
-              <strong>VISI SERVISI DARBOJAS</strong>
-            </>
-          </header>
-          <div class="visual-support__score">
-            <>
-              <i>98</i>
+            <div class="visual-support__rows">
               <span>
                 <>
-                  <b>Veiktspēja</b>
-                  <small>Pēdējā pārbaude pirms 4 min.</small>
+                  <i />
+                  <b>Drošības atjauninājumi</b>
+                  <small>Aktuāli</small>
                 </>
               </span>
-            </>
+              <span>
+                <>
+                  <i />
+                  <b>Rezerves kopijas</b>
+                  <small>Šodien, 03:10</small>
+                </>
+              </span>
+              <span>
+                <>
+                  <i />
+                  <b>Pieejamības uzraudzība</b>
+                  <small>99.99%</small>
+                </>
+              </span>
+            </div>
           </div>
-          <div class="visual-support__rows">
-            <span>
-              <>
-                <i />
-                <b>Drošības atjauninājumi</b>
-                <small>Aktuāli</small>
-              </>
-            </span>
-            <span>
-              <>
-                <i />
-                <b>Rezerves kopijas</b>
-                <small>Šodien, 03:10</small>
-              </>
-            </span>
-            <span>
-              <>
-                <i />
-                <b>Pieejamības uzraudzība</b>
-                <small>99.99%</small>
-              </>
-            </span>
-          </div>
-        </div>
-      )
-    }
+        )
+      }
+    </div>
   </div>
-
-  <figcaption><span>{service.number}</span>{service.label}</figcaption>
 </figure>
 
 <style>
   .service-visual {
     position: relative;
     isolation: isolate;
+    width: 100%;
+    height: clamp(30rem, calc(100svh - 15rem), 45rem);
     min-width: 0;
     margin: 0;
     overflow: hidden;
-    border: 1px solid rgb(255 255 255 / 17%);
-    border-radius: 1.1rem;
-    background: #101010;
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 7%);
+    border: 1px solid rgb(255 255 255 / 26%);
+    border-radius: var(--radius-card);
+    padding: 0.78rem;
+    background:
+      linear-gradient(118deg, rgb(255 255 255 / 9%), rgb(91 7 29 / 14%) 48%, rgb(255 255 255 / 4%)),
+      rgb(255 255 255 / 3%);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 15%);
+    backdrop-filter: blur(20px) saturate(112%);
   }
 
   .service-visual::before {
     position: absolute;
     z-index: -1;
-    top: -20%;
-    right: -14%;
-    width: 72%;
-    height: 62%;
-    border-radius: 50%;
-    background: rgb(224 35 78 / 17%);
-    filter: blur(74px);
+    inset: -30% 8% -40% 45%;
+    background: linear-gradient(90deg, transparent, rgb(153 24 59 / 18%), transparent);
+    filter: blur(40px);
+    transform: rotate(28deg);
     content: '';
     pointer-events: none;
   }
 
-  .service-visual__chrome {
+  .service-visual::after {
+    position: absolute;
+    z-index: 4;
+    inset: 0.3rem;
+    border: 1px solid rgb(255 255 255 / 10%);
+    border-radius: calc(var(--radius-card) - 0.08rem);
+    content: '';
+    pointer-events: none;
+  }
+
+  .service-visual__surface {
+    position: relative;
+    z-index: 1;
     display: flex;
-    min-height: 5.75rem;
+    height: 100%;
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 13%);
+    border-radius: calc(var(--radius-card) - 0.28rem);
+    flex-direction: column;
+    background: rgb(20 20 20 / 92%);
+  }
+
+  .service-visual__chrome {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    min-height: clamp(4.75rem, 6vw, 5.8rem);
     align-items: center;
     gap: clamp(1.5rem, 3vw, 2.75rem);
     border-bottom: 1px solid rgb(255 255 255 / 10%);
-    padding-inline: clamp(1.5rem, 4vw, 4.25rem);
+    padding-inline: clamp(2.2rem, 5vw, 5rem);
+    background: rgb(30 30 30 / 68%);
+    backdrop-filter: blur(16px);
   }
 
   .service-visual__chrome span {
@@ -325,43 +354,21 @@ const { service } = Astro.props;
 
   .service-visual__canvas {
     position: relative;
-    min-height: clamp(28rem, 41vw, 39rem);
+    z-index: 1;
+    min-height: 0;
     overflow: hidden;
-    background: linear-gradient(135deg, rgb(255 255 255 / 2.5%), transparent 44%);
-  }
-
-  .service-visual figcaption {
-    display: flex;
-    min-height: 3rem;
-    align-items: center;
-    justify-content: space-between;
-    border-top: 1px solid rgb(255 255 255 / 8%);
-    padding-inline: 1.2rem;
-    color: rgb(255 255 255 / 38%);
-    font: 550 0.61rem/1 var(--font-mono);
-  }
-
-  .service-visual figcaption span {
-    color: rgb(255 255 255 / 22%);
+    flex: 1;
+    background: var(--color-ink-750);
   }
 
   .visual-website {
     position: absolute;
-    inset: 8% 7% 0;
-    border: 1px solid rgb(255 255 255 / 12%);
-    border-radius: 0.85rem 0.85rem 0 0;
-    background: #080808;
+    inset: 0;
+    background: var(--color-ink-750);
     overflow: hidden;
   }
   .visual-website__bar {
-    display: flex;
-    height: 3rem;
-    align-items: center;
-    gap: 0.7rem;
-    border-bottom: 1px solid rgb(255 255 255 / 9%);
-    padding-inline: 1rem;
-    color: rgb(255 255 255 / 42%);
-    font: 500 0.58rem/1 var(--font-mono);
+    display: none;
   }
   .visual-website__bar i {
     width: 0.5rem;
@@ -376,8 +383,8 @@ const { service } = Astro.props;
   }
   .visual-website__hero {
     position: relative;
-    min-height: 18rem;
-    padding: clamp(2rem, 5vw, 4.5rem);
+    min-height: clamp(25rem, 31vw, 32rem);
+    padding: clamp(4rem, 7vw, 7rem) clamp(3rem, 8vw, 8rem);
     overflow: hidden;
   }
   .visual-website__hero small {
@@ -388,30 +395,29 @@ const { service } = Astro.props;
     position: relative;
     z-index: 1;
     display: block;
-    max-width: 10ch;
+    max-width: 9ch;
     margin-top: 1.1rem;
     color: white;
-    font-size: clamp(2rem, 4vw, 3.8rem);
+    font-size: clamp(2.8rem, 4.7vw, 4.8rem);
     font-weight: 430;
     letter-spacing: -0.045em;
     line-height: 0.98;
   }
   .visual-website__hero i {
     position: absolute;
-    right: -6%;
-    bottom: -40%;
-    width: 54%;
-    aspect-ratio: 1;
-    border-radius: 45% 55% 64% 36% / 56% 36% 64% 44%;
-    background: linear-gradient(145deg, #ad1439, #310711 72%);
-    transform: rotate(-18deg);
-    box-shadow: -2rem -1rem 5rem rgb(224 35 78 / 22%);
+    top: -38%;
+    right: 1%;
+    bottom: -70%;
+    width: 34%;
+    background: linear-gradient(90deg, transparent, rgb(146 18 52 / 62%), transparent);
+    filter: blur(34px);
+    transform: rotate(31deg);
   }
   .visual-website__cards {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 0.65rem;
-    padding: 0 1.2rem 1.2rem;
+    padding: 0 clamp(3rem, 8vw, 8rem) 1.2rem;
   }
   .visual-website__cards span {
     height: 7rem;
@@ -422,7 +428,7 @@ const { service } = Astro.props;
 
   .visual-commerce {
     position: absolute;
-    inset: 9% 8%;
+    inset: 9% 7% -5%;
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(12rem, 0.58fr);
     gap: 1rem;
@@ -494,7 +500,7 @@ const { service } = Astro.props;
 
   .visual-product {
     position: absolute;
-    inset: 7% 6% 0;
+    inset: 8% 6% -9%;
     display: grid;
     grid-template-columns: 4.5rem 1fr;
     border: 1px solid rgb(255 255 255 / 11%);
@@ -574,7 +580,7 @@ const { service } = Astro.props;
 
   .visual-design {
     position: absolute;
-    inset: 8%;
+    inset: 9% 7% -6%;
     display: grid;
     grid-template-columns: 0.85fr 1.15fr;
     gap: 1rem;
@@ -640,7 +646,7 @@ const { service } = Astro.props;
 
   .visual-automation {
     position: absolute;
-    inset: 7%;
+    inset: 8% 7% 2%;
   }
   .visual-automation svg {
     position: absolute;
@@ -692,7 +698,7 @@ const { service } = Astro.props;
 
   .visual-growth {
     position: absolute;
-    inset: 8% 7%;
+    inset: 10% 7% 0;
   }
   .visual-growth__metrics {
     display: flex;
@@ -737,7 +743,7 @@ const { service } = Astro.props;
 
   .visual-support {
     position: absolute;
-    inset: 8%;
+    inset: 9% 7% -5%;
     border: 1px solid rgb(255 255 255 / 11%);
     border-radius: 0.85rem;
     background: #090909;
@@ -809,12 +815,18 @@ const { service } = Astro.props;
   }
 
   @media (max-width: 720px) {
+    .service-visual {
+      height: auto;
+      min-height: 31rem;
+      border-radius: var(--radius-card);
+      padding: 0.45rem;
+    }
     .service-visual__chrome {
       min-height: 4.5rem;
       padding-inline: 1.2rem;
     }
     .service-visual__canvas {
-      min-height: 25rem;
+      min-height: 27rem;
     }
     .visual-commerce {
       inset: 6%;

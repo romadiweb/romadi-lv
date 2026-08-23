@@ -60,7 +60,7 @@ function isCurrentPage(href: string): boolean {
 
                   <div class="site-header__mega-grid">
                     {menuServices.map((service, index) => (
-                      <a class="site-header__mega-card" href={service.href} data-astro-prefetch>
+                      <a class="site-header__mega-card" href={service.href} data-astro-reload>
                         <span
                           class="site-header__mega-visual"
                           style={`--service-index:${index};`}
@@ -147,7 +147,7 @@ function isCurrentPage(href: string): boolean {
                       href={service.href}
                       style={`--mobile-index:${index + 1}`}
                       data-mobile-item
-                      data-astro-prefetch
+                      data-astro-reload
                     >
                       <>
                         <span>{service.title}</span>
