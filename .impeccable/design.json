@@ -1,0 +1,224 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-23T19:22:54.8378262+03:00",
+  "title": "Design System: ROMADI",
+  "extensions": {
+    "colorMeta": {
+      "canvas-black": {
+        "role": "neutral",
+        "displayName": "Canvas Black",
+        "canonical": "#050505",
+        "tonalRamp": ["#050505", "#111111", "#292929", "#404040", "#666666", "#8E8E93", "#B5B5BB", "#F5F5F7"]
+      },
+      "signal": {
+        "role": "primary",
+        "displayName": "ROMADI Signal",
+        "canonical": "#E0234E",
+        "tonalRamp": ["#430617", "#78142F", "#8D1232", "#A91037", "#CA1740", "#E0234E", "#F75F7F", "#FFF1F4"]
+      },
+      "wine-field": {
+        "role": "secondary",
+        "displayName": "Wine Field",
+        "canonical": "#620B22",
+        "tonalRamp": ["#190307", "#2B050E", "#430718", "#620B22", "#861331", "#B32A4B", "#DE6680", "#F8DCE3"]
+      },
+      "wine-shadow": {
+        "role": "neutral",
+        "displayName": "Wine Shadow",
+        "canonical": "#100507",
+        "tonalRamp": ["#080203", "#100507", "#260F13", "#46232A", "#6D424B", "#9A7179", "#C9AAB0", "#F4E9EB"]
+      },
+      "wine-edge": {
+        "role": "secondary",
+        "displayName": "Wine Edge",
+        "canonical": "#58091E",
+        "tonalRamp": ["#170207", "#2A040E", "#400616", "#58091E", "#7A122D", "#A52A47", "#D36379", "#F7DCE2"]
+      },
+      "cherry-glow": {
+        "role": "tertiary",
+        "displayName": "Cherry Glow",
+        "canonical": "#E41648",
+        "tonalRamp": ["#420615", "#710B25", "#971032", "#BD143C", "#E41648", "#F34E73", "#FA93A9", "#FFE6EC"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "One dominant Manrope statement per viewport."
+      },
+      "headline": {
+        "displayName": "Section Headline",
+        "purpose": "Balanced section propositions and closing CTA copy."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Readable explanatory prose and navigation."
+      },
+      "label": {
+        "displayName": "Technical Label",
+        "purpose": "JetBrains Mono metadata, counters, descriptions, and system details."
+      }
+    },
+    "shadows": [
+      {
+        "name": "panel-ambient",
+        "value": "inset 0 1px 0 rgb(255 255 255 / 5%), 0 24px 80px rgb(0 0 0 / 32%)",
+        "purpose": "Major floating panels only."
+      },
+      {
+        "name": "panel-hover",
+        "value": "inset 0 1px 0 rgb(255 255 255 / 8%), 0 32px 100px rgb(0 0 0 / 46%)",
+        "purpose": "Clickable major-panel hover elevation."
+      },
+      {
+        "name": "signal-glow",
+        "value": "0 0 0 1px rgb(224 35 78 / 28%), 0 14px 48px rgb(224 35 78 / 24%)",
+        "purpose": "Focused branded actions and small accent moments."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out-expo",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Primary easing for entrances, menu motion, hover lift, and panel movement."
+      },
+      {
+        "name": "ease-out-quart",
+        "value": "cubic-bezier(0.25, 1, 0.5, 1)",
+        "purpose": "Shorter state transitions."
+      },
+      {
+        "name": "mobile-menu-domino",
+        "value": "620ms cubic-bezier(0.16, 1, 0.3, 1) staggered",
+        "purpose": "Sequential mobile navigation entrance from a slight upper-left tilt."
+      }
+    ],
+    "breakpoints": [
+      { "name": "compact-mobile", "value": "360px" },
+      { "name": "mobile", "value": "600px" },
+      { "name": "compact", "value": "700px" },
+      { "name": "tablet", "value": "960px" },
+      { "name": "wide", "value": "1180px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Signal Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The focused cherry action used when the action belongs to the technical UI layer.",
+      "html": "<button class=\"ds-btn-primary\">Pieteikt projektu</button>",
+      "css": ".ds-btn-primary { display:inline-flex; min-height:52px; align-items:center; justify-content:center; border:1px solid var(--accent); border-radius:999px; padding:12.8px 24.8px; background:var(--accent); color:#fff; font:700 15px/1 var(--font-sans); cursor:pointer; transition:transform 300ms var(--ease-out-expo), background-color 300ms ease, border-color 300ms ease; } .ds-btn-primary:hover { border-color:var(--accent-hover); background:var(--accent-hover); transform:translateY(-2px); } .ds-btn-primary:focus-visible { outline:3px solid rgb(224 35 78 / 28%); outline-offset:3px; } .ds-btn-primary:active { transform:translateY(0); }"
+    },
+    {
+      "name": "White Editorial CTA",
+      "kind": "button",
+      "description": "The decisive white conversion button used inside wine-gradient campaign sections.",
+      "html": "<a class=\"ds-btn-editorial\" href=\"#\">Pieteikt projektu</a>",
+      "css": ".ds-btn-editorial { display:inline-flex; min-height:60px; align-items:center; justify-content:center; border-radius:16px; padding:14px 28px; background:#fff; color:#090909; font:650 14px/1 var(--font-sans); text-decoration:none; transition:transform 280ms var(--ease-out-expo); } .ds-btn-editorial:hover { transform:translateY(-3px); } .ds-btn-editorial:focus-visible { outline:3px solid #E0234E; outline-offset:3px; }"
+    },
+    {
+      "name": "Secondary Glass Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "A quiet supporting action over black or atmospheric backgrounds.",
+      "html": "<button class=\"ds-btn-secondary\">Apskatīt darbus</button>",
+      "css": ".ds-btn-secondary { display:inline-flex; min-height:52px; align-items:center; justify-content:center; border:1px solid rgb(255 255 255 / 11%); border-radius:999px; padding:12.8px 24.8px; background:rgb(255 255 255 / 4%); color:#fff; font:650 15px/1 var(--font-sans); cursor:pointer; backdrop-filter:blur(12px); transition:transform 300ms var(--ease-out-expo), background-color 300ms ease, border-color 300ms ease; } .ds-btn-secondary:hover { border-color:rgb(255 255 255 / 18%); background:rgb(255 255 255 / 8%); transform:translateY(-2px); } .ds-btn-secondary:focus-visible { outline:3px solid rgb(224 35 78 / 28%); outline-offset:3px; }"
+    },
+    {
+      "name": "Dark Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "The canonical field for contact and project forms.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Jūsu e-pasts\" />",
+      "css": ".ds-input { width:100%; min-height:52px; border:1px solid rgb(255 255 255 / 11%); border-radius:12.8px; padding:12.8px 16px; background:#090909; color:#fff; font:500 16px/1.5 var(--font-sans); transition:border-color 200ms ease, box-shadow 200ms ease; } .ds-input::placeholder { color:#B5B5BB; } .ds-input:hover { border-color:rgb(255 255 255 / 18%); } .ds-input:focus { border-color:#E0234E; outline:none; box-shadow:0 0 0 3px rgb(224 35 78 / 14%); }"
+    },
+    {
+      "name": "Surface Card",
+      "kind": "card",
+      "refersTo": "surface-card",
+      "description": "A compact black content surface that gains tone rather than a large decorative shadow.",
+      "html": "<article class=\"ds-card\"><h3>Pārdomāta izstrāde</h3><p>Digitāls risinājums ar skaidru struktūru un mērķi.</p></article>",
+      "css": ".ds-card { max-width:360px; border:1px solid rgb(255 255 255 / 7%); border-radius:16px; padding:24px; background:#0C0C0C; color:#fff; transition:transform 350ms var(--ease-out-expo), background-color 300ms ease, border-color 300ms ease; } .ds-card h3 { margin:0; font:600 20px/1.35 var(--font-sans); letter-spacing:-0.035em; } .ds-card p { margin:10px 0 0; color:#B5B5BB; font:500 13px/1.6 var(--font-mono); } .ds-card:hover { border-color:rgb(255 255 255 / 11%); background:#111; transform:translateY(-3px); } .ds-card:focus-within { outline:3px solid rgb(224 35 78 / 18%); outline-offset:3px; }"
+    },
+    {
+      "name": "Floating Navigation",
+      "kind": "nav",
+      "description": "The centered desktop navigation bar with a restrained burgundy glass atmosphere.",
+      "html": "<nav class=\"ds-nav\"><a href=\"#\">Pakalpojumi</a><a href=\"#\">Portfolio</a><a href=\"#\">Par mums</a><a href=\"#\">Kontakti</a></nav>",
+      "css": ".ds-nav { display:flex; align-items:center; justify-content:center; gap:32px; border-radius:32px; padding:18px 32px; background:linear-gradient(100deg, rgb(27 4 10 / 88%), rgb(8 4 6 / 74%) 48%, rgb(15 3 7 / 86%)); color:rgb(255 255 255 / 84%); font:650 14px/1 var(--font-sans); backdrop-filter:blur(18px); } .ds-nav a { color:inherit; text-decoration:none; transition:color 180ms ease, transform 220ms var(--ease-out-expo); } .ds-nav a:hover { color:#fff; transform:translateY(-1px); } .ds-nav a:focus-visible { color:#fff; outline:2px solid #E0234E; outline-offset:6px; }"
+    },
+    {
+      "name": "Wine Atmosphere Panel",
+      "kind": "custom",
+      "description": "The signature cherry-wine field behind showcase, CTA, footer transition, and hero compositions.",
+      "html": "<section class=\"ds-wine-panel\"><h2>Lieliskas idejas.<br />Pārdomāti risinājumi.</h2></section>",
+      "css": ".ds-wine-panel { position:relative; overflow:hidden; min-height:320px; border-radius:32px; padding:64px; background:radial-gradient(ellipse at 48% 102%, rgb(228 22 72 / 78%), transparent 38%), radial-gradient(ellipse at 2% 12%, rgb(190 14 59 / 64%), transparent 42%), radial-gradient(ellipse at 98% 13%, rgb(157 7 47 / 57%), transparent 42%), linear-gradient(115deg, #620B22, #100507 44%, #190509 68%, #58091E); color:#fff; } .ds-wine-panel h2 { margin:0; max-width:650px; font:500 clamp(40px, 5vw, 64px)/1 var(--font-sans); letter-spacing:-0.04em; text-wrap:balance; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Cherry Signal Room",
+    "overview": "ROMADI should feel like a high-end digital studio operating from a precise, dark technical environment. Near-black structure gives the work authority; deep wine fields, restrained cherry light, fine grain, and fluid motion give it a recognizable pulse. The visual language is confident and cinematic, never loud for its own sake. The system balances generous, single-purpose sections with compact technical labels and close-set functional groups. Screens may change art direction, but every surface must remain connected through the same ink hierarchy, cherry spectrum, typography, and controlled motion.",
+    "keyCharacteristics": [
+      "Near-black structural surfaces with committed wine/cherry atmospheric fields.",
+      "Large, restrained Manrope headlines paired with compact JetBrains Mono support copy.",
+      "Fine organic grain, soft vignettes, and animated liquid or line fields instead of decorative grids.",
+      "Broad section shells, tighter content cards, and clear alignment across columns.",
+      "Purposeful reveal, menu, hover, and typewriter motion with reduced-motion fallbacks."
+    ],
+    "rules": [
+      {
+        "name": "The Wine, Not Crimson Rule",
+        "body": "Signature fields combine Wine Field, Wine Shadow, Wine Edge, and translucent Cherry Glow. Never allow filters, blending, or saturation to collapse them into pure bright red.",
+        "section": "colors"
+      },
+      {
+        "name": "The Cherry Signal Rule",
+        "body": "ROMADI Signal identifies action and focus. Large atmospheric surfaces use the wine palette; they do not use the signal color as a flat fill.",
+        "section": "colors"
+      },
+      {
+        "name": "The Organic Grain Rule",
+        "body": "Texture must read as irregular film/static grain. Repeating squares, visible tiles, checker patterns, and decorative two-axis grids are prohibited.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Voices Rule",
+        "body": "Manrope makes the proposition; JetBrains Mono supplies evidence and metadata. Never set large marketing headlines in mono.",
+        "section": "typography"
+      },
+      {
+        "name": "The Two-Line Promise Rule",
+        "body": "Major CTA copy should resolve into intentional short lines, not an accidental narrow column or a three-line orphan.",
+        "section": "typography"
+      },
+      {
+        "name": "The Structural Shadow Rule",
+        "body": "Wide shadows are reserved for components that genuinely float above the page. Flat content cells use borders or tonal shifts, not decorative lift.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Soft Edge Rule",
+        "body": "Atmosphere fades into adjacent black through vignettes and gradients. Hard rectangular color cutoffs are forbidden unless they define a deliberate panel boundary.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do use the exact wine/cherry family for signature fields and verify the rendered result visually after filters and blend modes are applied.",
+      "Do align related headings and columns to a shared vertical start.",
+      "Do keep selected and hovered showcase labels white while inactive labels remain gray.",
+      "Do preserve clear tap targets, visible focus states, keyboard operation, and reduced-motion alternatives.",
+      "Do use grain, moving liquid fields, or animated line work only when they reinforce a section’s role.",
+      "Do keep the CTA and footer visually joined when they form one closing composition."
+    ],
+    "donts": [
+      "Don't substitute bright magenta, pure crimson, or white-hot highlights for the established wine/cherry atmosphere.",
+      "Don't use visible square noise, tiled patterns, decorative grids, or accidental vertical and horizontal divider lines.",
+      "Don't add pink borders around showcase previews or selectors.",
+      "Don't create oversized cards with sparse content; tighten the component before adding decoration.",
+      "Don't center-align concept-selector copy or push menu counters to the far edge when the reference calls for immediate adjacency.",
+      "Don't repeat numbered section markers or tiny uppercase eyebrows as generic scaffolding; retain them only where they are already a deliberate technical motif.",
+      "Don't use glass, glow, shadow, or animation as decoration without a structural or interactive reason."
+    ]
+  }
+}

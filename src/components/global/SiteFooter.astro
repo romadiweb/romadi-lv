@@ -3,6 +3,26 @@ import { SITE } from '@/config/site';
 
 const currentYear = new Date().getFullYear();
 const serviceLinks = SITE.services.slice(0, 4);
+
+interface Props {
+  ctaVariant?: 'default' | 'portfolio' | false;
+}
+
+const { ctaVariant = 'default' } = Astro.props;
+
+const cta = ctaVariant === 'portfolio'
+  ? {
+      title: 'Neesi pārliecināts?',
+      text: 'Apskati mūsu paveikto un uzzini, kā idejas pārtop pārdomātos digitālos risinājumos.',
+      label: 'Apskati mūsu darbus',
+      href: '/portfolio',
+    }
+  : {
+      title: 'Lieliskas idejas.\nPārdomāti risinājumi.',
+      text: 'Pastāstiet par savu ieceri. Palīdzēsim tai kļūt par skaidru, mūsdienīgu un vērtīgu digitālo risinājumu.',
+      label: 'Pieteikt projektu',
+      href: SITE.navigation.callToAction.href,
+    };
 ---
 
 <footer class="site-footer">
@@ -17,21 +37,20 @@ const serviceLinks = SITE.services.slice(0, 4);
     </svg>
   </div>
 
-  <section class="site-footer__cta" aria-labelledby="footer-cta-title">
-    <div class="site-footer__cta-copy" data-reveal>
-      <h2 id="footer-cta-title">Lieliskas idejas.<br />Pārdomāti risinājumi.</h2>
-    </div>
+  {ctaVariant && (
+    <section class="site-footer__cta" aria-labelledby="footer-cta-title">
+      <div class="site-footer__cta-copy" data-reveal>
+        <h2 id="footer-cta-title">{cta.title.split('\n').map((line, index) => <>{index > 0 && <br />}{line}</>)}</h2>
+      </div>
 
-    <div class="site-footer__cta-action" data-reveal>
-      <p>
-        Pastāstiet par savu ieceri. Palīdzēsim tai kļūt par skaidru, mūsdienīgu un vērtīgu
-        digitālo risinājumu.
-      </p>
-      <a href={SITE.navigation.callToAction.href} data-astro-prefetch>
-        Pieteikt projektu
-      </a>
-    </div>
-  </section>
+      <div class="site-footer__cta-action" data-reveal>
+        <p>{cta.text}</p>
+        <a href={cta.href} data-astro-prefetch>
+          {cta.label}
+        </a>
+      </div>
+    </section>
+  )}
 
   <div class="site-footer__panel">
     <section class="site-footer__contact" aria-labelledby="footer-contact-title">

@@ -1,0 +1,707 @@
+---
+import { Icon } from 'astro-icon/components';
+import { SITE } from '@/config/site';
+
+const serviceOptions = [
+  ...SITE.services.map((service) => service.label),
+  'Aplikāciju izstrāde',
+  'Mājaslapu, aplikāciju un digitālo produktu uzturēšana',
+  'Digitāls produkts vai sistēma',
+  'AI un automatizācija',
+  'Cits',
+];
+
+const socialItems = [
+  {
+    label: 'WhatsApp',
+    icon: 'simple-icons:whatsapp',
+    href: 'https://wa.me/37126625125',
+  },
+  {
+    label: 'Facebook',
+    icon: 'simple-icons:facebook',
+    href: SITE.social.facebook,
+  },
+  {
+    label: 'Instagram',
+    icon: 'simple-icons:instagram',
+    href: SITE.social.instagram,
+  },
+  {
+    label: 'TikTok',
+    icon: 'simple-icons:tiktok',
+    href: SITE.social.tiktok,
+  },
+  {
+    label: 'LinkedIn',
+    icon: 'simple-icons:linkedin',
+    href: SITE.social.linkedin,
+  },
+];
+---
+
+<section class="contact" aria-labelledby="contact-title">
+  <div class="contact__layout">
+    <div class="contact__primary">
+      <header class="contact__intro">
+        <p class="contact__eyebrow" aria-label="Sāksim sarunu">
+          <span
+            aria-hidden="true"
+            data-typewriter
+            data-typewriter-text="{ SĀKSIM SARUNU }"
+            data-typewriter-speed="54"></span>
+          <span class="contact__cursor" aria-hidden="true">_</span>
+        </p>
+        <h1 id="contact-title">Pastāstiet par savu ideju.</h1>
+        <p class="contact__lead">
+          Īsi aprakstiet ieceri, mērķi un vēlamo rezultātu. Atbildēsim vienas darba dienas laikā ar
+          precizējošiem jautājumiem un saprotamu nākamo soli.
+        </p>
+      </header>
+
+      <form class="contact-form" id="contact-form" data-contact-form novalidate>
+        <div class="contact-form__grid">
+          <div class="contact-field">
+            <label for="contact-name">Vārds <span aria-hidden="true">*</span></label>
+            <input id="contact-name" name="name" type="text" autocomplete="name" required />
+            <span class="contact-field__error" id="contact-name-error" data-error-for="contact-name"></span>
+          </div>
+
+          <div class="contact-field">
+            <label for="contact-email">E-pasts <span aria-hidden="true">*</span></label>
+            <input id="contact-email" name="email" type="email" autocomplete="email" required />
+            <span class="contact-field__error" id="contact-email-error" data-error-for="contact-email"></span>
+          </div>
+
+          <div class="contact-field">
+            <label for="contact-phone">Tālrunis</label>
+            <input id="contact-phone" name="phone" type="tel" autocomplete="tel" />
+            <span class="contact-field__error" id="contact-phone-error" data-error-for="contact-phone"></span>
+          </div>
+
+          <div class="contact-field">
+            <label for="contact-company">Uzņēmums</label>
+            <input id="contact-company" name="company" type="text" autocomplete="organization" />
+            <span class="contact-field__error" id="contact-company-error" data-error-for="contact-company"></span>
+          </div>
+
+          <div class="contact-field contact-field--wide">
+            <label for="contact-service">Kas jums nepieciešams? <span aria-hidden="true">*</span></label>
+            <div class="contact-select">
+              <select id="contact-service" name="service" required>
+                <option value="">Izvēlieties pakalpojumu</option>
+                {serviceOptions.map((option) => <option value={option}>{option}</option>)}
+              </select>
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4" /></svg>
+            </div>
+            <span class="contact-field__error" id="contact-service-error" data-error-for="contact-service"></span>
+          </div>
+
+          <div class="contact-field contact-field--wide contact-field--product-link" data-existing-product-field hidden>
+            <label for="contact-product-link">Esošā produkta saite <span class="contact-field__optional">(ja ir)</span></label>
+            <input
+              id="contact-product-link"
+              name="productLink"
+              type="url"
+              inputmode="url"
+              autocomplete="url"
+              placeholder="https://"
+              disabled
+            />
+            <span class="contact-field__error" id="contact-product-link-error" data-error-for="contact-product-link"></span>
+          </div>
+
+          <div class="contact-field">
+            <label for="contact-timeline">Vēlamais termiņš <span aria-hidden="true">*</span></label>
+            <div class="contact-select">
+              <select id="contact-timeline" name="timeline" required>
+                <option value="">Izvēlieties termiņu</option>
+                <option>Steidzami</option>
+                <option>1–2 mēneši</option>
+                <option>3–4 mēneši</option>
+                <option>5–6 mēneši</option>
+                <option>Vēl nav noteikts</option>
+              </select>
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4" /></svg>
+            </div>
+            <span class="contact-field__error" id="contact-timeline-error" data-error-for="contact-timeline"></span>
+          </div>
+
+          <div class="contact-field contact-field--budget">
+            <div class="contact-budget__heading">
+              <label for="contact-budget">Aptuvenais budžets</label>
+              <output for="contact-budget" data-budget-output>15 000 €</output>
+            </div>
+            <input
+              id="contact-budget"
+              name="budget"
+              type="range"
+              min="500"
+              max="50000"
+              step="500"
+              value="15000"
+            />
+            <div class="contact-budget__limits" aria-hidden="true"><span>500 €</span><span>50 000 €+</span></div>
+          </div>
+
+          <div class="contact-field contact-field--wide contact-field--message" data-message-field>
+            <label for="contact-message">Pastāstiet par projektu <span aria-hidden="true">*</span></label>
+            <textarea
+              id="contact-message"
+              name="message"
+              rows="5"
+              placeholder="Ko vēlaties izveidot, kam tas paredzēts un ko risinājumam būtu jāsasniedz?"
+              required></textarea>
+            <span class="contact-field__error" id="contact-message-error" data-error-for="contact-message"></span>
+          </div>
+        </div>
+
+        <label class="contact-consent" for="contact-consent">
+          <input id="contact-consent" name="consent" type="checkbox" required />
+          <span>Piekrītu, ka ROMADI izmanto norādīto informāciju, lai sazinātos par manu pieprasījumu.</span>
+        </label>
+        <span class="contact-field__error contact-consent__error" id="contact-consent-error" data-error-for="contact-consent"></span>
+
+        <div class="contact-form__actions">
+          <button type="submit" data-submit-button disabled>
+            <span data-submit-label>Nosūtīt pieprasījumu</span>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h12M11 5l5 5-5 5" /></svg>
+          </button>
+          <p class="contact-form__status" data-form-status aria-live="polite"></p>
+        </div>
+      </form>
+    </div>
+
+    <div class="contact-card-shell" data-card-shell>
+    <aside class="contact-card" aria-labelledby="contact-card-title">
+      <div class="contact-card__content">
+        <div>
+          <p class="contact-card__label">Saziņa</p>
+          <h2 id="contact-card-title">Runāsim par jūsu nākamo projektu.</h2>
+          <p class="contact-card__copy">
+            Sadarbojamies ar uzņēmumiem no pirmās idejas līdz gatavam, izmērāmam digitālam risinājumam.
+          </p>
+        </div>
+
+        <dl class="contact-card__details">
+          <div>
+            <dt>E-pasts</dt>
+            <dd><a href={`mailto:${SITE.contact.email}`}>{SITE.contact.email}</a></dd>
+          </div>
+          <div>
+            <dt>Tālrunis</dt>
+            <dd class="contact-card__phones">
+              {SITE.contact.phones.map((phone) => <a href={phone.href}>{phone.display}</a>)}
+            </dd>
+          </div>
+          <div>
+            <dt>Atrašanās vieta</dt>
+            <dd>{SITE.contact.location.city}, {SITE.contact.location.country}</dd>
+          </div>
+          <div>
+            <dt>Darba laiks</dt>
+            <dd>P.–Pk., 09.00–18.00</dd>
+          </div>
+          <div>
+            <dt>Uzņēmums</dt>
+            <dd>SIA ROMADI</dd>
+          </div>
+          <div>
+            <dt>Reģ. nr.</dt>
+            <dd aria-label="Reģistrācijas numurs nav norādīts">—</dd>
+          </div>
+        </dl>
+
+        <div class="contact-card__availability">
+          <span aria-hidden="true"></span>
+          Pieņemam jaunus projektus
+        </div>
+
+        <div class="contact-card__socials" aria-label="ROMADI sociālie tīkli">
+          {socialItems.map((item) => item.href ? (
+            <a href={item.href} target="_blank" rel="noopener noreferrer" aria-label={item.label}>
+              <Icon name={item.icon} aria-hidden="true" />
+            </a>
+          ) : (
+            <span aria-label={`${item.label} saite tiks pievienota`} aria-disabled="true">
+              <Icon name={item.icon} aria-hidden="true" />
+            </span>
+          ))}
+        </div>
+        <p class="contact-card__response">Parasti atbildam vienas darba dienas laikā.</p>
+      </div>
+    </aside>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initTypewriters } from '@/lib/animations/typewriter';
+
+  const formatBudget = (value: number): string =>
+    new Intl.NumberFormat('lv-LV', {
+      style: 'currency',
+      currency: 'EUR',
+      maximumFractionDigits: 0,
+    }).format(value);
+
+  const initContactForm = (): void => {
+    initTypewriters();
+
+    const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
+    if (!form || form.dataset.initialized === 'true') return;
+    form.dataset.initialized = 'true';
+
+    const budget = form.querySelector<HTMLInputElement>('#contact-budget');
+    const budgetOutput = form.querySelector<HTMLOutputElement>('[data-budget-output]');
+    const status = form.querySelector<HTMLElement>('[data-form-status]');
+    const submitButton = form.querySelector<HTMLButtonElement>('[data-submit-button]');
+    const submitLabel = form.querySelector<HTMLElement>('[data-submit-label]');
+    const consent = form.querySelector<HTMLInputElement>('#contact-consent');
+    const service = form.querySelector<HTMLSelectElement>('#contact-service');
+    const productLinkField = form.querySelector<HTMLElement>('[data-existing-product-field]');
+    const productLink = form.querySelector<HTMLInputElement>('#contact-product-link');
+    const cardShell = document.querySelector<HTMLElement>('[data-card-shell]');
+    const messageField = form.querySelector<HTMLElement>('[data-message-field]');
+    const card = cardShell?.querySelector<HTMLElement>('.contact-card');
+
+    const existingProductServices = new Set([
+      'Mājaslapu, aplikāciju un digitālo produktu uzturēšana',
+      'UI/UX dizains',
+      'SEO optimizācija',
+      'Google reklāmas',
+      'Sociālo tīklu reklāmas',
+    ]);
+
+    const updateProductLink = (): void => {
+      if (!service || !productLinkField || !productLink) return;
+      const shouldShow = existingProductServices.has(service.value);
+      productLinkField.hidden = !shouldShow;
+      productLink.disabled = !shouldShow;
+    };
+
+    const updateCardTrack = (): void => {
+      if (!cardShell || !messageField || !card) return;
+
+      if (!window.matchMedia('(min-width: 64.0625rem)').matches) {
+        cardShell.style.removeProperty('--contact-card-track');
+        return;
+      }
+
+      const shellTop = cardShell.getBoundingClientRect().top + window.scrollY;
+      const messageBottom = messageField.getBoundingClientRect().bottom + window.scrollY;
+      const trackHeight = Math.max(card.offsetHeight, messageBottom - shellTop);
+      cardShell.style.setProperty('--contact-card-track', `${trackHeight}px`);
+    };
+
+    const updateSubmitState = (): void => {
+      if (!submitButton) return;
+      submitButton.disabled = !consent?.checked;
+    };
+
+    const updateBudget = (): void => {
+      if (!budget || !budgetOutput) return;
+      const value = Number(budget.value);
+      const progress = ((value - Number(budget.min)) / (Number(budget.max) - Number(budget.min))) * 100;
+      budgetOutput.textContent = value === Number(budget.max) ? `${formatBudget(value)}+` : formatBudget(value);
+      budget.style.setProperty('--budget-progress', `${progress}%`);
+    };
+
+    const validateField = (field: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement): boolean => {
+      const error = form.querySelector<HTMLElement>(`[data-error-for="${field.id}"]`);
+      let message = '';
+
+      if (field.validity.valueMissing) message = 'Lūdzu, aizpildiet šo lauku.';
+      if (field.validity.typeMismatch) message = 'Lūdzu, ievadiet derīgu e-pasta adresi.';
+
+      field.setAttribute('aria-invalid', message ? 'true' : 'false');
+      if (error) error.textContent = message;
+      return !message;
+    };
+
+    form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('input, select, textarea').forEach((field) => {
+      if (field.type === 'range') return;
+      field.setAttribute('aria-describedby', `${field.id}-error`);
+      field.addEventListener(field.type === 'checkbox' || field instanceof HTMLSelectElement ? 'change' : 'blur', () => validateField(field));
+      field.addEventListener('input', () => {
+        if (field.getAttribute('aria-invalid') === 'true') validateField(field);
+      });
+    });
+
+    budget?.addEventListener('input', updateBudget);
+    service?.addEventListener('change', () => {
+      updateProductLink();
+      window.requestAnimationFrame(updateCardTrack);
+    });
+    consent?.addEventListener('change', updateSubmitState);
+    updateBudget();
+    updateProductLink();
+    updateSubmitState();
+    updateCardTrack();
+
+    const cardTrackObserver = new ResizeObserver(updateCardTrack);
+    cardTrackObserver.observe(form);
+    if (card) cardTrackObserver.observe(card);
+    window.addEventListener('resize', updateCardTrack);
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const fields = [
+        ...form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('input:not([disabled]), select:not([disabled]), textarea:not([disabled])'),
+      ].filter((field) => field.type !== 'range');
+      const invalidField = fields.find((field) => !validateField(field));
+
+      if (invalidField) {
+        invalidField.focus();
+        if (status) status.textContent = 'Pārbaudiet atzīmētos laukus.';
+        return;
+      }
+
+      const data = new FormData(form);
+      const body = [
+        `Vārds: ${data.get('name')}`,
+        `E-pasts: ${data.get('email')}`,
+        `Tālrunis: ${data.get('phone') || 'Nav norādīts'}`,
+        `Uzņēmums: ${data.get('company') || 'Nav norādīts'}`,
+        `Pakalpojums: ${data.get('service')}`,
+        `Esošā produkta saite: ${data.get('productLink') || 'Nav norādīta'}`,
+        `Termiņš: ${data.get('timeline')}`,
+        `Budžets: ${formatBudget(Number(data.get('budget')))}`,
+        '',
+        'Projekta apraksts:',
+        String(data.get('message')),
+      ].join('\n');
+      const subject = `Jauns projekta pieprasījums — ${data.get('name')}`;
+      const mailto = `mailto:info@romadi.lv?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+      if (submitButton) submitButton.disabled = true;
+      if (submitLabel) submitLabel.textContent = 'Sagatavojam e-pastu…';
+      if (status) status.textContent = 'Atveram jūsu e-pasta lietotni.';
+      window.location.href = mailto;
+
+      window.setTimeout(() => {
+        updateSubmitState();
+        if (submitLabel) submitLabel.textContent = 'Nosūtīt pieprasījumu';
+        if (status) status.innerHTML = 'Ja e-pasta lietotne neatvērās, rakstiet uz <a href="mailto:info@romadi.lv">info@romadi.lv</a>.';
+      }, 1400);
+    });
+  };
+
+  initContactForm();
+  document.addEventListener('astro:page-load', initContactForm);
+</script>
+
+<style>
+  .contact {
+    position: relative;
+    isolation: isolate;
+    min-height: 100vh;
+    overflow: clip;
+    padding: clamp(9.5rem, 13vw, 12.5rem) 2rem clamp(5rem, 8vw, 8rem);
+    background:
+      radial-gradient(circle at 79% 18%, rgb(91 7 29 / 24%), transparent 28rem),
+      radial-gradient(circle at 9% 71%, rgb(117 9 38 / 12%), transparent 25rem),
+      #050505;
+  }
+
+  .contact::before {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.92' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.32'/%3E%3C/svg%3E");
+    content: '';
+    opacity: 0.055;
+    pointer-events: none;
+  }
+
+  .contact__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(21rem, 0.75fr);
+    gap: clamp(3rem, 7vw, 7rem);
+    width: min(100%, 88rem);
+    margin-inline: auto;
+    align-items: start;
+  }
+
+  .contact__primary { min-width: 0; }
+
+  .contact__intro { max-width: 52rem; }
+
+  .contact__eyebrow {
+    display: flex;
+    min-height: 0.85rem;
+    align-items: baseline;
+    gap: 0.6ch;
+    margin: 0 0 1.4rem;
+    color: rgb(255 255 255 / 46%);
+    font: 600 0.66rem/1.2 var(--font-mono);
+    letter-spacing: 0.04em;
+  }
+
+  .contact__cursor {
+    margin-left: 0.4ch;
+    opacity: 0;
+    animation: contact-cursor 1.15s steps(1, end) infinite;
+  }
+
+  .contact__eyebrow span[data-typewriter-active='true'] + .contact__cursor { opacity: 1; }
+
+  .contact h1 {
+    max-width: 49rem;
+    margin: 0;
+    color: #fff;
+    font-size: clamp(3rem, 5.2vw, 5.25rem);
+    font-weight: 450;
+    letter-spacing: -0.06em;
+    line-height: 0.98;
+    text-wrap: balance;
+  }
+
+  .contact__lead {
+    max-width: 46rem;
+    margin: clamp(2rem, 4vw, 3.5rem) 0 0;
+    color: rgb(255 255 255 / 58%);
+    font: 500 clamp(0.84rem, 1.1vw, 0.95rem)/1.75 var(--font-mono);
+  }
+
+  .contact-form { margin-top: clamp(3.5rem, 6vw, 5.5rem); }
+
+  .contact-form__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2.35rem clamp(1.5rem, 4vw, 3.5rem);
+  }
+
+  .contact-field { position: relative; min-width: 0; }
+  .contact-field--wide { grid-column: 1 / -1; }
+  .contact-field[hidden] { display: none; }
+
+  .contact-field label,
+  .contact-budget__heading output {
+    display: block;
+    color: rgb(255 255 255 / 47%);
+    font: 600 0.67rem/1.2 var(--font-mono);
+    letter-spacing: 0.055em;
+    text-transform: uppercase;
+  }
+
+  .contact-field label span { color: #f04b6f; }
+  .contact-field label .contact-field__optional { color: rgb(255 255 255 / 30%); }
+
+  .contact-field input:not([type='range']),
+  .contact-field select,
+  .contact-field textarea {
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid rgb(255 255 255 / 22%);
+    border-radius: 0;
+    outline: 0;
+    background: transparent;
+    color: white;
+    font: 500 1rem/1.4 var(--font-sans);
+    transition: border-color 180ms ease;
+  }
+
+  .contact-field input:not([type='range']),
+  .contact-field select { height: 3.25rem; }
+
+  .contact-field textarea {
+    min-height: 9.5rem;
+    margin-top: 0.85rem;
+    padding: 1rem 1.1rem;
+    resize: vertical;
+    border: 1px solid rgb(255 255 255 / 18%);
+    border-radius: 12px;
+    line-height: 1.6;
+  }
+
+  .contact-field textarea::placeholder { color: rgb(255 255 255 / 27%); }
+  .contact-field input::placeholder { color: rgb(255 255 255 / 38%); }
+  .contact-field input:focus,
+  .contact-field select:focus,
+  .contact-field textarea:focus { border-color: rgb(255 255 255 / 74%); }
+  .contact-field [aria-invalid='true'] { border-color: #f04b6f !important; }
+
+  .contact-select { position: relative; }
+  .contact-select select { appearance: none; padding-right: 2rem; cursor: pointer; }
+  .contact-select select option { background: #111; color: white; }
+  .contact-select svg {
+    position: absolute;
+    top: 50%;
+    right: 0.15rem;
+    width: 1rem;
+    transform: translateY(-50%);
+    fill: none;
+    stroke: rgb(255 255 255 / 55%);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    pointer-events: none;
+  }
+
+  .contact-field__error {
+    display: block;
+    min-height: 1.05rem;
+    padding-top: 0.35rem;
+    color: #ff8ca5;
+    font: 500 0.66rem/1.35 var(--font-mono);
+  }
+
+  .contact-budget__heading { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+  .contact-budget__heading output { color: white; }
+
+  .contact-field input[type='range'] {
+    --budget-progress: 27%;
+    width: 100%;
+    height: 2px;
+    margin: 1.6rem 0 0;
+    appearance: none;
+    border: 0;
+    border-radius: 999px;
+    background: linear-gradient(to right, #f4f4f4 var(--budget-progress), rgb(255 255 255 / 17%) var(--budget-progress));
+    cursor: pointer;
+  }
+
+  .contact-field input[type='range']::-webkit-slider-thumb {
+    width: 18px;
+    height: 18px;
+    appearance: none;
+    border: 4px solid #fff;
+    border-radius: 50%;
+    background: #7f0c2c;
+  }
+
+  .contact-field input[type='range']::-moz-range-thumb {
+    width: 11px;
+    height: 11px;
+    border: 4px solid #fff;
+    border-radius: 50%;
+    background: #7f0c2c;
+  }
+
+  .contact-field input[type='range']:focus-visible { outline: 2px solid white; outline-offset: 8px; }
+  .contact-budget__limits { display: flex; justify-content: space-between; margin-top: 0.75rem; color: rgb(255 255 255 / 34%); font: 500 0.62rem/1 var(--font-mono); }
+
+  .contact-consent {
+    display: flex;
+    max-width: 43rem;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-top: 1.1rem;
+    color: rgb(255 255 255 / 48%);
+    font: 500 0.73rem/1.55 var(--font-mono);
+    cursor: pointer;
+  }
+
+  .contact-consent input { width: 1rem; height: 1rem; margin-top: 0.16rem; accent-color: #fff; }
+  .contact-consent__error { padding-left: 1.75rem; }
+
+  .contact-form__actions { display: flex; align-items: center; gap: 1.25rem; margin-top: 1.5rem; }
+  .contact-form__actions button {
+    display: inline-flex;
+    min-height: 3.75rem;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    border: 0;
+    border-radius: 16px;
+    background: #fff;
+    color: #090909;
+    font: 700 0.88rem/1 var(--font-sans);
+    text-decoration: none;
+    transition: transform 180ms ease, background-color 180ms ease;
+  }
+
+  .contact-form__actions button { min-width: 15rem; padding: 0.9rem 1.25rem; cursor: pointer; }
+  .contact-form__actions button svg { width: 1.15rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+  .contact-form__actions button:hover:not(:disabled),
+  .contact-card__socials a:hover { transform: translateY(-2px); background: #f0f0f0; }
+  .contact-form__actions button:disabled { cursor: not-allowed; background: #686868; color: #242424; opacity: 1; transform: none; }
+  .contact-form__status { margin: 0; color: rgb(255 255 255 / 48%); font: 500 0.68rem/1.45 var(--font-mono); }
+  .contact-form__status :global(a) { color: white; }
+
+  .contact-card {
+    position: sticky;
+    top: 7.5rem;
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 15%);
+    border-radius: 24px;
+    background: linear-gradient(150deg, #320711 0%, #150407 46%, #080606 100%);
+  }
+
+  .contact-card::before {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    background-image:
+      linear-gradient(rgb(255 255 255 / 5%) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 5%) 1px, transparent 1px);
+    background-position: -1.75rem -1.75rem;
+    background-size: 3.5rem 3.5rem;
+    content: '';
+    mask-image: linear-gradient(to bottom, black 0%, black 30%, rgb(0 0 0 / 58%) 48%, transparent 72%);
+    pointer-events: none;
+  }
+
+  .contact-card > * { position: relative; }
+
+  .contact-card-shell {
+    min-width: 0;
+    height: var(--contact-card-track, auto);
+    align-self: start;
+  }
+
+  .contact-card__content { z-index: 2; display: grid; gap: 2rem; padding: clamp(1.5rem, 3vw, 2.5rem); }
+  .contact-card__label { margin: 0 0 0.7rem; color: #ff6e8e; font: 600 0.63rem/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; }
+  .contact-card h2 { max-width: 24rem; margin: 0; color: white; font-size: clamp(1.65rem, 2.5vw, 2.3rem); font-weight: 500; letter-spacing: -0.045em; line-height: 1.08; }
+  .contact-card__copy { margin: 1rem 0 0; color: rgb(255 255 255 / 52%); font: 500 0.77rem/1.65 var(--font-mono); }
+  .contact-card__details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem 1rem; margin: 0; padding-top: 1.75rem; border-top: 1px solid rgb(255 255 255 / 11%); }
+  .contact-card__details div { min-width: 0; }
+  .contact-card__details dt { margin-bottom: 0.55rem; color: rgb(255 255 255 / 34%); font: 600 0.58rem/1 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; }
+  .contact-card__details dd { margin: 0; color: white; font-size: 1rem; font-weight: 600; line-height: 1.55; }
+  .contact-card__details a { color: inherit; text-decoration-color: rgb(255 255 255 / 32%); text-underline-offset: 0.2em; }
+  .contact-card__details dd span { color: rgb(255 255 255 / 25%); }
+  .contact-card__phones { display: grid; gap: 0.2rem; }
+  .contact-card__phones a { width: max-content; max-width: 100%; white-space: nowrap; }
+  .contact-card__availability { display: flex; align-items: center; gap: 0.65rem; color: rgb(255 255 255 / 63%); font: 600 0.66rem/1 var(--font-mono); }
+  .contact-card__availability span { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #ff5378; box-shadow: 0 0 0 5px rgb(255 83 120 / 12%); }
+  .contact-card__socials { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.15rem; padding-top: 0.15rem; }
+  .contact-card__socials a,
+  .contact-card__socials span {
+    display: inline-flex;
+    width: 1.5rem;
+    height: 1.5rem;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 1.5rem;
+    color: white;
+    transition: color 180ms ease, transform 180ms ease;
+  }
+  .contact-card__socials :global(svg) { width: 1.15rem; height: 1.15rem; fill: currentColor; }
+  .contact-card__socials span[aria-disabled='true'] { color: white; opacity: 0.5; }
+  .contact-card__socials a:hover { background: transparent; color: rgb(255 255 255 / 58%); transform: none; }
+  .contact-card__response { margin: -1.15rem 0 0; color: rgb(255 255 255 / 31%); font: 500 0.62rem/1.45 var(--font-mono); text-align: center; }
+
+  @keyframes contact-cursor { 0%, 45% { opacity: 1; } 46%, 100% { opacity: 0; } }
+  @media (max-width: 64rem) {
+    .contact__layout { grid-template-columns: 1fr; }
+    .contact-card-shell { align-self: auto; }
+    .contact-card { position: relative; top: auto; display: block; }
+  }
+
+  @media (max-width: 42rem) {
+    .contact { padding: 8rem 1rem 4rem; }
+    .contact h1 { font-size: clamp(2.65rem, 13vw, 4.1rem); }
+    .contact-form__grid { grid-template-columns: 1fr; gap: 1.8rem; }
+    .contact-field--wide { grid-column: auto; }
+    .contact-form__actions { align-items: stretch; flex-direction: column; }
+    .contact-form__actions button { width: 100%; min-width: 0; }
+    .contact-card { display: block; }
+    .contact-card__details { grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .contact__cursor { animation: none; }
+    .contact-form__actions button,
+    .contact-card__socials a { transition: none; }
+  }
+</style>

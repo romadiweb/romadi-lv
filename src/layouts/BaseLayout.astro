@@ -14,6 +14,7 @@ interface Props {
   description?: string;
   image?: string;
   noindex?: boolean;
+  footerCta?: 'default' | 'portfolio' | false;
 }
 
 const {
@@ -21,6 +22,7 @@ const {
   description = SITE.description,
   image = '/og/default.jpg',
   noindex = false,
+  footerCta = 'default',
 } = Astro.props;
 
 const pageTitle = title ? `${title} | ${SITE.name}` : SITE.title;
@@ -92,7 +94,7 @@ const socialImageUrl = new URL(image, siteBase);
       <slot />
     </main>
 
-    <SiteFooter />
+    <SiteFooter ctaVariant={footerCta} />
 
     <script>
       import { initRevealAnimations } from '@/lib/animations/reveal';
