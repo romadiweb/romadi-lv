@@ -1,0 +1,235 @@
+<section class="about-partnership" aria-labelledby="about-partnership-title">
+  <div class="about-partnership__inner">
+    <div class="about-partnership__copy" data-reveal>
+      <p class="about-partnership__eyebrow" aria-label="Darbs kopā">
+        <span
+          aria-hidden="true"
+          data-typewriter
+          data-typewriter-text="{ DARBS KOPĀ }"
+          data-typewriter-speed="54"></span>
+        <span class="about-partnership__cursor" aria-hidden="true">_</span>
+      </p>
+
+      <h2 id="about-partnership-title">Jūsu ideja.<br />Mūsu komanda tai līdzās.</h2>
+
+      <p class="about-partnership__description">
+        Katram uzņēmumam ir savs ritms, vajadzības un ambīcijas. Tāpēc nesākam ar gatavu
+        šablonu — vispirms uzklausām, iedziļināmies un tikai tad veidojam risinājumu, kas
+        iederas jūsu biznesā.
+      </p>
+
+      <a class="about-partnership__link" href="/kontakti" data-astro-prefetch>
+        Parunāsim par projektu
+        <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+
+    <figure class="about-partnership__media" data-reveal>
+      <img
+        src="/images/about-collaboration.jpg"
+        alt="Komanda kopīgi apspriež digitāla projekta risinājumus pie darba galda"
+        width="1800"
+        height="1200"
+        loading="lazy"
+        decoding="async"
+      />
+      <figcaption>
+        <span>01</span>
+        No pirmās sarunas līdz gatavam un uzturamam risinājumam.
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<script>
+  import { initTypewriters } from '@/lib/animations/typewriter';
+
+  initTypewriters();
+  document.addEventListener('astro:page-load', initTypewriters);
+</script>
+
+<style>
+  .about-partnership {
+    width: min(calc(100% - 4rem), 118rem);
+    margin-inline: auto;
+    padding: clamp(6rem, 10vw, 10rem) clamp(1.5rem, 4vw, 5rem);
+    background: #030303;
+  }
+
+  .about-partnership__inner {
+    display: grid;
+    max-width: 86rem;
+    margin-inline: auto;
+    grid-template-columns: minmax(0, 0.92fr) minmax(25rem, 1.08fr);
+    align-items: center;
+    gap: clamp(4rem, 9vw, 10rem);
+  }
+
+  .about-partnership__copy {
+    max-width: 43rem;
+  }
+
+  .about-partnership__eyebrow {
+    display: flex;
+    min-height: 0.85rem;
+    align-items: baseline;
+    gap: 0.6ch;
+    margin-bottom: 1.7rem;
+    color: rgb(255 255 255 / 48%);
+    font: 600 0.66rem/1.2 var(--font-mono);
+    letter-spacing: 0.04em;
+  }
+
+  .about-partnership__cursor {
+    margin-left: 0.4ch;
+    opacity: 0;
+    animation: about-partnership-cursor 1.15s steps(1, end) infinite;
+  }
+
+  .about-partnership__eyebrow span[data-typewriter-active='true'] + .about-partnership__cursor {
+    opacity: 1;
+  }
+
+  .about-partnership h2 {
+    max-width: 14ch;
+    color: white;
+    font-size: clamp(2.75rem, 4.8vw, 4.9rem);
+    font-weight: 450;
+    letter-spacing: -0.04em;
+    line-height: 1.03;
+  }
+
+  .about-partnership__description {
+    max-width: 62ch;
+    margin-top: clamp(2rem, 3.5vw, 3.25rem);
+    color: rgb(255 255 255 / 62%);
+    font: 500 0.96rem/1.75 var(--font-mono);
+  }
+
+  .about-partnership__link {
+    display: inline-flex;
+    min-height: 3.75rem;
+    margin-top: 2.25rem;
+    align-items: center;
+    gap: 1rem;
+    border-radius: 1rem;
+    padding: 0.85rem 1.5rem;
+    background: white;
+    color: #090909;
+    font-size: 1rem;
+    font-weight: 720;
+    transition: transform 260ms var(--ease-out-expo), background-color 180ms ease;
+  }
+
+  .about-partnership__link:hover {
+    background: rgb(255 255 255 / 92%);
+    transform: translateY(-3px);
+  }
+
+  .about-partnership__media {
+    position: relative;
+    isolation: isolate;
+    margin: 0;
+  }
+
+  .about-partnership__media::before {
+    position: absolute;
+    z-index: -1;
+    right: -12%;
+    bottom: -16%;
+    width: 72%;
+    height: 68%;
+    background: radial-gradient(circle, rgb(224 35 78 / 26%), rgb(98 11 34 / 12%) 46%, transparent 72%);
+    filter: blur(30px);
+    content: '';
+  }
+
+  .about-partnership__media img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1.42;
+    border-radius: 1rem;
+    object-fit: cover;
+    object-position: center 44%;
+    filter: saturate(0.78) contrast(1.07) brightness(0.78);
+  }
+
+  .about-partnership__media::after {
+    position: absolute;
+    inset: 0 0 3.35rem;
+    border-radius: 1rem;
+    background:
+      linear-gradient(135deg, rgb(98 11 34 / 20%), transparent 42%),
+      linear-gradient(180deg, transparent 58%, rgb(3 3 3 / 32%));
+    content: '';
+    pointer-events: none;
+  }
+
+  .about-partnership figcaption {
+    display: flex;
+    min-height: 3.35rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    color: rgb(255 255 255 / 52%);
+    font: 500 0.67rem/1.5 var(--font-mono);
+  }
+
+  .about-partnership figcaption span {
+    color: rgb(255 255 255 / 32%);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @keyframes about-partnership-cursor {
+    0%, 46% { opacity: 1; }
+    47%, 100% { opacity: 0.25; }
+  }
+
+  @media (max-width: 900px) {
+    .about-partnership__inner {
+      grid-template-columns: 1fr;
+      gap: 4.5rem;
+    }
+
+    .about-partnership__copy {
+      max-width: 46rem;
+    }
+
+    .about-partnership__media {
+      width: min(100%, 46rem);
+      margin-left: auto;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .about-partnership {
+      width: calc(100% - 1.5rem);
+      padding: 5rem 0.75rem 6rem;
+    }
+
+    .about-partnership h2 {
+      font-size: clamp(2.5rem, 12vw, 3.75rem);
+    }
+
+    .about-partnership__description {
+      margin-top: 2rem;
+      font-size: 1rem;
+    }
+
+    .about-partnership__media img {
+      aspect-ratio: 1.05;
+    }
+
+    .about-partnership figcaption {
+      align-items: flex-start;
+      padding-top: 0.9rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .about-partnership__cursor {
+      animation: none;
+      opacity: 1;
+    }
+  }
+</style>

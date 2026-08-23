@@ -1,3 +1,5 @@
+import { SERVICES } from '@/data/services';
+
 export const SITE = {
   /**
    * Core brand identity
@@ -89,55 +91,7 @@ export const SITE = {
   /**
    * ROMADI services
    */
-  services: [
-    {
-      id: 'website-development',
-      label: 'Mājaslapu izstrāde',
-      shortLabel: 'Mājaslapas',
-      href: '/majas-lapu-izstrade',
-      description:
-        'Ātras, mūsdienīgas un individuāli izstrādātas mājaslapas uzņēmuma mērķu sasniegšanai.',
-    },
-    {
-      id: 'ecommerce-development',
-      label: 'Interneta veikalu izstrāde',
-      shortLabel: 'E-komercija',
-      href: '/interneta-veikalu-izstrade',
-      description:
-        'Pārdomāti interneta veikali ar ērtu iepirkšanās procesu, integrācijām un izaugsmes iespējām.',
-    },
-    {
-      id: 'ui-ux-design',
-      label: 'UI/UX dizains',
-      shortLabel: 'UI/UX',
-      href: '/ui-ux-dizains',
-      description: 'Lietotāju vajadzībām un biznesa mērķiem pielāgots digitālo produktu dizains.',
-    },
-    {
-      id: 'seo',
-      label: 'SEO optimizācija',
-      shortLabel: 'SEO',
-      href: '/seo-optimizacija',
-      description:
-        'Tehniskā un satura optimizācija ilgtermiņa redzamībai Google meklēšanas rezultātos.',
-    },
-    {
-      id: 'google-ads',
-      label: 'Google reklāmas',
-      shortLabel: 'Google Ads',
-      href: '/google-reklamas',
-      description:
-        'Mērķētas Google reklāmas kampaņas klientu piesaistei un izmērāmai uzņēmuma izaugsmei.',
-    },
-    {
-      id: 'social-media-ads',
-      label: 'Sociālo tīklu reklāmas',
-      shortLabel: 'Social Ads',
-      href: '/kontakti',
-      description:
-        'Mērķētas reklāmas sociālajos tīklos zīmola atpazīstamībai, auditorijas sasniegšanai un pārdošanai.',
-    },
-  ],
+  services: SERVICES,
 
   /**
    * Footer navigation

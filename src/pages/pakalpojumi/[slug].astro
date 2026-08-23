@@ -1,0 +1,40 @@
+---
+import ServicePage from '@/components/sections/services/ServicePage.astro';
+import { SERVICES, type ServiceDefinition } from '@/data/services';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+export function getStaticPaths() {
+  return SERVICES.map((service) => ({
+    params: { slug: service.slug },
+    props: { service },
+  }));
+}
+
+interface Props {
+  service: ServiceDefinition;
+}
+
+const { service } = Astro.props;
+const canonicalUrl = new URL(service.href, Astro.site ?? 'https://romadi.lv').toString();
+const serviceJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: service.label,
+  description: service.seoDescription,
+  url: canonicalUrl,
+  areaServed: {
+    '@type': 'Country',
+    name: 'Latvija',
+  },
+  provider: {
+    '@type': 'Organization',
+    name: 'ROMADI',
+    url: 'https://romadi.lv',
+  },
+};
+---
+
+<BaseLayout title={service.seoTitle} description={service.seoDescription}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(serviceJsonLd)} />
+  <ServicePage service={service} />
+</BaseLayout>

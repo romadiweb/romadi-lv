@@ -5,7 +5,7 @@ const currentYear = new Date().getFullYear();
 const serviceLinks = SITE.services.slice(0, 4);
 
 interface Props {
-  ctaVariant?: 'default' | 'portfolio' | false;
+  ctaVariant?: 'default' | 'portfolio' | 'about' | false;
 }
 
 const { ctaVariant = 'default' } = Astro.props;
@@ -17,12 +17,19 @@ const cta = ctaVariant === 'portfolio'
       label: 'Apskati mūsu darbus',
       href: '/portfolio',
     }
-  : {
-      title: 'Lieliskas idejas.\nPārdomāti risinājumi.',
-      text: 'Pastāstiet par savu ieceri. Palīdzēsim tai kļūt par skaidru, mūsdienīgu un vērtīgu digitālo risinājumu.',
-      label: 'Pieteikt projektu',
-      href: SITE.navigation.callToAction.href,
-    };
+  : ctaVariant === 'about'
+    ? {
+        title: 'Vēlies uzsākt sadarbību?',
+        text: 'Pastāsti mums par savu ieceri. Iedziļināsimies tava biznesa specifikā un kopā atradīsim risinājumu, kas der tieši tev.',
+        label: 'Pieteikt projektu',
+        href: SITE.navigation.callToAction.href,
+      }
+    : {
+        title: 'Lieliskas idejas.\nPārdomāti risinājumi.',
+        text: 'Pastāstiet par savu ieceri. Palīdzēsim tai kļūt par skaidru, mūsdienīgu un vērtīgu digitālo risinājumu.',
+        label: 'Pieteikt projektu',
+        href: SITE.navigation.callToAction.href,
+      };
 ---
 
 <footer class="site-footer">
@@ -319,7 +326,7 @@ const cta = ctaVariant === 'portfolio'
   @keyframes footer-ambient { from { transform: translate3d(-4%, 2%, 0) scale(0.94); } to { transform: translate3d(5%, -4%, 0) scale(1.08); } }
 
   @media (max-width: 960px) {
-    .site-footer__cta { grid-template-columns: 1fr; gap: 4rem; padding-inline: clamp(2rem, 8vw, 5rem); }
+    .site-footer__cta { grid-template-columns: 1fr; gap: 4rem; margin-inline: 0.75rem; border-radius: 1.5rem 1.5rem 0 0; padding-inline: clamp(2rem, 8vw, 5rem); }
     .site-footer__cta-action { max-width: 36rem; }
     .site-footer__panel { grid-template-columns: 1fr; margin-inline: 0.75rem; border-radius: 1.5rem; }
     .site-footer__contact { border-right: 0; border-bottom: 1px solid rgb(255 255 255 / 8%); }

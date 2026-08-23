@@ -1,0 +1,374 @@
+---
+const barCount = 176;
+
+const bars = Array.from({ length: barCount }, (_, index) => {
+  const progress = index / (barCount - 1);
+  const rise = Math.pow(progress, 2.05) * 770;
+  const longWave = Math.sin(progress * Math.PI * 6.4) * (12 + progress * 46);
+  const shortWave = Math.sin(index * 1.43) * (4 + progress * 25);
+  const pulse = Math.max(0, Math.sin(progress * Math.PI * 15.5)) * progress * 42;
+  const height = Math.max(8, Math.min(866, 10 + rise + longWave + shortWave + pulse));
+  const fadeVariation = (Math.sin(index * 2.17) + Math.sin(index * 0.61) + 2) / 4;
+  const fadeShare = 0.82 - progress * 0.4;
+  const fadeLength = Math.min(
+    height * fadeShare,
+    8 + fadeVariation * 34 + Math.pow(progress, 1.65) * 132,
+  );
+
+  return {
+    id: `about-approach-bar-${index}`,
+    x: (index / (barCount - 1)) * 1600,
+    y: 900 - height,
+    opacity: 0.16 + progress * 0.11,
+    fadeEnd: 900 - fadeLength,
+  };
+});
+---
+
+<section class="about-approach" aria-labelledby="about-approach-title">
+  <div class="about-approach__graph" aria-hidden="true">
+    <svg viewBox="0 0 1600 900" preserveAspectRatio="none" focusable="false">
+      <defs>
+        {
+          bars.map((bar) => (
+            <linearGradient
+              id={bar.id}
+              x1={bar.x}
+              y1="900"
+              x2={bar.x}
+              y2={bar.fadeEnd}
+              gradientUnits="userSpaceOnUse"
+            >
+        <stop offset="0" stop-color="white" stop-opacity="0" />
+        <stop offset="0.42" stop-color="white" stop-opacity="0" />
+        <stop offset="0.72" stop-color="white" stop-opacity={(bar.opacity * 0.18).toFixed(3)} />
+        <stop offset="1" stop-color="white" stop-opacity={bar.opacity.toFixed(3)} />
+            </linearGradient>
+          ))
+        }
+      </defs>
+      <g>
+        {
+          bars.map((bar) => (
+            <line
+              x1={bar.x}
+              y1="900"
+              x2={bar.x}
+              y2={bar.y}
+              stroke={`url(#${bar.id})`}
+            />
+          ))
+        }
+      </g>
+    </svg>
+  </div>
+
+  <div class="about-approach__inner">
+    <header class="about-approach__copy" data-reveal>
+      <p class="about-approach__eyebrow" aria-label="Sadarbība">
+        <span
+          aria-hidden="true"
+          data-typewriter
+          data-typewriter-text="{ SADARBĪBA }"
+          data-typewriter-speed="54"></span>
+        <span class="about-approach__cursor" aria-hidden="true">_</span>
+      </p>
+
+      <h2 id="about-approach-title">Viena komanda.<br />Līdzās katrā posmā.</h2>
+    </header>
+
+    <div class="about-approach__support" data-reveal>
+      <p class="about-approach__description">
+        Neatkarīgi no tā, vai sākam ar jaunu ideju vai turpinām jau esošu produktu, mūsu
+        komanda iesaistās tur, kur tā rada lielāko vērtību. Skaidri lēmumi, atklāta
+        komunikācija un kopīga atbildība par rezultātu.
+      </p>
+      <a href="/kontakti" data-astro-prefetch>Sāksim ar sarunu <span aria-hidden="true">↗</span></a>
+    </div>
+
+    <ol class="about-approach__stages" aria-label="Sadarbības posmi">
+      <li>
+        <div class="about-approach__stage-content">
+          <span>01</span><strong>Saprotam</strong><small>Mērķi, auditoriju un vajadzības</small>
+        </div>
+      </li>
+      <li>
+        <div class="about-approach__stage-content">
+          <span>02</span><strong>Veidojam</strong><small>Dizainu, tehnoloģiju un saturu</small>
+        </div>
+      </li>
+      <li>
+        <div class="about-approach__stage-content">
+          <span>03</span><strong>Attīstām</strong><small>Pēc palaišanas un ilgtermiņā</small>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<script>
+  import { initTypewriters } from '@/lib/animations/typewriter';
+
+  initTypewriters();
+  document.addEventListener('astro:page-load', initTypewriters);
+</script>
+
+<style>
+  .about-approach {
+    position: relative;
+    isolation: isolate;
+    width: min(calc(100% - 4rem), 118rem);
+    min-height: clamp(48rem, 61vw, 58rem);
+    margin-inline: auto;
+    overflow: hidden;
+    background: #030303;
+  }
+
+  .about-approach::after {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 62% 46% at 18% 8%, #030303 0%, rgb(3 3 3 / 94%) 54%, transparent 100%),
+      radial-gradient(ellipse 43% 38% at 66% 9%, rgb(3 3 3 / 92%) 0%, rgb(3 3 3 / 68%) 55%, transparent 100%);
+    content: '';
+    pointer-events: none;
+  }
+
+  .about-approach__inner {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    max-width: 96rem;
+    min-height: inherit;
+    margin-inline: auto;
+    grid-template-columns: minmax(0, 1fr) minmax(22rem, 0.72fr);
+    grid-template-rows: auto 1fr auto;
+    align-items: start;
+    column-gap: clamp(4rem, 10vw, 11rem);
+    padding: clamp(6rem, 9vw, 9rem) clamp(1.5rem, 4vw, 5rem);
+  }
+
+  .about-approach__copy {
+    width: min(100%, 48rem);
+  }
+
+  .about-approach__eyebrow {
+    display: flex;
+    min-height: 0.85rem;
+    align-items: baseline;
+    gap: 0.6ch;
+    margin-bottom: 1.7rem;
+    color: rgb(255 255 255 / 48%);
+    font: 600 0.66rem/1.2 var(--font-mono);
+    letter-spacing: 0.04em;
+  }
+
+  .about-approach__cursor {
+    margin-left: 0.4ch;
+    opacity: 0;
+    animation: about-approach-cursor 1.15s steps(1, end) infinite;
+  }
+
+  .about-approach__eyebrow span[data-typewriter-active='true'] + .about-approach__cursor {
+    opacity: 1;
+  }
+
+  .about-approach h2 {
+    max-width: 17ch;
+    color: white;
+    font-size: clamp(2.75rem, 4.7vw, 4.75rem);
+    font-weight: 450;
+    letter-spacing: -0.04em;
+    line-height: 1.04;
+  }
+
+  .about-approach__description {
+    max-width: 58ch;
+    color: rgb(255 255 255 / 62%);
+    font: 500 1rem/1.7 var(--font-mono);
+  }
+
+  .about-approach__support {
+    align-self: end;
+    padding-bottom: clamp(2rem, 5vw, 5rem);
+  }
+
+  .about-approach__support > a {
+    display: inline-flex;
+    margin-top: 2rem;
+    align-items: center;
+    gap: 0.8rem;
+    color: white;
+    font-size: 1rem;
+    font-weight: 680;
+    transition: gap 220ms var(--ease-out-expo), color 180ms ease;
+  }
+
+  .about-approach__support > a:hover {
+    gap: 1.15rem;
+    color: #f75f7f;
+  }
+
+  .about-approach__stages {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-self: end;
+    gap: clamp(2rem, 6vw, 7rem);
+    margin: 0;
+    padding: 0 0 clamp(1rem, 2vw, 2rem);
+    list-style: none;
+  }
+
+  .about-approach__stages li {
+    display: grid;
+    align-content: end;
+  }
+
+  .about-approach__stage-content {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    width: fit-content;
+    max-width: 100%;
+    align-content: end;
+    gap: 0.65rem;
+  }
+
+  .about-approach__stage-content::before {
+    position: absolute;
+    z-index: -1;
+    inset: -1.25rem -1.5rem -2rem;
+    background: radial-gradient(
+      ellipse 47% 43% at 50% 64%,
+      rgb(3 3 3 / 68%) 0%,
+      rgb(3 3 3 / 50%) 34%,
+      rgb(3 3 3 / 20%) 62%,
+      transparent 100%
+    );
+    content: '';
+    pointer-events: none;
+  }
+
+  .about-approach__stages span,
+  .about-approach__stages small {
+    color: rgb(255 255 255 / 60%);
+    font: 500 0.72rem/1.5 var(--font-mono);
+  }
+
+  .about-approach__stages strong {
+    color: white;
+    font-size: clamp(1.1rem, 1.5vw, 1.4rem);
+    font-weight: 620;
+    letter-spacing: -0.03em;
+  }
+
+  .about-approach__graph {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .about-approach__graph svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .about-approach__graph line {
+    stroke-width: 2.35;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  @keyframes about-approach-cursor {
+    0%, 46% { opacity: 1; }
+    47%, 100% { opacity: 0.25; }
+  }
+
+  @media (max-width: 900px) {
+    .about-approach {
+      min-height: 49rem;
+    }
+
+    .about-approach::after {
+      background:
+        radial-gradient(ellipse 82% 48% at 16% 9%, #030303 0%, rgb(3 3 3 / 94%) 58%, transparent 100%),
+        radial-gradient(ellipse 66% 38% at 58% 30%, rgb(3 3 3 / 84%) 0%, transparent 100%);
+    }
+
+    .about-approach__copy {
+      width: min(100%, 39rem);
+    }
+
+    .about-approach__inner {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto 1fr;
+      row-gap: 3rem;
+    }
+
+    .about-approach__support {
+      max-width: 39rem;
+      align-self: start;
+      padding-bottom: 0;
+    }
+
+    .about-approach__stages {
+      gap: 2rem;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .about-approach {
+      width: calc(100% - 1.5rem);
+      min-height: 44rem;
+    }
+
+    .about-approach__inner {
+      padding: 4.5rem 0.75rem;
+    }
+
+    .about-approach__eyebrow {
+      margin-bottom: 1.25rem;
+    }
+
+    .about-approach h2 {
+      max-width: 13ch;
+      font-size: clamp(2.5rem, 12vw, 3.75rem);
+    }
+
+    .about-approach__description {
+      max-width: 38ch;
+      line-height: 1.65;
+    }
+
+    .about-approach__stages {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      padding-bottom: 0;
+    }
+
+    .about-approach__stage-content {
+      grid-template-columns: 2rem minmax(0, 1fr);
+      gap: 0.25rem 0.75rem;
+    }
+
+    .about-approach__stages strong,
+    .about-approach__stages small {
+      grid-column: 2;
+    }
+
+    .about-approach__graph {
+      top: 12%;
+      right: -28%;
+      bottom: 0;
+      left: -34%;
+    }
+
+    .about-approach__graph line {
+      stroke-width: 1.6;
+    }
+  }
+</style>

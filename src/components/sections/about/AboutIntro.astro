@@ -1,0 +1,411 @@
+<section class="about-intro" aria-labelledby="about-intro-title">
+  <div class="about-intro__plasma" aria-hidden="true">
+    <svg viewBox="0 0 800 800" focusable="false">
+      <defs>
+        <linearGradient id="about-plasma-stroke" x1="210" y1="110" x2="670" y2="720" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#7f0b2a" />
+          <stop offset="0.26" stop-color="#d71d49" />
+          <stop offset="0.54" stop-color="#a91037" />
+          <stop offset="0.8" stop-color="#620b22" />
+          <stop offset="1" stop-color="#27030d" stop-opacity="0.45" />
+        </linearGradient>
+
+        <radialGradient id="about-plasma-pool" cx="0.42" cy="0.4" r="0.72">
+          <stop offset="0" stop-color="#e0234e" stop-opacity="0.9" />
+          <stop offset="0.48" stop-color="#8f0d31" stop-opacity="0.82" />
+          <stop offset="1" stop-color="#3a0412" stop-opacity="0" />
+        </radialGradient>
+
+        <linearGradient id="about-plasma-fade" x1="0" y1="0" x2="0.9" y2="1">
+          <stop offset="0" stop-color="white" />
+          <stop offset="0.7" stop-color="white" />
+          <stop offset="1" stop-color="black" />
+        </linearGradient>
+
+        <mask id="about-plasma-mask">
+          <rect width="800" height="800" fill="url(#about-plasma-fade)" />
+        </mask>
+
+        <filter id="about-plasma-bloom" x="-55%" y="-55%" width="210%" height="210%" color-interpolation-filters="sRGB">
+          <feGaussianBlur stdDeviation="42" />
+        </filter>
+
+        <filter id="about-plasma-goo" x="-45%" y="-45%" width="190%" height="190%" color-interpolation-filters="sRGB">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="18" result="liquid-blur" />
+          <feColorMatrix
+            in="liquid-blur"
+            type="matrix"
+            values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -7"
+            result="liquid-union"
+          />
+          <feGaussianBlur in="liquid-union" stdDeviation="7" result="liquid-edge" />
+          <feMerge>
+            <feMergeNode in="liquid-edge" />
+            <feMergeNode in="liquid-union" />
+          </feMerge>
+        </filter>
+
+        <filter id="about-plasma-core" x="-35%" y="-35%" width="170%" height="170%" color-interpolation-filters="sRGB">
+          <feGaussianBlur stdDeviation="11" />
+        </filter>
+
+        <path
+          id="about-plasma-r-body"
+          d="M250 696C242 540 244 316 266 142C390 104 554 120 610 224C668 332 606 434 454 462C388 474 324 466 276 442"
+        >
+          <animate
+            attributeName="d"
+            dur="10.5s"
+            repeatCount="indefinite"
+            calcMode="spline"
+            keySplines="0.25 1 0.5 1;0.25 1 0.5 1;0.25 1 0.5 1"
+            values="M250 696C242 540 244 316 266 142C390 104 554 120 610 224C668 332 606 434 454 462C388 474 324 466 276 442;M256 698C238 538 252 302 274 148C398 110 566 126 616 232C664 336 596 446 448 468C380 478 316 462 280 436;M246 692C250 532 238 326 260 136C382 96 548 116 604 216C672 326 614 426 462 456C396 470 330 472 270 448;M250 696C242 540 244 316 266 142C390 104 554 120 610 224C668 332 606 434 454 462C388 474 324 466 276 442"
+          />
+        </path>
+
+        <path id="about-plasma-r-leg" d="M446 462C512 504 580 592 648 708">
+          <animate
+            attributeName="d"
+            dur="10.5s"
+            repeatCount="indefinite"
+            calcMode="spline"
+            keySplines="0.25 1 0.5 1;0.25 1 0.5 1;0.25 1 0.5 1"
+            values="M446 462C512 504 580 592 648 708;M440 468C518 508 592 588 654 700;M454 456C508 500 572 600 640 714;M446 462C512 504 580 592 648 708"
+          />
+        </path>
+      </defs>
+
+      <g mask="url(#about-plasma-mask)">
+        <g class="about-intro__plasma-mark">
+          <g fill="none" stroke="#7b0a2b" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.52" stroke-width="162" filter="url(#about-plasma-bloom)">
+            <use href="#about-plasma-r-body" />
+            <use href="#about-plasma-r-leg" />
+          </g>
+
+          <g filter="url(#about-plasma-goo)">
+            <g fill="none" stroke="url(#about-plasma-stroke)" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88" stroke-width="104">
+              <use href="#about-plasma-r-body" />
+              <use href="#about-plasma-r-leg" />
+            </g>
+            <ellipse cx="448" cy="462" rx="102" ry="88" fill="url(#about-plasma-pool)" opacity="0.84">
+              <animate attributeName="rx" values="102;118;94;102" dur="8.8s" repeatCount="indefinite" calcMode="spline" keySplines="0.25 1 0.5 1;0.25 1 0.5 1;0.25 1 0.5 1" />
+              <animate attributeName="ry" values="88;78;104;88" dur="8.8s" repeatCount="indefinite" calcMode="spline" keySplines="0.25 1 0.5 1;0.25 1 0.5 1;0.25 1 0.5 1" />
+            </ellipse>
+            <ellipse cx="270" cy="632" rx="70" ry="112" fill="url(#about-plasma-pool)" opacity="0.62">
+              <animate attributeName="rx" values="70;86;64;70" dur="11.2s" repeatCount="indefinite" calcMode="spline" keySplines="0.25 1 0.5 1;0.25 1 0.5 1;0.25 1 0.5 1" />
+              <animate attributeName="ry" values="112;98;126;112" dur="11.2s" repeatCount="indefinite" calcMode="spline" keySplines="0.25 1 0.5 1;0.25 1 0.5 1;0.25 1 0.5 1" />
+            </ellipse>
+          </g>
+
+          <g fill="none" stroke="#e0234e" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.28" stroke-width="52" filter="url(#about-plasma-core)">
+            <use href="#about-plasma-r-body" />
+            <use href="#about-plasma-r-leg" />
+          </g>
+        </g>
+      </g>
+    </svg>
+  </div>
+
+  <div class="about-intro__inner">
+    <header class="about-intro__heading" data-reveal>
+      <p class="about-intro__eyebrow" aria-label="Par ROMADI">
+        <span
+          aria-hidden="true"
+          data-typewriter
+          data-typewriter-text="{ PAR ROMADI }"
+          data-typewriter-speed="54"></span>
+        <span class="about-intro__cursor" aria-hidden="true">_</span>
+      </p>
+      <h1 id="about-intro-title">Veidojam uzņēmumiem,<br />kas domā uz priekšu.</h1>
+    </header>
+
+    <div class="about-intro__statement" data-reveal>
+      <span class="about-intro__quote-mark" aria-hidden="true">“</span>
+      <blockquote>
+        Mēs veidojam ne tikai mājaslapas. Mēs palīdzam uzņēmumiem saprast, kas tiem patiesībā
+        vajadzīgs, un pārvēršam šo skaidrību digitālā produktā, kas strādā ilgtermiņā.
+      </blockquote>
+
+      <div class="about-intro__identity">
+        <span class="about-intro__identity-mark" aria-hidden="true">R</span>
+        <span>
+          <strong>ROMADI</strong>
+          <small>Digitālais partneris · Liepāja</small>
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initTypewriters } from '@/lib/animations/typewriter';
+
+  const initAboutIntro = (): void => {
+    initTypewriters();
+
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    document.querySelectorAll<SVGSVGElement>('.about-intro__plasma svg').forEach((svg) => {
+      svg.pauseAnimations();
+    });
+  };
+
+  initAboutIntro();
+  document.addEventListener('astro:page-load', initAboutIntro);
+</script>
+
+<style>
+  .about-intro {
+    position: relative;
+    isolation: isolate;
+    width: min(calc(100% - 4rem), 118rem);
+    min-height: clamp(48rem, 70vw, 61rem);
+    margin-inline: auto;
+    overflow: hidden;
+    padding: clamp(12rem, 16vw, 15rem) clamp(1.5rem, 4vw, 5rem) clamp(3.5rem, 6vw, 5.5rem);
+    background: #030303;
+  }
+
+  .about-intro::after {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    background: linear-gradient(90deg, #030303 0%, #030303 42%, rgb(3 3 3 / 78%) 58%, transparent 78%);
+    content: '';
+    pointer-events: none;
+  }
+
+  .about-intro__inner {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    min-height: calc(clamp(48rem, 70vw, 61rem) - clamp(15.5rem, 22vw, 20.5rem));
+    max-width: 96rem;
+    margin-inline: auto;
+    grid-template-rows: auto 1fr;
+  }
+
+  .about-intro__heading {
+    min-width: 0;
+  }
+
+  .about-intro__eyebrow {
+    display: flex;
+    min-height: 0.85rem;
+    align-items: baseline;
+    gap: 0.6ch;
+    margin-bottom: 1.7rem;
+    color: rgb(255 255 255 / 48%);
+    font: 600 0.66rem/1.2 var(--font-mono);
+    letter-spacing: 0.04em;
+  }
+
+  .about-intro__cursor {
+    margin-left: 0.4ch;
+    opacity: 0;
+    animation: about-intro-cursor 1.15s steps(1, end) infinite;
+  }
+
+  .about-intro__eyebrow span[data-typewriter-active='true'] + .about-intro__cursor {
+    opacity: 1;
+  }
+
+  .about-intro h1 {
+    max-width: 16ch;
+    color: white;
+    font-size: clamp(3.35rem, 6.6vw, 6rem);
+    font-weight: 440;
+    letter-spacing: -0.04em;
+    line-height: 1.02;
+  }
+
+  .about-intro__statement {
+    display: grid;
+    width: min(100%, 61rem);
+    align-self: end;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .about-intro__quote-mark {
+    height: 2.25rem;
+    color: white;
+    font-size: 4.25em;
+    font-weight: 650;
+    line-height: 0.9;
+  }
+
+  .about-intro blockquote {
+    max-width: 69ch;
+    color: rgb(255 255 255 / 84%);
+    font-size: clamp(1rem, 1.35vw, 1.25rem);
+    font-weight: 500;
+    letter-spacing: -0.025em;
+    line-height: 1.55;
+  }
+
+  .about-intro__identity {
+    display: inline-flex;
+    width: fit-content;
+    min-height: 5.25rem;
+    margin-top: clamp(1.25rem, 3vw, 2.5rem);
+    align-items: center;
+    border: 1px solid rgb(255 255 255 / 28%);
+    border-radius: 999px;
+    padding: 0.45rem 1.5rem 0.45rem 0.45rem;
+  }
+
+  .about-intro__identity-mark {
+    display: grid;
+    width: 4.35rem;
+    height: 4.35rem;
+    flex: none;
+    place-items: center;
+    border: 1px solid rgb(255 255 255 / 18%);
+    border-radius: 50%;
+    color: white;
+    font-size: 1.25em;
+    font-weight: 750;
+  }
+
+  .about-intro__identity > span:last-child {
+    display: grid;
+    gap: 0.3rem;
+    padding-left: 1.25rem;
+  }
+
+  .about-intro__identity strong {
+    color: white;
+    font-size: 0.875em;
+    font-weight: 650;
+  }
+
+  .about-intro__identity small {
+    color: rgb(255 255 255 / 48%);
+    font: 500 0.67rem/1.35 var(--font-mono);
+  }
+
+  .about-intro__plasma {
+    position: absolute;
+    z-index: -1;
+    top: clamp(-10rem, -7vw, -5rem);
+    right: clamp(-5rem, -2.5vw, 1rem);
+    width: min(70vw, 64rem);
+    aspect-ratio: 1;
+    opacity: 0.86;
+    contain: layout paint;
+    pointer-events: none;
+  }
+
+  .about-intro__plasma svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .about-intro__plasma-mark {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: about-plasma-drift 18s ease-in-out infinite alternate;
+  }
+
+  @keyframes about-intro-cursor {
+    0%, 46% { opacity: 1; }
+    47%, 100% { opacity: 0.25; }
+  }
+
+  @keyframes about-plasma-drift {
+    from { transform: translate3d(-5px, 4px, 0) rotate(-1.5deg) scale(0.99, 1.01); }
+    to { transform: translate3d(9px, -7px, 0) rotate(1deg) scale(1.015, 0.985); }
+  }
+
+  @media (max-width: 1080px) {
+    .about-intro {
+      min-height: 54rem;
+    }
+
+    .about-intro::after {
+      background: linear-gradient(90deg, #030303 0%, #030303 30%, rgb(3 3 3 / 76%) 58%, transparent 82%);
+    }
+
+    .about-intro__inner {
+      min-height: 37rem;
+    }
+
+    .about-intro__plasma {
+      top: 0;
+      right: -10rem;
+      width: min(92vw, 58rem);
+      opacity: 0.66;
+    }
+
+    .about-intro__statement {
+      width: min(100%, 44rem);
+    }
+  }
+
+  @media (max-width: 700px) {
+    .about-intro {
+      width: calc(100% - 1.5rem);
+      min-height: 49rem;
+      padding: 10rem 0.75rem 3.5rem;
+    }
+
+    .about-intro::after {
+      background:
+        linear-gradient(180deg, rgb(3 3 3 / 15%) 0%, #030303 50%, #030303 100%),
+        linear-gradient(90deg, #030303 0%, rgb(3 3 3 / 52%) 70%, transparent 100%);
+    }
+
+    .about-intro__inner {
+      min-height: 35.5rem;
+    }
+
+    .about-intro__eyebrow {
+      margin-bottom: 1.25rem;
+    }
+
+    .about-intro h1 {
+      max-width: 12ch;
+      font-size: clamp(2.75rem, 14vw, 4.25rem);
+    }
+
+    .about-intro__plasma {
+      top: 4.5rem;
+      right: -12rem;
+      width: 40rem;
+      opacity: 0.5;
+    }
+
+    .about-intro__quote-mark {
+      height: 1.65rem;
+      font-size: 3em;
+    }
+
+    .about-intro blockquote {
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .about-intro__identity {
+      min-height: 4.5rem;
+      margin-top: 1rem;
+      padding-right: 1rem;
+    }
+
+    .about-intro__identity-mark {
+      width: 3.6rem;
+      height: 3.6rem;
+    }
+
+    .about-intro__identity > span:last-child {
+      padding-left: 0.9rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .about-intro__plasma-mark {
+      animation: none;
+    }
+  }
+</style>

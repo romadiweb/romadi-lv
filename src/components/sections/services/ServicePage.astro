@@ -1,0 +1,381 @@
+---
+import ServiceVisual from '@/components/sections/services/ServiceVisual.astro';
+import { SERVICES, type ServiceDefinition } from '@/data/services';
+
+interface Props {
+  service: ServiceDefinition;
+}
+
+const { service } = Astro.props;
+---
+
+<article class="service-page">
+  <section class="service-hero" aria-labelledby="service-title">
+    <div class="service-hero__atmosphere" aria-hidden="true"></div>
+
+    <div class="service-hero__inner">
+      <div class="service-hero__copy" data-reveal>
+        <p class="service-hero__eyebrow" aria-label={service.eyebrow}>
+          <span
+            aria-hidden="true"
+            data-typewriter
+            data-typewriter-text={`{ ${service.eyebrow} }`}
+            data-typewriter-speed="42"></span>
+          <span class="service-hero__cursor" aria-hidden="true">_</span>
+        </p>
+
+        <h1 id="service-title">
+          {
+            service.headline.map((line, index) => (
+              <>
+                {index > 0 && <br />}
+                {line}
+              </>
+            ))
+          }
+        </h1>
+
+        <p class="service-hero__intro">{service.intro}</p>
+      </div>
+
+      <div class="service-hero__visual" data-reveal>
+        <ServiceVisual service={service} />
+      </div>
+    </div>
+
+    <nav class="service-hero__navigation" aria-label="Citi pakalpojumi">
+      {
+        SERVICES.map((item) => (
+          <a
+            href={item.href}
+            aria-current={item.slug === service.slug ? 'page' : undefined}
+            data-astro-prefetch
+          >
+            <span>{item.number}</span>
+            {item.shortLabel}
+          </a>
+        ))
+      }
+    </nav>
+  </section>
+
+  <section class="service-details" aria-labelledby="service-details-title">
+    <div class="service-details__heading" data-reveal>
+      <p>{service.number} / {service.label}</p>
+      <h2 id="service-details-title">Ko iegūst jūsu uzņēmums.</h2>
+    </div>
+
+    <ol class="service-details__grid">
+      {
+        service.details.map((detail, index) => (
+          <li data-reveal>
+            <span>{String(index + 1).padStart(2, '0')}</span>
+            <h3>{detail.title}</h3>
+            <p>{detail.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+</article>
+
+<script>
+  import { initTypewriters } from '@/lib/animations/typewriter';
+
+  initTypewriters();
+  document.addEventListener('astro:page-load', initTypewriters);
+</script>
+
+<style>
+  .service-page {
+    background: #030303;
+  }
+
+  .service-hero {
+    position: relative;
+    isolation: isolate;
+    width: min(calc(100% - 2rem), 118rem);
+    min-height: clamp(52rem, 70vw, 65rem);
+    margin-inline: auto;
+    overflow: hidden;
+    background: #030303;
+  }
+
+  .service-hero__atmosphere {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .service-hero__atmosphere::before {
+    position: absolute;
+    right: 24%;
+    bottom: -36%;
+    width: min(54rem, 62vw);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgb(224 35 78 / 42%) 0%,
+      rgb(98 11 34 / 28%) 32%,
+      transparent 70%
+    );
+    filter: blur(44px);
+    content: '';
+  }
+
+  .service-hero__atmosphere::after {
+    position: absolute;
+    top: -18%;
+    right: -12%;
+    width: 58%;
+    height: 70%;
+    background: radial-gradient(ellipse, rgb(255 255 255 / 6%), transparent 68%);
+    content: '';
+  }
+
+  .service-hero__inner {
+    display: grid;
+    width: min(100%, 102rem);
+    min-height: clamp(45rem, 61vw, 57rem);
+    margin-inline: auto;
+    grid-template-columns: minmax(22rem, 0.78fr) minmax(34rem, 1.42fr);
+    align-items: center;
+    gap: clamp(4rem, 7vw, 8rem);
+    padding: clamp(9rem, 13vw, 13rem) clamp(1.5rem, 4vw, 4rem) 5rem;
+  }
+
+  .service-hero__copy {
+    align-self: center;
+  }
+
+  .service-hero__eyebrow {
+    display: flex;
+    min-height: 0.85rem;
+    align-items: baseline;
+    gap: 0.6ch;
+    margin-bottom: 1.8rem;
+    color: rgb(255 255 255 / 48%);
+    font: 600 0.66rem/1.2 var(--font-mono);
+    letter-spacing: 0.04em;
+  }
+
+  .service-hero__cursor {
+    margin-left: 0.4ch;
+    opacity: 0;
+    animation: service-cursor 1.15s steps(1, end) infinite;
+  }
+
+  .service-hero__eyebrow span[data-typewriter-active='true'] + .service-hero__cursor {
+    opacity: 1;
+  }
+
+  .service-hero h1 {
+    max-width: 14ch;
+    color: white;
+    font-size: clamp(3rem, 4.65vw, 5rem);
+    font-weight: 440;
+    letter-spacing: -0.04em;
+    line-height: 1.02;
+    text-wrap: balance;
+  }
+
+  .service-hero__intro {
+    max-width: 55ch;
+    margin-top: clamp(2.5rem, 4vw, 4rem);
+    color: rgb(255 255 255 / 60%);
+    font: 500 clamp(0.8rem, 0.92vw, 0.94rem)/1.78 var(--font-mono);
+    text-wrap: pretty;
+  }
+
+  .service-hero__visual {
+    min-width: 0;
+    margin-right: max(-5rem, calc((100vw - 102rem) / -2));
+  }
+
+  .service-hero__navigation {
+    display: grid;
+    width: min(calc(100% - 3rem), 94rem);
+    margin-inline: auto;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    border-top: 1px solid rgb(255 255 255 / 11%);
+  }
+
+  .service-hero__navigation a {
+    display: grid;
+    min-width: 0;
+    min-height: 5rem;
+    align-content: center;
+    gap: 0.5rem;
+    padding-inline: 0.8rem;
+    color: rgb(255 255 255 / 40%);
+    font-size: clamp(0.64rem, 0.78vw, 0.75rem);
+    font-weight: 630;
+    transition:
+      color 180ms ease,
+      background-color 180ms ease;
+  }
+
+  .service-hero__navigation a + a {
+    border-left: 1px solid rgb(255 255 255 / 8%);
+  }
+  .service-hero__navigation a span {
+    color: rgb(255 255 255 / 25%);
+    font: 550 0.55rem/1 var(--font-mono);
+  }
+  .service-hero__navigation a:hover,
+  .service-hero__navigation a[aria-current='page'] {
+    color: white;
+    background: rgb(255 255 255 / 3.5%);
+  }
+  .service-hero__navigation a[aria-current='page'] span {
+    color: #f75f7f;
+  }
+
+  .service-details {
+    display: grid;
+    width: min(calc(100% - 4rem), 86rem);
+    margin-inline: auto;
+    grid-template-columns: minmax(18rem, 0.72fr) minmax(0, 1.28fr);
+    gap: clamp(4rem, 9vw, 10rem);
+    padding: clamp(7rem, 11vw, 11rem) 0 clamp(8rem, 12vw, 12rem);
+  }
+
+  .service-details__heading p {
+    margin-bottom: 1.5rem;
+    color: rgb(255 255 255 / 38%);
+    font: 550 0.62rem/1.4 var(--font-mono);
+  }
+
+  .service-details h2 {
+    max-width: 11ch;
+    color: white;
+    font-size: clamp(2.7rem, 4.4vw, 4.5rem);
+    font-weight: 440;
+    letter-spacing: -0.04em;
+    line-height: 1.02;
+  }
+
+  .service-details__grid {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .service-details__grid li {
+    display: grid;
+    grid-template-columns: 3.25rem minmax(0, 0.72fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 1.5rem;
+    border-top: 1px solid rgb(255 255 255 / 12%);
+    padding: 2.25rem 0;
+  }
+
+  .service-details__grid li:last-child {
+    border-bottom: 1px solid rgb(255 255 255 / 12%);
+  }
+  .service-details__grid span {
+    color: rgb(255 255 255 / 32%);
+    font: 550 0.62rem/1.5 var(--font-mono);
+  }
+  .service-details__grid h3 {
+    color: white;
+    font-size: clamp(1.05rem, 1.35vw, 1.3rem);
+    font-weight: 620;
+    letter-spacing: -0.03em;
+    line-height: 1.35;
+  }
+  .service-details__grid p {
+    color: rgb(255 255 255 / 52%);
+    font: 500 0.78rem/1.72 var(--font-mono);
+  }
+
+  @keyframes service-cursor {
+    0%,
+    46% {
+      opacity: 1;
+    }
+    47%,
+    100% {
+      opacity: 0.25;
+    }
+  }
+
+  @media (max-width: 1050px) {
+    .service-hero__inner {
+      grid-template-columns: minmax(19rem, 0.8fr) minmax(28rem, 1.2fr);
+      gap: 3rem;
+    }
+    .service-hero__visual {
+      margin-right: -2rem;
+    }
+    .service-hero__navigation {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .service-hero__navigation a:nth-child(5) {
+      border-left: 0;
+    }
+    .service-hero__navigation a:nth-child(n + 5) {
+      border-top: 1px solid rgb(255 255 255 / 8%);
+    }
+  }
+
+  @media (max-width: 800px) {
+    .service-hero {
+      width: calc(100% - 1rem);
+    }
+    .service-hero__inner {
+      grid-template-columns: 1fr;
+      gap: 4rem;
+      padding: 9rem 0.75rem 4rem;
+    }
+    .service-hero h1 {
+      max-width: 12ch;
+      font-size: clamp(2.8rem, 12vw, 4.35rem);
+    }
+    .service-hero__intro {
+      max-width: 48ch;
+    }
+    .service-hero__visual {
+      margin-right: 0;
+    }
+    .service-hero__navigation {
+      width: calc(100% - 1.5rem);
+      grid-template-columns: 1fr 1fr;
+    }
+    .service-hero__navigation a {
+      min-height: 4.5rem;
+    }
+    .service-hero__navigation a:nth-child(odd) {
+      border-left: 0;
+    }
+    .service-hero__navigation a:nth-child(n + 3) {
+      border-top: 1px solid rgb(255 255 255 / 8%);
+    }
+    .service-details {
+      width: calc(100% - 2.5rem);
+      grid-template-columns: 1fr;
+      gap: 4rem;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .service-details__grid li {
+      grid-template-columns: 2rem minmax(0, 1fr);
+      gap: 0.6rem 0.9rem;
+    }
+    .service-details__grid h3,
+    .service-details__grid p {
+      grid-column: 2;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .service-hero__cursor {
+      animation: none;
+      opacity: 1;
+    }
+  }
+</style>

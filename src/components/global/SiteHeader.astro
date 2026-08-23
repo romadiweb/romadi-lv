@@ -1,40 +1,14 @@
 ---
 import { SITE } from '@/config/site';
+import { HEADER_SERVICES } from '@/data/services';
 
 const currentPath = Astro.url.pathname;
 
-const menuServices = [
-  {
-    title: 'Mājaslapu izstrāde',
-    description: 'Ātras, pārdomātas un viegli uzturamas mājaslapas.',
-    href: '/majas-lapu-izstrade',
-  },
-  {
-    title: 'Interneta veikali',
-    description: 'E-komercijas risinājumi ar skaidru un ērtu pirkšanas plūsmu.',
-    href: '/interneta-veikalu-izstrade',
-  },
-  {
-    title: 'Digitālie produkti un sistēmas',
-    description: 'Portāli, klientu zonas, rezervācijas un iekšējie rīki.',
-    href: '/kontakti',
-  },
-  {
-    title: 'Zīmols un dizains',
-    description: 'Vizuālā identitāte, interfeisi un komunikācijas materiāli.',
-    href: '/ui-ux-dizains',
-  },
-  {
-    title: 'AI un automatizācija',
-    description: 'Praktiski AI palīgi, darbplūsmas un integrācijas.',
-    href: '/kontakti',
-  },
-  {
-    title: 'Izaugsme un atbalsts',
-    description: 'Analītika, SEO, pārbūve un ilgtermiņa tehniskais atbalsts.',
-    href: '/kontakti',
-  },
-];
+const menuServices = HEADER_SERVICES.map((service) => ({
+  title: service.label,
+  description: service.description,
+  href: service.href,
+}));
 
 function isCurrentPage(href: string): boolean {
   if (href === '/') {
@@ -68,7 +42,13 @@ function isCurrentPage(href: string): boolean {
               >
                 {item.label}
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M7 10L12 15L17 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+                  <path
+                    d="M7 10L12 15L17 10"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
                 </svg>
               </a>
 
@@ -79,19 +59,23 @@ function isCurrentPage(href: string): boolean {
                   </div>
 
                   <div class="site-header__mega-grid">
-                    {
-                      menuServices.map((service, index) => (
-                        <a class="site-header__mega-card" href={service.href} data-astro-prefetch>
-                          <span class="site-header__mega-visual" style={`--service-index:${index};`} aria-hidden="true">
-                            <i></i><i></i><b>0{index + 1}</b>
-                          </span>
-                          <span class="site-header__mega-copy">
-                            <strong>{service.title}</strong>
-                            <small>{service.description}</small>
-                          </span>
-                        </a>
-                      ))
-                    }
+                    {menuServices.map((service, index) => (
+                      <a class="site-header__mega-card" href={service.href} data-astro-prefetch>
+                        <span
+                          class="site-header__mega-visual"
+                          style={`--service-index:${index};`}
+                          aria-hidden="true"
+                        >
+                          <i />
+                          <i />
+                          <b>0{index + 1}</b>
+                        </span>
+                        <span class="site-header__mega-copy">
+                          <strong>{service.title}</strong>
+                          <small>{service.description}</small>
+                        </span>
+                      </a>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -140,32 +124,66 @@ function isCurrentPage(href: string): boolean {
           </svg>
         </summary>
 
-        <button class="site-header__mobile-backdrop" type="button" aria-label="Aizvērt navigācijas izvēlni"></button>
+        <button
+          class="site-header__mobile-backdrop"
+          type="button"
+          aria-label="Aizvērt navigācijas izvēlni"></button>
 
         <div class="site-header__mobile-panel">
           <nav aria-label="Mobilā navigācija" class="site-header__mobile-navigation">
             <div class="site-header__mobile-services">
-              <a class="site-header__mobile-main-link" href="/pakalpojumi" style="--mobile-index:0" data-mobile-item>
+              <a
+                class="site-header__mobile-main-link"
+                href="/pakalpojumi"
+                style="--mobile-index:0"
+                data-mobile-item
+              >
                 <span>Pakalpojumi</span><small>01</small>
               </a>
               <div class="site-header__mobile-service-links">
                 {
                   menuServices.map((service, index) => (
-                    <a href={service.href} style={`--mobile-index:${index + 1}`} data-mobile-item data-astro-prefetch>
-                      <span>{service.title}</span><small>1.{index + 1}</small>
+                    <a
+                      href={service.href}
+                      style={`--mobile-index:${index + 1}`}
+                      data-mobile-item
+                      data-astro-prefetch
+                    >
+                      <>
+                        <span>{service.title}</span>
+                        <small>1.{index + 1}</small>
+                      </>
                     </a>
                   ))
                 }
               </div>
             </div>
 
-            <a class="site-header__mobile-main-link" href="/portfolio" style="--mobile-index:7" data-mobile-item data-astro-prefetch>
+            <a
+              class="site-header__mobile-main-link"
+              href="/portfolio"
+              style="--mobile-index:7"
+              data-mobile-item
+              data-astro-prefetch
+            >
               <span>Portfolio</span><small>02</small>
             </a>
-            <a class="site-header__mobile-main-link" href="/par-mums" style="--mobile-index:8" data-mobile-item data-astro-prefetch>
+            <a
+              class="site-header__mobile-main-link"
+              href="/par-mums"
+              style="--mobile-index:8"
+              data-mobile-item
+              data-astro-prefetch
+            >
               <span>Par mums</span><small>03</small>
             </a>
-            <a class="site-header__mobile-main-link" href="/kontakti" style="--mobile-index:9" data-mobile-item data-astro-prefetch>
+            <a
+              class="site-header__mobile-main-link"
+              href="/kontakti"
+              style="--mobile-index:9"
+              data-mobile-item
+              data-astro-prefetch
+            >
               <span>Kontakti</span><small>04</small>
             </a>
           </nav>
@@ -224,7 +242,9 @@ function isCurrentPage(href: string): boolean {
 
       const summary = menu.querySelector<HTMLElement>('summary');
       const backdrop = menu.querySelector<HTMLButtonElement>('.site-header__mobile-backdrop');
-      const links = Array.from(menu.querySelectorAll<HTMLAnchorElement>('.site-header__mobile-panel a'));
+      const links = Array.from(
+        menu.querySelectorAll<HTMLAnchorElement>('.site-header__mobile-panel a'),
+      );
       let closeTimer = 0;
 
       if (!summary || !backdrop) return;
@@ -449,7 +469,9 @@ function isCurrentPage(href: string): boolean {
 
   .site-header__services-trigger svg {
     opacity: 0.62;
-    transition: transform 260ms var(--ease-out-expo), opacity 180ms ease;
+    transition:
+      transform 260ms var(--ease-out-expo),
+      opacity 180ms ease;
   }
 
   .site-header__services-menu:hover .site-header__services-trigger svg,
@@ -478,7 +500,9 @@ function isCurrentPage(href: string): boolean {
       radial-gradient(circle at 48% -12%, rgb(244 48 94 / 34%), transparent 45%),
       radial-gradient(circle at 0% 70%, rgb(153 8 48 / 24%), transparent 38%),
       linear-gradient(135deg, rgb(69 12 30 / 94%), rgb(37 7 17 / 96%) 55%, rgb(25 8 13 / 97%));
-    box-shadow: 0 2.4rem 6rem rgb(0 0 0 / 50%), inset 0 1px rgb(255 255 255 / 8%);
+    box-shadow:
+      0 2.4rem 6rem rgb(0 0 0 / 50%),
+      inset 0 1px rgb(255 255 255 / 8%);
     opacity: 0;
     transform: translateY(1rem) scale(0.985);
     transform-origin: top center;
@@ -531,7 +555,10 @@ function isCurrentPage(href: string): boolean {
     border-radius: 0.95rem;
     padding: 0.65rem;
     background: rgb(255 255 255 / 3%);
-    transition: border-color 220ms ease, background-color 220ms ease, transform 300ms var(--ease-out-expo);
+    transition:
+      border-color 220ms ease,
+      background-color 220ms ease,
+      transform 300ms var(--ease-out-expo);
   }
 
   .site-header__mega-card:hover,
@@ -557,19 +584,61 @@ function isCurrentPage(href: string): boolean {
     position: absolute;
     inset: 0;
     opacity: 0.14;
-    background-image: linear-gradient(rgb(255 255 255 / 15%) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 15%) 1px, transparent 1px);
+    background-image:
+      linear-gradient(rgb(255 255 255 / 15%) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 15%) 1px, transparent 1px);
     background-size: 1rem 1rem;
     content: '';
   }
 
-  .site-header__mega-visual i { position: absolute; z-index: 1; border: 1px solid rgb(255 255 255 / 22%); border-radius: 50%; }
-  .site-header__mega-visual i:first-child { top: 15%; right: -8%; width: 60%; aspect-ratio: 1; }
-  .site-header__mega-visual i:nth-child(2) { bottom: -22%; left: 12%; width: 48%; aspect-ratio: 1; background: rgb(224 35 78 / 24%); }
-  .site-header__mega-visual b { position: absolute; z-index: 2; right: 0.55rem; bottom: 0.45rem; color: rgb(255 255 255 / 64%); font: 600 0.5rem/1 var(--font-mono); }
+  .site-header__mega-visual i {
+    position: absolute;
+    z-index: 1;
+    border: 1px solid rgb(255 255 255 / 22%);
+    border-radius: 50%;
+  }
+  .site-header__mega-visual i:first-child {
+    top: 15%;
+    right: -8%;
+    width: 60%;
+    aspect-ratio: 1;
+  }
+  .site-header__mega-visual i:nth-child(2) {
+    bottom: -22%;
+    left: 12%;
+    width: 48%;
+    aspect-ratio: 1;
+    background: rgb(224 35 78 / 24%);
+  }
+  .site-header__mega-visual b {
+    position: absolute;
+    z-index: 2;
+    right: 0.55rem;
+    bottom: 0.45rem;
+    color: rgb(255 255 255 / 64%);
+    font: 600 0.5rem/1 var(--font-mono);
+  }
 
-  .site-header__mega-copy { display: grid; min-width: 0; align-content: center; gap: 0.4rem; }
-  .site-header__mega-copy strong { color: white; font-size: 0.88rem; font-weight: 650; letter-spacing: -0.025em; }
-  .site-header__mega-copy small { display: -webkit-box; overflow: hidden; color: rgb(255 255 255 / 46%); font: 500 0.61rem/1.45 var(--font-mono); -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+  .site-header__mega-copy {
+    display: grid;
+    min-width: 0;
+    align-content: center;
+    gap: 0.4rem;
+  }
+  .site-header__mega-copy strong {
+    color: white;
+    font-size: 0.88rem;
+    font-weight: 650;
+    letter-spacing: -0.025em;
+  }
+  .site-header__mega-copy small {
+    display: -webkit-box;
+    overflow: hidden;
+    color: rgb(255 255 255 / 46%);
+    font: 500 0.61rem/1.45 var(--font-mono);
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
 
   /*
    * Keep all links sharp when the mouse is not inside the nav.
@@ -686,7 +755,9 @@ function isCurrentPage(href: string): boolean {
   .site-header__mobile-menu summary svg {
     width: 1.85rem;
     height: 1.85rem;
-    transition: opacity 180ms ease, transform 350ms var(--ease-out-expo);
+    transition:
+      opacity 180ms ease,
+      transform 350ms var(--ease-out-expo);
   }
 
   .site-header__mobile-menu summary::-webkit-details-marker {
@@ -703,7 +774,9 @@ function isCurrentPage(href: string): boolean {
     content: '';
     opacity: 0;
     transform: rotate(0deg) scaleX(0.65);
-    transition: opacity 220ms ease, transform 420ms var(--ease-out-expo);
+    transition:
+      opacity 220ms ease,
+      transform 420ms var(--ease-out-expo);
   }
 
   .site-header__mobile-menu[data-mobile-open='true'] summary {
@@ -760,13 +833,14 @@ function isCurrentPage(href: string): boolean {
     padding: clamp(6rem, 13vh, 8rem) clamp(1.5rem, 7vw, 2.5rem) 2rem;
     background:
       radial-gradient(circle at 100% 0%, rgb(126 8 39 / 20%), transparent 34%),
-      radial-gradient(circle at 0% 100%, rgb(224 35 78 / 8%), transparent 30%),
-      #0b0b0c;
+      radial-gradient(circle at 0% 100%, rgb(224 35 78 / 8%), transparent 30%), #0b0b0c;
     box-shadow: -2rem 0 6rem rgb(0 0 0 / 52%);
     opacity: 0.75;
     pointer-events: none;
     transform: translateX(105%);
-    transition: transform 580ms var(--ease-out-expo), opacity 420ms ease;
+    transition:
+      transform 580ms var(--ease-out-expo),
+      opacity 420ms ease;
   }
 
   .site-header__mobile-menu[data-mobile-open='true'] .site-header__mobile-panel {
@@ -843,7 +917,9 @@ function isCurrentPage(href: string): boolean {
     opacity: 0;
     transform: translate3d(-1.2rem, -1.25rem, 0) rotate(-4deg);
     transform-origin: left top;
-    transition: opacity 180ms ease, transform 280ms ease;
+    transition:
+      opacity 180ms ease,
+      transform 280ms ease;
   }
 
   .site-header__mobile-menu[data-mobile-open='true'] [data-mobile-item] {
@@ -867,9 +943,18 @@ function isCurrentPage(href: string): boolean {
   }
 
   @keyframes mobile-menu-domino {
-    0% { opacity: 0; transform: translate3d(-1.2rem, -1.25rem, 0) rotate(-4deg); }
-    58% { opacity: 1; transform: translate3d(0.15rem, 0.08rem, 0) rotate(0.35deg); }
-    100% { opacity: 1; transform: translate3d(0, 0, 0) rotate(0deg); }
+    0% {
+      opacity: 0;
+      transform: translate3d(-1.2rem, -1.25rem, 0) rotate(-4deg);
+    }
+    58% {
+      opacity: 1;
+      transform: translate3d(0.15rem, 0.08rem, 0) rotate(0.35deg);
+    }
+    100% {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) rotate(0deg);
+    }
   }
 
   @media (max-width: 960px) {

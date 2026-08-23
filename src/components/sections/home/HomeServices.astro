@@ -1,48 +1,12 @@
 ---
-const services = [
-  {
-    number: '01',
-    title: 'Mājaslapu izstrāde',
-    description:
-      'Ātras, pārdomātas un viegli uzturamas mājaslapas, kas palīdz apmeklētājam saprast piedāvājumu un spert nākamo soli.',
-  },
-  {
-    number: '02',
-    title: 'Interneta veikali',
-    description:
-      'E-komercijas risinājumi ar skaidru produktu struktūru, ērtu pirkšanas plūsmu un pamatiem mērīšanai, piegādei un izaugsmei.',
-  },
-  {
-    number: '03',
-    title: 'Digitālie produkti un sistēmas',
-    description:
-      'Portāli, klientu zonas, rezervācijas, iekšējie rīki un citas sistēmas, kas samazina manuālo darbu un sakārto procesus.',
-  },
-  {
-    number: '04',
-    title: 'Zīmols un dizains',
-    description:
-      'Vizuālā identitāte, interfeisa dizains un komunikācijas materiāli, kas palīdz zīmolam izskatīties pārliecinoši visos kanālos.',
-  },
-  {
-    number: '05',
-    title: 'AI un automatizācija',
-    description:
-      'Praktiski AI palīgi, automatizētas darbplūsmas un integrācijas, kas ietaupa laiku ikdienas komandai, nevis tikai izskatās gudri prezentācijā.',
-  },
-  {
-    number: '06',
-    title: 'Digitālā izaugsme',
-    description:
-      'Analītika, konversiju uzlabojumi, SEO pamati un kampaņu tehniskā puse, lai digitālais risinājums turpina pelnīt uzmanību.',
-  },
-  {
-    number: '07',
-    title: 'Pārbūve un ilgtermiņa atbalsts',
-    description:
-      'Esošu lapu sakārtošana, tehniskā pārbūve, uzturēšana un nepārtraukts atbalsts, kad projektam jāaug bez haosa.',
-  },
-];
+import { SERVICES } from '@/data/services';
+
+const services = SERVICES.map((service) => ({
+  number: service.number,
+  title: service.label,
+  description: service.description,
+  href: service.href,
+}));
 ---
 
 <section class="home-services" aria-labelledby="home-services-title">
@@ -78,11 +42,12 @@ const services = [
       >
         {
           services.map((service, index) => (
-            <article
+            <a
               class="home-services__card"
               style={`--card-index: ${index};`}
-              tabindex="0"
+              href={service.href}
               data-service-card
+              data-astro-prefetch
             >
               <span class="home-services__sun" aria-hidden="true">
                 <span class="home-services__sun-rays" />
@@ -98,7 +63,7 @@ const services = [
                 <h3>{service.title}</h3>
                 <p>{service.description}</p>
               </div>
-            </article>
+            </a>
           ))
         }
       </div>
@@ -249,7 +214,6 @@ const services = [
         cards.forEach((card, index) => {
           const isActive = index === activeIndex;
           card.dataset.active = String(isActive);
-          card.setAttribute('aria-expanded', String(isActive));
         });
       };
 
@@ -319,7 +283,6 @@ const services = [
           card.style.setProperty('--card-layer', String(layer));
           card.dataset.side = side;
           card.dataset.active = String(isActive);
-          card.setAttribute('aria-expanded', String(isActive));
         });
       };
 

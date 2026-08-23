@@ -1,0 +1,292 @@
+---
+const faqs = [
+  {
+    question: 'Ar ko ROMADI atšķiras no citiem izstrādes partneriem?',
+    answer:
+      'Mēs nesākam ar tehnoloģiju vai vizuālu efektu. Vispirms saprotam biznesa mērķi, tad kopā izveidojam risinājumu, kas ir skaidrs lietotājam, uzturams komandai un gatavs augt.',
+  },
+  {
+    question: 'Cik ilgi aizņem mājaslapas vai digitāla produkta izstrāde?',
+    answer:
+      'Termiņš ir atkarīgs no apjoma un sarežģītības. Pēc pirmās sarunas sadalām projektu saprotamos posmos un sagatavojam reālistisku laika plānu, lai abas puses zina, kas notiek tālāk.',
+  },
+  {
+    question: 'Vai strādājat arī ar jau esošām mājaslapām un aplikācijām?',
+    answer:
+      'Jā. Varam pārbaudīt esošo risinājumu, sakārtot dizainu un lietojamību, uzlabot ātrumu vai drošību, pievienot jaunas funkcijas un pārņemt produkta turpmāko uzturēšanu.',
+  },
+  {
+    question: 'Kā notiek sadarbība projekta laikā?',
+    answer:
+      'Strādājam pa skaidriem posmiem, regulāri parādot paveikto un izskaidrojot nākamos lēmumus. Jums vienmēr ir saprotams progress, prioritātes un tas, kur tiek ieguldīts projekta budžets.',
+  },
+  {
+    question: 'Kas notiek pēc projekta palaišanas?',
+    answer:
+      'Palaišana nav sadarbības beigas. Piedāvājam uzturēšanu, tehnisko atbalstu, analītiku un turpmāku attīstību, lai risinājums paliek drošs, ātrs un noderīgs arī mainoties uzņēmuma vajadzībām.',
+  },
+  {
+    question: 'Vai varat palīdzēt arī ar dizainu, saturu un izaugsmi?',
+    answer:
+      'Jā. Atkarībā no projekta varam apvienot zīmola un UI/UX dizainu, satura struktūru, izstrādi, SEO, analītiku un automatizāciju vienā saskaņotā procesā.',
+  },
+];
+---
+
+<section class="about-faq" aria-labelledby="about-faq-title">
+  <div class="about-faq__inner">
+    <header class="about-faq__header" data-reveal>
+      <p class="about-faq__eyebrow" aria-label="Biežāk uzdotie jautājumi">
+        <span
+          aria-hidden="true"
+          data-typewriter
+          data-typewriter-text="{ FAQ }"
+          data-typewriter-speed="54"></span>
+        <span class="about-faq__cursor" aria-hidden="true">_</span>
+      </p>
+      <h2 id="about-faq-title">Ir jautājumi?</h2>
+    </header>
+
+    <div class="about-faq__list">
+      {
+        faqs.map((faq, index) => (
+          <details class="about-faq__item" name="about-faq" open={index === 0}>
+            <summary>
+              <span class="about-faq__number" aria-hidden="true">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <span class="about-faq__question">{faq.question}</span>
+              <span class="about-faq__toggle" aria-hidden="true">
+                <i></i><i></i>
+              </span>
+            </summary>
+            <div class="about-faq__answer">
+              <p>{faq.answer}</p>
+            </div>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initTypewriters } from '@/lib/animations/typewriter';
+
+  initTypewriters();
+  document.addEventListener('astro:page-load', initTypewriters);
+</script>
+
+<style>
+  .about-faq {
+    width: min(calc(100% - 4rem), 118rem);
+    margin-inline: auto;
+    padding: clamp(4rem, 6vw, 6rem) clamp(1.5rem, 4vw, 5rem) clamp(7rem, 11vw, 11rem);
+    background: #030303;
+  }
+
+  .about-faq__inner {
+    max-width: 86rem;
+    margin-inline: auto;
+  }
+
+  .about-faq__header {
+    margin-bottom: clamp(4.5rem, 8vw, 8rem);
+  }
+
+  .about-faq__eyebrow {
+    display: flex;
+    min-height: 0.85rem;
+    align-items: baseline;
+    gap: 0.6ch;
+    margin-bottom: 1.7rem;
+    color: rgb(255 255 255 / 46%);
+    font: 600 0.66rem/1.2 var(--font-mono);
+    letter-spacing: 0.04em;
+  }
+
+  .about-faq__cursor {
+    margin-left: 0.4ch;
+    opacity: 0;
+    animation: about-faq-cursor 1.15s steps(1, end) infinite;
+  }
+
+  .about-faq__eyebrow span[data-typewriter-active='true'] + .about-faq__cursor {
+    opacity: 1;
+  }
+
+  .about-faq h2 {
+    color: white;
+    font-size: clamp(3.5rem, 7.4vw, 6rem);
+    font-weight: 430;
+    letter-spacing: -0.04em;
+    line-height: 0.98;
+  }
+
+  .about-faq__list {
+    interpolate-size: allow-keywords;
+    border-bottom: 1px solid rgb(255 255 255 / 16%);
+  }
+
+  .about-faq__item {
+    border-top: 1px solid rgb(255 255 255 / 16%);
+  }
+
+  .about-faq__item::details-content {
+    block-size: 0;
+    overflow: clip;
+    opacity: 0;
+    transition:
+      block-size 420ms var(--ease-out-expo),
+      content-visibility 420ms allow-discrete,
+      opacity 240ms ease;
+  }
+
+  .about-faq__item[open]::details-content {
+    block-size: auto;
+    opacity: 1;
+  }
+
+  .about-faq summary {
+    display: grid;
+    min-height: 7.25rem;
+    grid-template-columns: 4.5rem minmax(0, 1fr) 2.75rem;
+    align-items: center;
+    gap: 1.5rem;
+    padding-block: 1.5rem;
+    color: rgb(255 255 255 / 86%);
+    cursor: pointer;
+    list-style: none;
+    transition: color 180ms ease;
+  }
+
+  .about-faq summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .about-faq summary:hover,
+  .about-faq summary:focus-visible {
+    color: white;
+  }
+
+  .about-faq summary:focus-visible {
+    outline-offset: -2px;
+  }
+
+  .about-faq__number {
+    color: rgb(255 255 255 / 42%);
+    font: 550 0.7rem/1 var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .about-faq__question {
+    font-size: clamp(1.15rem, 1.65vw, 1.55rem);
+    font-weight: 570;
+    letter-spacing: -0.035em;
+    line-height: 1.25;
+  }
+
+  .about-faq__toggle {
+    position: relative;
+    display: grid;
+    width: 2.75rem;
+    height: 2.75rem;
+    place-items: center;
+    justify-self: end;
+  }
+
+  .about-faq__toggle i {
+    position: absolute;
+    width: 2rem;
+    height: 1.5px;
+    background: currentColor;
+    transition: transform 360ms var(--ease-out-expo);
+  }
+
+  .about-faq__toggle i:last-child {
+    transform: rotate(90deg);
+  }
+
+  .about-faq__item[open] .about-faq__toggle i:first-child {
+    transform: scaleX(0.72);
+  }
+
+  .about-faq__item[open] .about-faq__toggle i:last-child {
+    transform: rotate(90deg) scaleX(0);
+  }
+
+  .about-faq__answer {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr) 2.75rem;
+    gap: 1.5rem;
+    padding-bottom: 2.75rem;
+  }
+
+  .about-faq__answer p {
+    grid-column: 2;
+    max-width: 72ch;
+    color: rgb(255 255 255 / 54%);
+    font: 500 1rem/1.7 var(--font-mono);
+  }
+
+  @keyframes about-faq-cursor {
+    0%, 46% { opacity: 1; }
+    47%, 100% { opacity: 0.25; }
+  }
+
+  @media (max-width: 900px) {
+    .about-faq summary {
+      grid-template-columns: 3rem minmax(0, 1fr) 2.75rem;
+      gap: 1rem;
+    }
+
+    .about-faq__answer {
+      grid-template-columns: 3rem minmax(0, 1fr) 2.75rem;
+      gap: 1rem;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .about-faq {
+      width: calc(100% - 1.5rem);
+      padding: 4rem 0.75rem 6rem;
+    }
+
+    .about-faq__header {
+      margin-bottom: 3.5rem;
+    }
+
+    .about-faq h2 {
+      font-size: clamp(3.25rem, 16vw, 4.75rem);
+    }
+
+    .about-faq summary {
+      min-height: 6.5rem;
+      grid-template-columns: 2rem minmax(0, 1fr) 2.75rem;
+      gap: 0.75rem;
+      padding-block: 1.25rem;
+    }
+
+    .about-faq__question {
+      font-size: 1rem;
+      line-height: 1.35;
+    }
+
+    .about-faq__answer {
+      grid-template-columns: 2rem minmax(0, 1fr) 2.75rem;
+      gap: 0.75rem;
+      padding-bottom: 2rem;
+    }
+
+    .about-faq__answer p {
+      grid-column: 2 / 4;
+      padding-right: 0.5rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .about-faq__item::details-content {
+      transition: none;
+    }
+  }
+</style>

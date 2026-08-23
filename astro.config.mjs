@@ -13,6 +13,15 @@ export default defineConfig({
 
   trailingSlash: 'never',
 
+  redirects: {
+    '/majas-lapu-izstrade': '/pakalpojumi/majaslapu-izstrade',
+    '/interneta-veikalu-izstrade': '/pakalpojumi/interneta-veikalu-izstrade',
+    '/ui-ux-dizains': '/pakalpojumi/zimola-un-ui-ux-dizains',
+    '/seo-optimizacija': '/pakalpojumi/digitala-izaugsme',
+    '/google-reklamas': '/pakalpojumi/digitala-izaugsme',
+    '/socialo-tiklu-reklamas': '/pakalpojumi/digitala-izaugsme',
+  },
+
   integrations: [mdx(), sitemap(), icon()],
 
   // Prefetch only links that explicitly use data-astro-prefetch.
