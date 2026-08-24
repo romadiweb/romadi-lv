@@ -1,5 +1,6 @@
 ---
 import { Icon } from 'astro-icon/components';
+import SectionEyebrow from '@/components/ui/SectionEyebrow.astro';
 
 interface SystemWork {
   name: string;
@@ -21,7 +22,7 @@ const defaultWorks: readonly SystemWork[] = [
     type: 'MĀCĪBU SISTĒMA / LOĢISTIKAS SIMULĀCIJA',
     description:
       'RTU Liepājas Jūrniecības koledžai izstrādāta interaktīva mācību vide, kur studenti simulē maršrutu, transporta un loģistikas lēmumus, bet pasniedzēji pārvalda mācību scenārijus un rezultātus.',
-    image: '/images/projects/loadmaster-simulator.png?v=3',
+    image: '/images/projects/loadmaster-simulator.png?v=4',
     imageAlt: 'Loadmaster Simulator pieslēgšanās un mācību vides sākuma ekrāns',
     capabilities: ['Loģistikas scenāriji', 'Maršrutu simulācija', 'Studentu un pasniedzēju piekļuve', 'Rezultātu pārvaldība'],
   },
@@ -33,7 +34,7 @@ const { works = defaultWorks } = Astro.props;
 <section class="system-works" aria-labelledby="system-works-title">
   <header class="system-works__header" data-reveal>
     <div>
-      <p>&#123; RISINĀJUMU PIEMĒRI &#125;</p>
+      <SectionEyebrow text="RISINĀJUMU PIEMĒRI" />
       <h2 id="system-works-title">Sistēmas, kas kļūst par darba daļu.</h2>
     </div>
     <p>
@@ -180,10 +181,11 @@ const { works = defaultWorks } = Astro.props;
     height: 100%;
     object-fit: cover;
     object-position: center top;
+    transform: scale(1.01);
     transition: transform 700ms var(--ease-out-expo);
   }
 
-  .system-work:hover .system-work__media img { transform: scale(1.018); }
+  .system-work:hover .system-work__media img { transform: scale(1.025); }
 
   .system-work__media > span {
     position: absolute;
@@ -354,10 +356,34 @@ const { works = defaultWorks } = Astro.props;
   @media (max-width: 600px) {
     .system-work__content { padding: 2rem; }
     .system-work__media { min-height: 18rem; }
+    .system-work__dialog {
+      width: calc(100vw - 1rem);
+      height: min(31rem, calc(100svh - 1rem));
+      max-height: calc(100svh - 1rem);
+      overflow: auto;
+      border-radius: 1rem;
+      padding: 4.25rem 0.5rem 0.5rem;
+      overscroll-behavior: contain;
+    }
+    .system-work__dialog img {
+      width: max(52rem, 220vw);
+      max-width: none;
+      max-height: none;
+      border-radius: 0.65rem;
+    }
+    .system-work__dialog button {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      width: 3.25rem;
+      height: 3.25rem;
+      background: #151515;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .system-work__media img { transition: none; }
-    .system-work:hover .system-work__media img { transform: none; }
+    .system-work__media img,
+    .system-work:hover .system-work__media img { transform: scale(1.01); }
   }
 </style>

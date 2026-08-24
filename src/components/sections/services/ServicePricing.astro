@@ -14,10 +14,20 @@ interface Props {
   contactHref: string;
   intro: string;
   fallbackPlans: FallbackPlan[];
+  showPrice?: boolean;
+  maxPlans?: number;
 }
 
-const { serviceKey, contactHref, intro, fallbackPlans } = Astro.props;
+const {
+  serviceKey,
+  contactHref,
+  intro,
+  fallbackPlans,
+  showPrice = true,
+  maxPlans = 3,
+} = Astro.props;
 const titleId = `service-pricing-${serviceKey}`;
+const initialColumns = Math.max(1, Math.min(fallbackPlans.length, maxPlans, 3));
 ---
 
 <section
@@ -26,18 +36,20 @@ const titleId = `service-pricing-${serviceKey}`;
   data-service-pricing
   data-service-key={serviceKey}
   data-default-cta={contactHref}
+  data-show-price={String(showPrice)}
+  data-max-plans={String(maxPlans)}
 >
   <header class="service-pricing__header">
     <h2 id={titleId}>Cik tas maksā?</h2>
     <p>{intro}</p>
   </header>
 
-  <div class="service-pricing__grid" data-pricing-grid>
+  <div class="service-pricing__grid" data-pricing-grid style={`--pricing-columns: ${initialColumns}`}>
     {fallbackPlans.map((plan, index) => (
       <article class="service-pricing__plan" data-pricing-card data-featured={index === 1 ? 'true' : undefined}>
         <div class="service-pricing__field">
           <h3 data-plan-name>{plan.name}</h3>
-          <p><span data-price-prefix>Sākot no</span> <strong data-price-label>{plan.price}</strong></p>
+          <p hidden={!showPrice}><span data-price-prefix>Sākot no</span> <strong data-price-label>{plan.price}</strong></p>
         </div>
         <div class="service-pricing__body">
           <p data-plan-description>{plan.text}</p>
@@ -56,7 +68,7 @@ const titleId = `service-pricing-${serviceKey}`;
     <article class="service-pricing__plan" data-pricing-card>
       <div class="service-pricing__field">
         <h3 data-plan-name></h3>
-        <p><span data-price-prefix></span> <strong data-price-label></strong></p>
+        <p hidden={!showPrice}><span data-price-prefix></span> <strong data-price-label></strong></p>
       </div>
       <div class="service-pricing__body">
         <p data-plan-description></p>
@@ -99,8 +111,11 @@ const titleId = `service-pricing-${serviceKey}`;
         return;
       }
 
+      if (data.length === 0) return;
+
       const defaultCta = section.dataset.defaultCta ?? '/kontakti';
-      const cards = data.flatMap((plan) => {
+      const maxPlans = Math.max(1, Number(section.dataset.maxPlans ?? 3));
+      const cards = data.slice(0, maxPlans).flatMap((plan) => {
         const card = cardTemplate.content.firstElementChild?.cloneNode(true);
         if (!(card instanceof HTMLElement)) return [];
         if (plan.is_featured) card.dataset.featured = 'true';
@@ -166,6 +181,10 @@ const titleId = `service-pricing-${serviceKey}`;
     display: grid;
     grid-template-columns: repeat(var(--pricing-columns, 3), minmax(0, 1fr));
     gap: 1.5rem;
+  }
+  .service-pricing__grid:has(> :only-child) {
+    grid-template-columns: minmax(0, 38rem);
+    justify-content: center;
   }
   .service-pricing__plan {
     --plan-aura: rgb(156 47 196 / 32%);
@@ -245,6 +264,12 @@ const titleId = `service-pricing-${serviceKey}`;
     text-wrap: balance;
   }
   .service-pricing__field > p { margin-top: 2rem; color: white; font-size: 1rem; font-weight: 500; }
+  .service-pricing[data-show-price='false'] .service-pricing__field {
+    display: flex;
+    min-height: 9rem;
+    align-items: flex-end;
+  }
+  .service-pricing[data-show-price='false'] .service-pricing__field > p { display: none; }
   .service-pricing__field strong {
     display: block;
     margin-top: 0.35rem;

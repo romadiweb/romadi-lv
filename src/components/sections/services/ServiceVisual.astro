@@ -35,15 +35,29 @@ const websiteProjects = [
       {
         service.visual === 'website' && (
           <div class="visual-website">
-            {websiteProjects.map((project) => (
-              <BrowserPreviewFrame
-                title={project.name}
-                src={`/images/projects/${project.slug}-1600.webp`}
-                mobileSrc={`/images/projects/${project.slug}-800.webp`}
-                width={1600}
-                height={project.height}
-              />
-            ))}
+            <div class="visual-website__desktop">
+              {websiteProjects.map((project) => (
+                <BrowserPreviewFrame
+                  title={project.name}
+                  src={`/images/projects/${project.slug}-1600.webp`}
+                  width={1600}
+                  height={project.height}
+                />
+              ))}
+            </div>
+            <div class="visual-website__mobile">
+              <div class="visual-mobile-device visual-mobile-device--website">
+                <span aria-hidden="true"></span>
+                <img
+                  src="/images/projects/liepajas-teltis-mobile.png"
+                  alt=""
+                  width="392"
+                  height="825"
+                  loading="eager"
+                  decoding="async"
+                />
+              </div>
+            </div>
           </div>
         )
       }
@@ -51,12 +65,27 @@ const websiteProjects = [
       {
         service.visual === 'commerce' && (
           <div class="visual-commerce">
-            <BrowserPreviewFrame
-              title="VELA · Your bag"
-              src="/images/projects/commerce-cart-open.png"
-              width={1600}
-              height={900}
-            />
+            <div class="visual-commerce__desktop">
+              <BrowserPreviewFrame
+                title="VELA · Your bag"
+                src="/images/projects/commerce-cart-open.png"
+                width={1600}
+                height={900}
+              />
+            </div>
+            <div class="visual-commerce__mobile">
+              <div class="visual-mobile-device visual-mobile-device--commerce">
+                <span aria-hidden="true"></span>
+                <img
+                  src="/images/projects/vela-mobile.png"
+                  alt=""
+                  width="390"
+                  height="844"
+                  loading="eager"
+                  decoding="async"
+                />
+              </div>
+            </div>
           </div>
         )
       }
@@ -64,15 +93,31 @@ const websiteProjects = [
       {
         service.visual === 'product' && (
           <div class="visual-product-preview">
-            <BrowserPreviewFrame
-              title="MARLOW · Front desk"
-              src="/images/projects/marlow-front-desk.png"
-              width={1898}
-              height={835}
-              fit="contain"
-              imageBackground="#f3efe7"
-              objectPosition="left top"
-            />
+            <div class="visual-product-preview__desktop">
+              <BrowserPreviewFrame
+                title="Nova CMS · Dashboard"
+                src="/images/projects/nova-cms-desktop.png?v=2"
+                width={1448}
+                height={980}
+                fit="cover"
+                imageBackground="#f5f7fb"
+                objectPosition="left top"
+                imageScale={1.11}
+              />
+            </div>
+            <div class="visual-product-preview__mobile">
+              <div class="visual-mobile-device visual-mobile-device--product">
+                <span aria-hidden="true"></span>
+                <img
+                  src="/images/projects/nova-cms-mobile.png"
+                  alt=""
+                  width="940"
+                  height="1675"
+                  loading="eager"
+                  decoding="async"
+                />
+              </div>
+            </div>
           </div>
         )
       }
@@ -324,6 +369,36 @@ const websiteProjects = [
     justify-content: center;
     overflow: hidden;
   }
+
+  .visual-product-preview__desktop {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .visual-product-preview__mobile { display: none; }
+
+  .visual-commerce__desktop {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .visual-commerce__mobile { display: none; }
+
+  .visual-website__desktop {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .visual-website__mobile { display: none; }
 
   .visual-design {
     position: absolute;
@@ -579,6 +654,102 @@ const websiteProjects = [
     .visual-commerce,
     .visual-product-preview {
       inset: 0.8rem;
+    }
+    .service-visual[data-kind='product'] {
+      min-height: 44rem;
+    }
+    .service-visual[data-kind='commerce'] {
+      min-height: 44rem;
+    }
+    .service-visual[data-kind='website'] {
+      min-height: 44rem;
+    }
+    .service-visual[data-kind='website'] .service-visual__chrome,
+    .service-visual[data-kind='commerce'] .service-visual__chrome,
+    .service-visual[data-kind='product'] .service-visual__chrome {
+      display: none;
+    }
+    .service-visual[data-kind='website'] .service-visual__canvas {
+      min-height: 43rem;
+      background:
+        radial-gradient(circle at 50% 32%, rgb(118 137 79 / 14%), transparent 42%),
+        #0a0a0b;
+    }
+    .service-visual[data-kind='commerce'] .service-visual__canvas {
+      min-height: 43rem;
+      background:
+        radial-gradient(circle at 50% 32%, rgb(214 198 166 / 12%), transparent 42%),
+        #0a0a0b;
+    }
+    .service-visual[data-kind='product'] .service-visual__canvas {
+      min-height: 43rem;
+      background:
+        radial-gradient(circle at 50% 32%, rgb(104 125 246 / 12%), transparent 42%),
+        #0a0a0b;
+    }
+    .service-visual[data-kind='website'] .visual-website,
+    .service-visual[data-kind='commerce'] .visual-commerce,
+    .service-visual[data-kind='product'] .visual-product-preview {
+      inset: 0.75rem;
+    }
+    .visual-website__desktop,
+    .visual-commerce__desktop,
+    .visual-product-preview__desktop { display: none; }
+    .visual-website__mobile,
+    .visual-commerce__mobile,
+    .visual-product-preview__mobile {
+      display: grid;
+      width: 100%;
+      height: 100%;
+      place-items: center;
+    }
+    .visual-mobile-device {
+      position: relative;
+      box-sizing: border-box;
+      width: min(78vw, 20rem);
+      overflow: hidden;
+      border: 0.42rem solid #050505;
+      border-radius: 2.7rem;
+      background: white;
+      box-shadow: 0 1.5rem 3rem rgb(0 0 0 / 52%);
+    }
+    .visual-mobile-device--product { aspect-ratio: 940 / 1675; }
+    .visual-mobile-device--commerce { aspect-ratio: 390 / 874; }
+    .visual-mobile-device--website { aspect-ratio: 392 / 855; }
+    .visual-mobile-device--commerce,
+    .visual-mobile-device--website {
+      padding-top: 1.25rem;
+      background: #050505;
+    }
+    .visual-mobile-device--commerce > span,
+    .visual-mobile-device--website > span {
+      top: 0.48rem;
+      width: 18%;
+      height: 0.28rem;
+      background: rgb(255 255 255 / 42%);
+    }
+    .visual-mobile-device > span {
+      position: absolute;
+      z-index: 2;
+      top: 0.5rem;
+      left: 50%;
+      width: 28%;
+      height: 1.05rem;
+      border-radius: 999px;
+      background: #050505;
+      transform: translateX(-50%);
+    }
+    .visual-mobile-device img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+    }
+    .visual-mobile-device--commerce img,
+    .visual-mobile-device--website img {
+      height: calc(100% - 1.25rem);
+      border-radius: 1.75rem 1.75rem 2.05rem 2.05rem;
     }
     .visual-design {
       inset: 6%;

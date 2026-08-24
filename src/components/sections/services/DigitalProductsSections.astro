@@ -5,12 +5,13 @@ interface Props {
 
 const { contactHref } = Astro.props;
 import SystemWorkShowcase from './SystemWorkShowcase.astro';
+import SectionEyebrow from '@/components/ui/SectionEyebrow.astro';
 ---
 
 <div class="digital-products-sections">
   <section class="systems-intro" aria-labelledby="systems-intro-title">
     <div class="systems-intro__copy" data-reveal>
-      <p>&#123; DIGITĀLĀS SISTĒMAS &#125;</p>
+      <SectionEyebrow text="DIGITĀLĀS SISTĒMAS" />
       <h2 id="systems-intro-title">Jūsu procesam radīts digitāls rīks.</h2>
       <p>
         Rezervāciju sistēma, klientu portāls vai individuāls CMS nav tikai vēl viena
@@ -22,10 +23,10 @@ import SystemWorkShowcase from './SystemWorkShowcase.astro';
 
     <div class="systems-intro__visual" data-reveal>
       <img
-        src="/images/about-collaboration.jpg"
-        alt="Komanda kopīgi strādā pie digitāla risinājuma"
-        width="1800"
-        height="1168"
+        src="/images/projects/digital-systems-code.png"
+        alt="Digitālas sistēmas HTML un CSS pirmkods izstrādes vidē"
+        width="1456"
+        height="1092"
         loading="lazy"
         decoding="async"
       />
@@ -343,9 +344,55 @@ import SystemWorkShowcase from './SystemWorkShowcase.astro';
   @media (max-width: 600px) {
     .digital-products-sections { width: calc(100% - 2.5rem); }
     .systems-intro__visual { min-height: 22rem; }
-    .systems-story { padding: 0.4rem; transform: none; }
-    .systems-story__glass { padding: 2rem; }
-    .systems-story__avatar { width: 8rem; }
+    .systems-story {
+      min-height: 0;
+      border-radius: 1rem;
+      padding: 0.4rem;
+      transform: none;
+    }
+    .systems-story::before { inset: -1.5rem; }
+    .systems-story__glass {
+      display: flex;
+      min-height: 0;
+      border-radius: 0.75rem;
+      padding: 3rem 1.75rem;
+      flex-direction: column;
+      gap: 3rem;
+      background:
+        radial-gradient(24rem circle at 54% 20%, rgb(255 255 255 / 10%), transparent 52%),
+        linear-gradient(155deg, rgb(35 35 35 / 96%), rgb(22 22 22 / 96%));
+    }
+    .systems-story blockquote { order: 1; }
+    .systems-story blockquote > span {
+      height: 2rem;
+      font-size: 3.25rem;
+    }
+    .systems-story blockquote > p {
+      max-width: none;
+      margin-top: 0.75rem;
+      font-size: 1.05rem;
+      letter-spacing: -0.015em;
+      line-height: 1.7;
+    }
+    .systems-story blockquote footer {
+      margin-top: 1.25rem;
+      font-size: 0.9rem;
+      line-height: 1.65;
+    }
+    .systems-story__profile {
+      display: grid;
+      order: 2;
+      justify-items: center;
+      text-align: center;
+    }
+    .systems-story__avatar {
+      width: 8rem;
+      margin-bottom: 1.5rem;
+    }
+    .systems-story__profile p {
+      max-width: 28ch;
+      margin-top: 0.55rem;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

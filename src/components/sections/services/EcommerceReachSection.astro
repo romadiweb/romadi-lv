@@ -1,4 +1,6 @@
 ---
+import SectionEyebrow from '@/components/ui/SectionEyebrow.astro';
+
 interface Props {
   contactHref: string;
 }
@@ -8,7 +10,7 @@ const { contactHref } = Astro.props;
 
 <section class="commerce-reach" aria-labelledby="commerce-reach-title">
   <div class="commerce-reach__copy" data-reveal>
-    <p>&#123; PĀRDOŠANAS POTENCIĀLS &#125;</p>
+    <SectionEyebrow text="PĀRDOŠANAS POTENCIĀLS" />
     <h2 id="commerce-reach-title">Vairāk ceļu līdz pirkumam.</h2>
     <p>
       Sociālie tīkli palīdz produktu pamanīt. Pilnvērtīgs interneta veikals ļauj to atrast,

@@ -1,0 +1,49 @@
+---
+interface Props {
+  text: string;
+  speed?: number;
+  class?: string;
+}
+
+const { text, speed = 42, class: className } = Astro.props;
+---
+
+<p class:list={['section-eyebrow', className]} aria-label={text}>
+  <span
+    aria-hidden="true"
+    data-typewriter
+    data-typewriter-text={`{ ${text} }`}
+    data-typewriter-speed={speed}></span>
+  <span class="section-eyebrow__cursor" aria-hidden="true">_</span>
+</p>
+
+<style>
+  .section-eyebrow {
+    display: flex;
+    min-height: 1rem;
+    align-items: baseline;
+    gap: 0.4ch;
+    margin: 0 0 1.25rem;
+    color: #8e8e93;
+    font: 550 clamp(0.72rem, 0.85vw, 0.9rem)/1.6 var(--font-mono);
+    letter-spacing: 0.02em;
+  }
+
+  .section-eyebrow__cursor {
+    opacity: 0;
+    animation: section-eyebrow-cursor 1.15s steps(1, end) infinite;
+  }
+
+  .section-eyebrow span[data-typewriter-active='true'] + .section-eyebrow__cursor {
+    opacity: 1;
+  }
+
+  @keyframes section-eyebrow-cursor {
+    0%, 46% { opacity: 1; }
+    47%, 100% { opacity: 0.2; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .section-eyebrow__cursor { animation: none; opacity: 1; }
+  }
+</style>

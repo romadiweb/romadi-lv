@@ -8,6 +8,7 @@ interface Props {
   fit?: 'cover' | 'contain';
   imageBackground?: string;
   objectPosition?: string;
+  imageScale?: number;
 }
 
 const {
@@ -19,10 +20,11 @@ const {
   fit = 'cover',
   imageBackground = '#f5f5f5',
   objectPosition = 'top center',
+  imageScale = 1,
 } = Astro.props;
 ---
 
-<div class="browser-preview" style={`--preview-fit: ${fit}; --preview-background: ${imageBackground}; --preview-position: ${objectPosition};`}>
+<div class="browser-preview" style={`--preview-fit: ${fit}; --preview-background: ${imageBackground}; --preview-position: ${objectPosition}; --preview-scale: ${imageScale};`}>
   <div class="browser-preview__chrome">
     <span aria-hidden="true"><i></i><i></i><i></i></span>
     <small>{title}</small>
@@ -116,5 +118,7 @@ const {
     height: 100%;
     object-fit: var(--preview-fit);
     object-position: var(--preview-position);
+    transform: scale(var(--preview-scale));
+    transform-origin: bottom center;
   }
 </style>

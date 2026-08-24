@@ -207,8 +207,10 @@ const capabilities = [
   @media (max-width: 600px) {
     .home-support { width: calc(100% - 1.5rem); padding: 5rem 0 3.5rem; }
     .home-support__intro { padding-inline: 0.75rem; }
-    .home-support__grid { grid-template-columns: 1fr; margin-top: 4rem; border-radius: 1rem; }
-    .home-support__capability { min-height: 11rem; border-right: 0 !important; border-bottom: 1px solid rgb(255 255 255 / 12%) !important; padding: 2rem; gap: 1.5rem; }
-    .home-support__capability:last-child { border-bottom: 0 !important; }
+    .home-support__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 4rem; border-radius: 1rem; }
+    .home-support__capability { min-height: 10rem; border-right: 1px solid rgb(255 255 255 / 12%) !important; border-bottom: 1px solid rgb(255 255 255 / 12%) !important; padding: 1.25rem; gap: 1rem; }
+    .home-support__capability:nth-child(2n) { border-right: 0 !important; }
+    .home-support__capability:nth-last-child(-n + 2) { border-bottom: 0 !important; }
+    .home-support__capability h3 { font-size: 0.9rem; line-height: 1.35; }
   }
 </style>

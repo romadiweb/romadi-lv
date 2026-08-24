@@ -6,6 +6,7 @@ import WebsiteDevelopmentSections from '@/components/sections/services/WebsiteDe
 import EcommerceSalesSection from '@/components/sections/services/EcommerceSalesSection.astro';
 import EcommerceReachSection from '@/components/sections/services/EcommerceReachSection.astro';
 import DigitalProductsSections from '@/components/sections/services/DigitalProductsSections.astro';
+import SectionEyebrow from '@/components/ui/SectionEyebrow.astro';
 import { SERVICES, type ServiceDefinition } from '@/data/services';
 
 interface Props {
@@ -41,6 +42,21 @@ const ecommercePricing = [
     action: 'Pārrunāt individuālu veikalu',
   },
 ];
+
+const digitalProductScope = [
+  {
+    name: 'Vispirms izprotam prasības',
+    price: '',
+    text: 'Rezervāciju sistēmas, klientu portāli, CMS un iekšējie rīki atšķiras pēc darbplūsmas, lietotāju lomām, datiem un integrācijām. Tāpēc precīzu darba apjomu nosakām tikai pēc prasību izpētes.',
+    features: [
+      'Vajadzību un esošo procesu izpēte',
+      'Funkcionalitātes un lietotāju lomu definēšana',
+      'Integrāciju un datu plūsmas izvērtēšana',
+      'Skaidrs darba apjoms, termiņš un piedāvājums',
+    ],
+    action: 'Pārrunāt prasības',
+  },
+];
 ---
 
 <article class="service-page">
@@ -49,14 +65,7 @@ const ecommercePricing = [
 
     <div class="service-hero__inner">
       <div class="service-hero__copy" data-reveal>
-        <p class="service-hero__eyebrow" aria-label={service.eyebrow}>
-          <span
-            aria-hidden="true"
-            data-typewriter
-            data-typewriter-text={`{ ${service.eyebrow} }`}
-            data-typewriter-speed="42"></span>
-          <span class="service-hero__cursor" aria-hidden="true">_</span>
-        </p>
+        <SectionEyebrow text={service.eyebrow} class="service-hero__eyebrow" />
 
         <h1 id="service-title">
           {
@@ -156,7 +165,17 @@ const ecommercePricing = [
         {service.visual === 'commerce' ? (
           <EcommerceSalesSection />
         ) : service.visual === 'product' ? (
-          <DigitalProductsSections contactHref={contactHref} />
+          <>
+            <DigitalProductsSections contactHref={contactHref} />
+            <ServicePricing
+              serviceKey={service.slug}
+              contactHref={contactHref}
+              intro="Šādiem risinājumiem nav vienas fiksētas cenas — vispirms jāizprot process, lietotāji un nepieciešamās integrācijas."
+              fallbackPlans={digitalProductScope}
+              showPrice={false}
+              maxPlans={1}
+            />
+          </>
         ) : (
           <section class="service-details" aria-labelledby="service-details-title">
             <div class="service-details__heading" data-reveal>
@@ -261,25 +280,8 @@ const ecommercePricing = [
     margin-top: var(--service-content-offset);
   }
 
-  .service-hero__eyebrow {
-    display: flex;
-    min-height: 0.85rem;
-    align-items: baseline;
-    gap: 0.6ch;
+  :global(.service-hero__eyebrow) {
     margin-bottom: 1.8rem;
-    color: rgb(255 255 255 / 48%);
-    font: 550 0.72rem/1.6 var(--font-mono);
-    letter-spacing: 0.04em;
-  }
-
-  .service-hero__cursor {
-    margin-left: 0.4ch;
-    opacity: 0;
-    animation: service-cursor 1.15s steps(1, end) infinite;
-  }
-
-  .service-hero__eyebrow span[data-typewriter-active='true'] + .service-hero__cursor {
-    opacity: 1;
   }
 
   .service-hero h1 {
