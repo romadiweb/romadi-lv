@@ -6,6 +6,9 @@ import WebsiteDevelopmentSections from '@/components/sections/services/WebsiteDe
 import EcommerceSalesSection from '@/components/sections/services/EcommerceSalesSection.astro';
 import EcommerceReachSection from '@/components/sections/services/EcommerceReachSection.astro';
 import DigitalProductsSections from '@/components/sections/services/DigitalProductsSections.astro';
+import DesignSystemFan from '@/components/sections/services/DesignSystemFan.astro';
+import ServiceProcess from '@/components/sections/services/ServiceProcess.astro';
+import DesignBeforeAfter from '@/components/sections/services/DesignBeforeAfter.astro';
 import SectionEyebrow from '@/components/ui/SectionEyebrow.astro';
 import { SERVICES, type ServiceDefinition } from '@/data/services';
 
@@ -55,6 +58,57 @@ const digitalProductScope = [
       'Skaidrs darba apjoms, termiņš un piedāvājums',
     ],
     action: 'Pārrunāt prasības',
+  },
+];
+
+const brandDesignPricing = [
+  {
+    name: 'Logo un vizuālais sākums',
+    price: '350 €',
+    text: 'Uzņēmumam, kam vajadzīga pārliecinoša un praktiski izmantojama vizuālā identitāte bez liekas sarežģītības.',
+    features: ['Logo dizains', 'Krāsu un burtveidolu izvēle', 'Logo lietošanas varianti', 'Faili digitālai videi un drukai'],
+    action: 'Pārrunāt vizuālo sākumu',
+  },
+  {
+    name: 'Zīmola identitāte',
+    price: '750 €',
+    text: 'Vienota zīmola sistēma uzņēmumam, kas vēlas būt viegli atpazīstams visos klienta saskares punktos.',
+    features: ['Logo un vizuālā valoda', 'Zīmola krāsu sistēma', 'Tipogrāfija un grafiskie elementi', 'Sociālo tīklu sagataves'],
+    action: 'Pārrunāt zīmola identitāti',
+  },
+  {
+    name: 'Pilna dizaina sistēma',
+    price: '1 400 €',
+    text: 'Plašāka identitāte un digitālā dizaina sistēma uzņēmumam, kam vajadzīga konsekvence vairākos produktos un kanālos.',
+    features: ['Pilna zīmola identitāte', 'UI komponentu sistēma', 'Mājaslapas vai produkta dizains', 'Detalizētas lietošanas vadlīnijas'],
+    action: 'Pārrunāt dizaina sistēmu',
+  },
+];
+
+const brandDesignProcess = [
+  {
+    icon: 'lucide:scan-search',
+    title: 'Izpēte un virziens',
+    text: 'Sākam ar biznesu, auditoriju un kontekstu, lai dizains risinātu pareizo problēmu, nevis būtu tikai dekorācija.',
+    points: ['Zīmola un auditorijas izpēte', 'Konkurentu vizuālais audits', 'Mērķi un radošais virziens'],
+  },
+  {
+    icon: 'lucide:waypoints',
+    title: 'Koncepts un UX struktūra',
+    text: 'Veidojam zīmola ideju, informācijas hierarhiju un lietotāja ceļus pirms pievēršamies detaļām.',
+    points: ['Noskaņas un koncepta virziens', 'Informācijas arhitektūra', 'Lietotāju plūsmas un skices'],
+  },
+  {
+    icon: 'lucide:panels-top-left',
+    title: 'Identitāte un UI dizains',
+    text: 'Pārvēršam izvēlēto virzienu konsekventā vizuālajā valodā un skaidrās digitālo produktu saskarnēs.',
+    points: ['Logo un vizuālā valoda', 'Augstas precizitātes UI maketi', 'Responsīvie skati un stāvokļi'],
+  },
+  {
+    icon: 'lucide:badge-check',
+    title: 'Testēšana un sistēma',
+    text: 'Pārbaudām lietojamību, sakārtojam komponentes un nododam sistēmu, ko komanda var turpināt izmantot.',
+    points: ['Prototipa un UX pārbaude', 'Komponentes un dizaina tokeni', 'Vadlīnijas un nodošana komandai'],
   },
 ];
 ---
@@ -176,6 +230,13 @@ const digitalProductScope = [
               maxPlans={1}
             />
           </>
+        ) : service.visual === 'design' ? (
+          <ServiceProcess
+            intro="Spēcīgs zīmols nav tikai skaists logo. Identitātei, saturam un saskarnei jāstrādā kā vienai sistēmai — no pirmā iespaida līdz pēdējam klikšķim."
+            steps={brandDesignProcess}
+            theme="orange"
+            compactAfter
+          />
         ) : (
           <section class="service-details" aria-labelledby="service-details-title">
             <div class="service-details__heading" data-reveal>
@@ -204,6 +265,20 @@ const digitalProductScope = [
               fallbackPlans={ecommercePricing}
             />
             <EcommerceReachSection contactHref={contactHref} />
+          </>
+        )}
+
+        {service.visual === 'design' && (
+          <>
+            <DesignSystemFan />
+            <ServicePricing
+              serviceKey={service.slug}
+              contactHref={contactHref}
+              intro="Trīs sākuma līmeņi — no skaidra vizuālā pamata līdz pilnai zīmola un digitālā produkta dizaina sistēmai."
+              fallbackPlans={brandDesignPricing}
+              theme="orange"
+            />
+            <DesignBeforeAfter />
           </>
         )}
       </>

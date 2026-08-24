@@ -16,6 +16,7 @@ interface Props {
   fallbackPlans: FallbackPlan[];
   showPrice?: boolean;
   maxPlans?: number;
+  theme?: 'purple' | 'orange';
 }
 
 const {
@@ -25,6 +26,7 @@ const {
   fallbackPlans,
   showPrice = true,
   maxPlans = 3,
+  theme = 'purple',
 } = Astro.props;
 const titleId = `service-pricing-${serviceKey}`;
 const initialColumns = Math.max(1, Math.min(fallbackPlans.length, maxPlans, 3));
@@ -38,6 +40,7 @@ const initialColumns = Math.max(1, Math.min(fallbackPlans.length, maxPlans, 3));
   data-default-cta={contactHref}
   data-show-price={String(showPrice)}
   data-max-plans={String(maxPlans)}
+  data-theme={theme}
 >
   <header class="service-pricing__header">
     <h2 id={titleId}>Cik tas maksā?</h2>
@@ -223,6 +226,24 @@ const initialColumns = Math.max(1, Math.min(fallbackPlans.length, maxPlans, 3));
     --plan-field-start: #0c0610;
     --plan-field-mid: #290934;
     --plan-field-end: #551167;
+  }
+  .service-pricing[data-theme='orange'] .service-pricing__plan {
+    --plan-aura: rgb(191 71 27 / 34%);
+    --plan-field-start: #100806;
+    --plan-field-mid: #41190e;
+    --plan-field-end: #873315;
+  }
+  .service-pricing[data-theme='orange'] .service-pricing__plan:nth-child(2) {
+    --plan-aura: rgb(213 82 31 / 38%);
+    --plan-field-start: #120806;
+    --plan-field-mid: #4d1c0e;
+    --plan-field-end: #a4421d;
+  }
+  .service-pricing[data-theme='orange'] .service-pricing__plan:nth-child(3) {
+    --plan-aura: rgb(173 60 24 / 32%);
+    --plan-field-start: #0f0705;
+    --plan-field-mid: #39150c;
+    --plan-field-end: #762b13;
   }
   .service-pricing__plan[data-featured='true'] {
     transform: translateY(-1.5rem);

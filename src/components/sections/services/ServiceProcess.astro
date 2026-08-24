@@ -1,0 +1,222 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface ProcessStep {
+  icon: string;
+  title: string;
+  text: string;
+  points: string[];
+}
+
+interface Props {
+  title?: string;
+  intro: string;
+  steps: ProcessStep[];
+  theme?: 'red' | 'orange';
+  compactAfter?: boolean;
+}
+
+const {
+  title = 'Kā mēs strādājam?',
+  intro,
+  steps,
+  theme = 'red',
+  compactAfter = false,
+} = Astro.props;
+
+const titleId = `service-process-${theme}`;
+---
+
+<section class="service-process" aria-labelledby={titleId} data-theme={theme} data-compact-after={compactAfter ? 'true' : undefined}>
+  <header class="service-process__header" data-reveal>
+    <h2 id={titleId}>{title}</h2>
+    <p>{intro}</p>
+  </header>
+
+  <ol class="service-process__track">
+    {
+      steps.map((step, index) => (
+        <li data-reveal>
+          <div class="service-process__marker">
+            <Icon name={step.icon} aria-hidden="true" />
+            <span>{String(index + 1).padStart(2, '0')}</span>
+          </div>
+          <h3>{step.title}</h3>
+          <p>{step.text}</p>
+          <ul>
+            {step.points.map((point) => <li>{point}</li>)}
+          </ul>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  .service-process {
+    --process-accent: #e0234e;
+    --process-accent-soft: #f75f7f;
+    width: min(calc(100% - 4rem), 94rem);
+    margin-inline: auto;
+    padding-block: clamp(5rem, 9vw, 9rem);
+  }
+
+  .service-process[data-theme='orange'] {
+    --process-accent: #e8662a;
+    --process-accent-soft: #ff9562;
+  }
+
+  .service-process[data-compact-after='true'] { padding-bottom: clamp(2rem, 4vw, 4rem); }
+
+  .service-process__header {
+    display: grid;
+    grid-template-columns: minmax(18rem, 0.72fr) minmax(0, 1.28fr);
+    align-items: end;
+    gap: clamp(3rem, 6vw, 6rem);
+    margin-bottom: clamp(3rem, 6vw, 6rem);
+  }
+
+  .service-process h2 {
+    max-width: 10ch;
+    color: white;
+    font-size: clamp(2.3rem, 4.25vw, 4.5rem);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    text-wrap: balance;
+  }
+
+  .service-process__header > p {
+    max-width: 62ch;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+
+  .service-process__track {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .service-process__track::before {
+    position: absolute;
+    top: 2rem;
+    right: 0;
+    left: 0;
+    height: 1px;
+    background: linear-gradient(90deg, var(--process-accent), rgb(255 255 255 / 14%));
+    content: '';
+  }
+
+  .service-process__track > li {
+    position: relative;
+    padding-top: 6.5rem;
+  }
+
+  .service-process__track > li:nth-child(even) { padding-top: 9rem; }
+
+  .service-process__marker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    width: 4rem;
+    height: 4rem;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid color-mix(in srgb, var(--process-accent) 52%, transparent);
+    border-radius: 50%;
+    background: #080506;
+    color: var(--process-accent-soft);
+  }
+
+  .service-process__marker :global(svg) { width: 1.35rem; height: 1.35rem; }
+
+  .service-process__marker span {
+    position: absolute;
+    top: -0.2rem;
+    right: -0.5rem;
+    color: var(--text-muted);
+    font: 550 0.72rem/1.6 var(--font-mono);
+  }
+
+  .service-process h3 {
+    color: white;
+    font-size: clamp(1rem, 1.25vw, 1.25rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1.4;
+    text-wrap: balance;
+  }
+
+  .service-process__track > li > p {
+    margin-top: 1rem;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+
+  .service-process__track ul {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .service-process__track ul li {
+    position: relative;
+    padding-left: 1rem;
+    color: var(--text-muted);
+    font: 550 0.72rem/1.6 var(--font-mono);
+  }
+
+  .service-process__track ul li::before {
+    position: absolute;
+    top: 0.65em;
+    left: 0;
+    width: 0.3rem;
+    height: 0.3rem;
+    border-radius: 50%;
+    background: var(--process-accent);
+    content: '';
+  }
+
+  @media (max-width: 900px) {
+    .service-process__track { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 3rem; }
+    .service-process__track::before { display: none; }
+    .service-process__track > li,
+    .service-process__track > li:nth-child(even) { padding-top: 5.5rem; }
+  }
+
+  @media (max-width: 700px) {
+    .service-process { width: calc(100% - 2.5rem); padding-block: 5rem; }
+    .service-process__header { grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 3rem; }
+    .service-process__track { grid-template-columns: 1fr; gap: 0; }
+    .service-process__track::after {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 2rem;
+      width: 1px;
+      background: linear-gradient(var(--process-accent), rgb(255 255 255 / 10%), transparent);
+      content: '';
+    }
+    .service-process__track > li,
+    .service-process__track > li:nth-child(even) {
+      min-height: 19rem;
+      padding: 0 0 4rem 6rem;
+    }
+    .service-process__track > li:last-child { min-height: 0; padding-bottom: 0; }
+    .service-process__marker { z-index: 1; }
+  }
+</style>

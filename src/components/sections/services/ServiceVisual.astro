@@ -125,33 +125,16 @@ const websiteProjects = [
       {
         service.visual === 'design' && (
           <div class="visual-design">
-            <div class="visual-design__type">
-              <>
-                <small>ROMADI / 01</small>
-                <strong>R</strong>
-                <span>
-                  Manrope
-                  <br />
-                  JetBrains Mono
-                </span>
-              </>
-            </div>
-            <div class="visual-design__system">
-              <div class="visual-design__swatches">
-                <>
-                  <i />
-                  <i />
-                  <i />
-                  <i />
-                </>
-              </div>
-              <b>Veidots, lai izceltos.</b>
-              <>
-                <span />
-                <span />
-                <span />
-              </>
-            </div>
+            <BrowserPreviewFrame
+              title="UI / UX dizaina sistēma"
+              src="/images/projects/uiuxhero-pc-v2.png"
+              mobileSrc="/images/projects/uiuxhero-mobile-v2.png"
+              width={1448}
+              height={1086}
+              fit="cover"
+              imageBackground="#030303"
+              objectPosition="center"
+            />
           </div>
         )
       }
@@ -361,7 +344,8 @@ const websiteProjects = [
 
   .visual-website,
   .visual-commerce,
-  .visual-product-preview {
+  .visual-product-preview,
+  .visual-design {
     position: absolute;
     inset: clamp(1rem, 3vw, 2.5rem);
     display: flex;
@@ -401,69 +385,7 @@ const websiteProjects = [
   .visual-website__mobile { display: none; }
 
   .visual-design {
-    position: absolute;
-    inset: 9% 7% -6%;
-    display: grid;
-    grid-template-columns: 0.85fr 1.15fr;
-    gap: 1rem;
-  }
-  .visual-design__type,
-  .visual-design__system {
-    border: 1px solid rgb(255 255 255 / 11%);
-    border-radius: 0.85rem;
-    background: #080808;
-    padding: clamp(1.4rem, 3vw, 2.5rem);
-  }
-  .visual-design__type small {
-    color: rgb(255 255 255 / 42%);
-    font: 550 0.56rem/1 var(--font-mono);
-  }
-  .visual-design__type strong {
-    display: block;
-    color: white;
-    font-size: clamp(8rem, 17vw, 15rem);
-    font-weight: 600;
-    letter-spacing: -0.1em;
-    line-height: 0.8;
-  }
-  .visual-design__type span {
-    color: rgb(255 255 255 / 48%);
-    font: 500 0.65rem/1.65 var(--font-mono);
-  }
-  .visual-design__swatches {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.45rem;
-  }
-  .visual-design__swatches i {
-    height: 4.5rem;
-    border-radius: 0.4rem;
-    background: #e0234e;
-  }
-  .visual-design__swatches i:nth-child(2) {
-    background: #620b22;
-  }
-  .visual-design__swatches i:nth-child(3) {
-    background: #171717;
-  }
-  .visual-design__swatches i:nth-child(4) {
-    background: #f5f5f5;
-  }
-  .visual-design__system b {
-    display: block;
-    max-width: 9ch;
-    margin: clamp(3rem, 7vw, 6rem) 0 2rem;
-    color: white;
-    font-size: clamp(1.8rem, 3.5vw, 3.4rem);
-    font-weight: 440;
-    letter-spacing: -0.045em;
-    line-height: 1;
-  }
-  .visual-design__system > span {
-    display: block;
-    height: 1px;
-    margin-top: 1.1rem;
-    background: rgb(255 255 255 / 14%);
+    background: #030303;
   }
 
   .visual-automation {
@@ -652,7 +574,8 @@ const websiteProjects = [
     }
     .visual-website,
     .visual-commerce,
-    .visual-product-preview {
+    .visual-product-preview,
+    .visual-design {
       inset: 0.8rem;
     }
     .service-visual[data-kind='product'] {
@@ -664,9 +587,13 @@ const websiteProjects = [
     .service-visual[data-kind='website'] {
       min-height: 44rem;
     }
+    .service-visual[data-kind='design'] {
+      min-height: 42rem;
+    }
     .service-visual[data-kind='website'] .service-visual__chrome,
     .service-visual[data-kind='commerce'] .service-visual__chrome,
-    .service-visual[data-kind='product'] .service-visual__chrome {
+    .service-visual[data-kind='product'] .service-visual__chrome,
+    .service-visual[data-kind='design'] .service-visual__chrome {
       display: none;
     }
     .service-visual[data-kind='website'] .service-visual__canvas {
@@ -687,9 +614,14 @@ const websiteProjects = [
         radial-gradient(circle at 50% 32%, rgb(104 125 246 / 12%), transparent 42%),
         #0a0a0b;
     }
+    .service-visual[data-kind='design'] .service-visual__canvas {
+      min-height: 41rem;
+      background: #030303;
+    }
     .service-visual[data-kind='website'] .visual-website,
     .service-visual[data-kind='commerce'] .visual-commerce,
-    .service-visual[data-kind='product'] .visual-product-preview {
+    .service-visual[data-kind='product'] .visual-product-preview,
+    .service-visual[data-kind='design'] .visual-design {
       inset: 0.75rem;
     }
     .visual-website__desktop,
@@ -750,9 +682,6 @@ const websiteProjects = [
     .visual-mobile-device--website img {
       height: calc(100% - 1.25rem);
       border-radius: 1.75rem 1.75rem 2.05rem 2.05rem;
-    }
-    .visual-design {
-      inset: 6%;
     }
     .visual-automation__node {
       min-width: 7rem;

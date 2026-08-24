@@ -55,9 +55,23 @@ const services = SERVICES.map((service) => ({
 
               <span class="home-services__number">{service.number}</span>
 
-              <span class="home-services__icon-placeholder" aria-hidden="true">
-                <span />
-              </span>
+              {
+                service.number === '02' ? (
+                  <img
+                    class="home-services__service-icon"
+                    src="/images/services/shopping-bag-metallic.png"
+                    alt=""
+                    width="1280"
+                    height="1280"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ) : (
+                  <span class="home-services__icon-placeholder" aria-hidden="true">
+                    <span />
+                  </span>
+                )
+              }
 
               <div class="home-services__copy">
                 <h3>{service.title}</h3>
@@ -678,10 +692,23 @@ const services = SERVICES.map((service) => ({
   }
 
   .home-services__number,
+  .home-services__service-icon,
   .home-services__icon-placeholder,
   .home-services__copy {
     position: relative;
     z-index: 3;
+  }
+
+  .home-services__service-icon {
+    align-self: center;
+    justify-self: center;
+    width: clamp(5.6rem, 8.4vw, 8rem);
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 0.8rem 1.35rem rgb(0 0 0 / 28%));
+    transition:
+      filter 520ms ease,
+      transform 760ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .home-services__number {
@@ -822,6 +849,12 @@ const services = SERVICES.map((service) => ({
     filter: drop-shadow(0 0.8rem 1.35rem rgb(0 0 0 / 24%))
       drop-shadow(0 0 1rem rgb(255 255 255 / 8%));
     transform: translateY(-0.15rem) scale(1.025);
+  }
+
+  .home-services__card[data-active='true'] .home-services__service-icon {
+    filter: drop-shadow(0 0.9rem 1.5rem rgb(0 0 0 / 34%))
+      drop-shadow(0 0 1.1rem rgb(224 35 78 / 18%));
+    transform: translateY(-0.15rem) scale(1.04);
   }
 
   .home-services__card[data-active='true'] h3 {
@@ -1042,6 +1075,7 @@ const services = SERVICES.map((service) => ({
     .home-services__card,
     .home-services__card p,
     .home-services__sun,
+    .home-services__service-icon,
     .home-services__icon-placeholder,
     .home-services__card h3 {
       transition: none;

@@ -1,0 +1,303 @@
+---
+import { Icon } from 'astro-icon/components';
+
+const comparisons = [
+  {
+    icon: 'lucide:palette',
+    without: 'Nejaušas krāsas un stili katrā materiālā',
+    with: 'Vienota krāsu, tipogrāfijas un attēlu valoda',
+  },
+  {
+    icon: 'lucide:list-tree',
+    without: 'Viss konkurē par uzmanību vienlaikus',
+    with: 'Skaidra hierarhija ved cilvēku uz svarīgāko',
+  },
+  {
+    icon: 'lucide:component',
+    without: 'Katrs ekrāns un materiāls jāveido no jauna',
+    with: 'Atkārtojamas komponentes paātrina ikdienas darbu',
+  },
+  {
+    icon: 'lucide:smartphone',
+    without: 'Pieredze mainās un lūzt dažādās ierīcēs',
+    with: 'Konsekventa pieredze katrā ekrānā un kanālā',
+  },
+] as const;
+---
+
+<section class="design-compare" aria-labelledby="design-compare-title" data-design-compare>
+  <header class="design-compare__header" data-reveal>
+    <h2 id="design-compare-title">Atšķirību var sajust.</h2>
+    <p>
+      Labs dizains nav dekorācija. Tas palīdz cilvēkam ātrāk atpazīt zīmolu,
+      saprast piedāvājumu un pārliecinoši nonākt līdz nākamajai darbībai.
+    </p>
+  </header>
+
+  <div class="design-compare__frame" style="--compare-split: 50%;" data-compare-frame>
+    <div class="design-compare__side design-compare__side--without">
+      <div class="design-compare__content">
+        <span class="design-compare__state"><i aria-hidden="true">×</i> Bez sistēmas</span>
+        <h3>Sadrumstalots iespaids</h3>
+        <p>Atsevišķas skaistas detaļas, kas neveido vienu saprotamu pieredzi.</p>
+
+        <ul>
+          {comparisons.map((item, index) => (
+            <li>
+              <small>{String(index + 1).padStart(2, '0')}</small>
+              <Icon name={item.icon} aria-hidden="true" />
+              <span>{item.without}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <div class="design-compare__side design-compare__side--with">
+      <div class="design-compare__content">
+        <span class="design-compare__state"><i aria-hidden="true">✓</i> Ar dizaina sistēmu</span>
+        <h3>Vienota zīmola pieredze</h3>
+        <p>Katrs elements atbalsta vienu zīmola raksturu un skaidru lietotāja ceļu.</p>
+
+        <ul>
+          {comparisons.map((item, index) => (
+            <li>
+              <small>{String(index + 1).padStart(2, '0')}</small>
+              <Icon name={item.icon} aria-hidden="true" />
+              <span>{item.with}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <div class="design-compare__divider" aria-hidden="true">
+      <span><i></i><i></i><i></i><i></i><i></i><i></i></span>
+    </div>
+
+    <label class="design-compare__control">
+      <span class="sr-only">Mainīt redzamo daļu starp pieredzi bez sistēmas un ar dizaina sistēmu</span>
+      <input
+        type="range"
+        min="0"
+        max="100"
+        value="50"
+        step="1"
+        aria-label="Bez sistēmas un ar dizaina sistēmu"
+        data-compare-range
+      />
+    </label>
+  </div>
+
+  <div class="design-compare__legend" aria-hidden="true">
+    <span>Bez sistēmas</span>
+    <span>Ar dizaina sistēmu</span>
+  </div>
+</section>
+
+<script>
+  function initDesignComparisons() {
+    document.querySelectorAll<HTMLElement>('[data-design-compare]').forEach((section) => {
+      if (section.dataset.initialized === 'true') return;
+
+      const frame = section.querySelector<HTMLElement>('[data-compare-frame]');
+      const range = section.querySelector<HTMLInputElement>('[data-compare-range]');
+      if (!frame || !range) return;
+
+      const update = () => frame.style.setProperty('--compare-split', `${range.value}%`);
+      range.addEventListener('input', update);
+      update();
+      section.dataset.initialized = 'true';
+    });
+  }
+
+  initDesignComparisons();
+  document.addEventListener('astro:page-load', initDesignComparisons);
+</script>
+
+<style>
+  .design-compare {
+    width: min(calc(100% - 4rem), 94rem);
+    margin-inline: auto;
+    padding-block: clamp(5rem, 9vw, 9rem);
+  }
+
+  .design-compare__header {
+    display: grid;
+    grid-template-columns: minmax(18rem, 0.72fr) minmax(0, 1.28fr);
+    align-items: end;
+    gap: clamp(3rem, 6vw, 6rem);
+    margin-bottom: clamp(3rem, 6vw, 5rem);
+  }
+
+  .design-compare h2 {
+    max-width: 11ch;
+    color: white;
+    font-size: clamp(2.3rem, 4.25vw, 4.5rem);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    text-wrap: balance;
+  }
+
+  .design-compare__header > p {
+    max-width: 62ch;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+
+  .design-compare__frame {
+    position: relative;
+    height: clamp(35rem, 54vw, 43rem);
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 14%);
+    border-radius: 1rem;
+    background: #090909;
+    box-shadow: 0 0 3rem rgb(173 57 22 / 10%);
+    touch-action: pan-y;
+  }
+
+  .design-compare__side { position: absolute; inset: 0; overflow: hidden; }
+
+  .design-compare__side--without {
+    z-index: 1;
+    background: radial-gradient(circle at 12% 4%, rgb(224 35 78 / 28%), transparent 24rem), linear-gradient(145deg, #21070e, #090708 62%);
+    clip-path: inset(0 calc(100% - var(--compare-split)) 0 0);
+  }
+
+  .design-compare__side--with {
+    background: radial-gradient(circle at 88% 4%, rgb(232 102 42 / 34%), transparent 25rem), linear-gradient(215deg, #371207, #0b0806 62%);
+    clip-path: inset(0 0 0 var(--compare-split));
+  }
+
+  .design-compare__side::after {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(rgb(214 218 224 / 6%) 1px, transparent 1px), linear-gradient(90deg, rgb(214 218 224 / 6%) 1px, transparent 1px);
+    background-size: 2rem 2rem;
+    content: '';
+    pointer-events: none;
+  }
+
+  .design-compare__content {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    width: min(46rem, 50vw);
+    padding: clamp(2rem, 4vw, 4rem);
+  }
+
+  .design-compare__side--with .design-compare__content { right: 0; left: auto; }
+
+  .design-compare__state {
+    display: inline-flex;
+    min-height: 2.25rem;
+    align-items: center;
+    gap: 0.6rem;
+    border: 1px solid rgb(247 95 127 / 45%);
+    border-radius: 999px;
+    padding-inline: 0.9rem;
+    background: rgb(224 35 78 / 10%);
+    color: #f75f7f;
+    font: 600 0.72rem/1.4 var(--font-mono);
+  }
+
+  .design-compare__side--with .design-compare__state { border-color: rgb(255 149 98 / 48%); background: rgb(232 102 42 / 12%); color: #ff9562; }
+  .design-compare__state i { font-size: 1rem; font-style: normal; }
+
+  .design-compare h3 {
+    margin-top: 1.5rem;
+    color: white;
+    font-size: clamp(2rem, 3.2vw, 3.5rem);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    text-wrap: balance;
+  }
+
+  .design-compare__content > p { max-width: 48ch; margin-top: 1rem; color: var(--text-secondary); font-size: 1rem; line-height: 1.6; text-wrap: pretty; }
+  .design-compare__content ul { display: grid; gap: 0.75rem; margin-top: clamp(2rem, 4vw, 4rem); padding: 0; list-style: none; }
+
+  .design-compare__content li {
+    display: grid;
+    min-height: 4.25rem;
+    grid-template-columns: 1.5rem 2.5rem minmax(0, 1fr);
+    align-items: center;
+    gap: 0.75rem;
+    border: 1px solid rgb(224 35 78 / 22%);
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: rgb(0 0 0 / 24%);
+    color: #c5c5ca;
+    font-size: 0.92rem;
+    line-height: 1.45;
+  }
+
+  .design-compare__side--with li { border-color: rgb(232 102 42 / 28%); }
+  .design-compare__content li small { color: var(--text-muted); font: 550 0.68rem/1 var(--font-mono); }
+  .design-compare__content li :global(svg) { width: 1.2rem; height: 1.2rem; color: #f75f7f; }
+  .design-compare__side--with li :global(svg) { color: #ff9562; }
+
+  .design-compare__divider {
+    position: absolute;
+    z-index: 4;
+    top: 0;
+    bottom: 0;
+    left: var(--compare-split);
+    width: 2px;
+    background: linear-gradient(transparent, #ff9562 12%, #e8662a 88%, transparent);
+    box-shadow: 0 0 1rem rgb(232 102 42 / 60%);
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .design-compare__divider > span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    width: 3.5rem;
+    height: 3.5rem;
+    grid-template-columns: repeat(2, 0.25rem);
+    place-content: center;
+    gap: 0.18rem;
+    border: 1px solid rgb(255 255 255 / 65%);
+    border-radius: 50%;
+    background: linear-gradient(145deg, #f75f7f, #e8662a);
+    box-shadow: 0 0 1.5rem rgb(232 102 42 / 42%);
+    transform: translate(-50%, -50%);
+  }
+
+  .design-compare__divider i { width: 0.25rem; height: 0.25rem; border-radius: 50%; background: white; }
+  .design-compare__control,
+  .design-compare__control input { position: absolute; z-index: 5; inset: 0; width: 100%; height: 100%; }
+  .design-compare__control input { margin: 0; cursor: ew-resize; opacity: 0; }
+
+  .design-compare__legend { display: flex; justify-content: space-between; margin-top: 1rem; color: var(--text-muted); font: 550 0.72rem/1.6 var(--font-mono); }
+  .design-compare__legend span:last-child { color: #ff9562; }
+
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); clip-path: inset(50%); white-space: nowrap; }
+
+  @media (max-width: 700px) {
+    .design-compare { width: calc(100% - 2.5rem); padding-block: 5rem; }
+    .design-compare__header { grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 3rem; }
+    .design-compare__frame { height: 38rem; }
+    .design-compare__content { width: 100%; padding: 1.5rem; }
+    .design-compare h3 { max-width: 9ch; font-size: 2.25rem; }
+    .design-compare__content > p { max-width: 30ch; font-size: 0.9rem; }
+    .design-compare__content ul { margin-top: 2rem; }
+    .design-compare__content li { width: calc(100vw - 5.5rem); min-height: 4rem; font-size: 0.8rem; }
+    .design-compare__side--with .design-compare__content { display: grid; justify-items: end; text-align: right; }
+    .design-compare__side--with .design-compare__content li { grid-template-columns: minmax(0, 1fr) 2.5rem 1.5rem; }
+    .design-compare__side--with .design-compare__content li span { grid-column: 1; grid-row: 1; }
+    .design-compare__side--with .design-compare__content li :global(svg) { grid-column: 2; grid-row: 1; }
+    .design-compare__side--with .design-compare__content li small { grid-column: 3; grid-row: 1; }
+    .design-compare__divider > span { width: 3rem; height: 3rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) { .design-compare__divider { box-shadow: none; } }
+</style>
