@@ -30,7 +30,8 @@
         alt="Komanda kopīgi apspriež digitāla projekta risinājumus pie darba galda"
         width="1800"
         height="1200"
-        loading="lazy"
+        loading="eager"
+        fetchpriority="low"
         decoding="async"
       />
       <figcaption>
@@ -203,8 +204,8 @@
 
   @media (max-width: 700px) {
     .about-partnership {
-      width: calc(100% - 1.5rem);
-      padding: 5rem 0.75rem 6rem;
+      width: 100%;
+      padding: 5rem 1.5rem 6rem;
     }
 
     .about-partnership h2 {

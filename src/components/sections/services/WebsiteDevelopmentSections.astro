@@ -1,0 +1,1111 @@
+---
+import { Icon } from 'astro-icon/components';
+import { getPublishedWebsiteProjects, type ProjectProof } from '@/lib/projects';
+
+interface Props {
+  contactHref: string;
+  serviceKey: string;
+}
+
+const { contactHref, serviceKey } = Astro.props;
+
+const processSteps = [
+  {
+    icon: 'lucide:search-check',
+    title: 'Analīze un stratēģija',
+    text: 'Pirms dizaina saprotam jūsu biznesu, auditoriju un mērķi, kas mājaslapai jāsasniedz.',
+    points: [
+      'Pozicionējums un piedāvājums',
+      'Auditorija un pirkuma motivācija',
+      'Konkurentu un datu izpēte',
+    ],
+  },
+  {
+    icon: 'lucide:waypoints',
+    title: 'Struktūra un UX',
+    text: 'Izveidojam skaidru ceļu no pirmā iespaida līdz darbībai — zvanam, pieteikumam vai pirkumam.',
+    points: ['Lapu un satura struktūra', 'Lietotāja ceļi', 'Konversijas punkti'],
+  },
+  {
+    icon: 'lucide:panels-top-left',
+    title: 'Dizains un izstrāde',
+    text: 'Pārvēršam stratēģiju individuālā, ātrā un visās ierīcēs pārliecinošā digitālajā pieredzē.',
+    points: ['Individuāls UI dizains', 'Responsīva izstrāde', 'SEO un integrāciju pamati'],
+  },
+  {
+    icon: 'lucide:gauge',
+    title: 'Testēšana un izaugsme',
+    text: 'Palaišana nav finišs. Pārbaudām, mēram un turpinām uzlabot to, kas rada rezultātu.',
+    points: ['Kvalitātes un ātruma pārbaude', 'Analītikas uzstādīšana', 'Attīstība pēc palaišanas'],
+  },
+] as const;
+
+const fallbackProjects: ProjectProof[] = [
+  {
+    id: 1,
+    name: 'Diana Hunt',
+    slug: 'diana-hunt',
+    logo_url: '/images/projects/diana-logo-metallic.webp',
+    sort_order: 10,
+  },
+  {
+    id: 2,
+    name: 'Liepājas Teltis',
+    slug: 'liepajas-teltis',
+    logo_url: '/images/projects/liepajasteltis-logo-metallic.webp',
+    sort_order: 20,
+  },
+  {
+    id: 3,
+    name: 'RTU Liepājas Jūrniecības koledža',
+    slug: 'rtu-liepajas-jurniecibas-koledza',
+    logo_url: '/images/projects/ljk-logo-metallic.webp',
+    sort_order: 30,
+  },
+  {
+    id: 4,
+    name: 'Loadmaster Simulator',
+    slug: 'loadmaster-simulator',
+    logo_url: '/images/projects/loadmaster-logo-metallic.webp',
+    sort_order: 40,
+  },
+  {
+    id: 5,
+    name: 'Ship Stability Simulator',
+    slug: 'ship-stability-simulator',
+    logo_url: '/images/projects/shipstability-logo-metallic.webp',
+    sort_order: 50,
+  },
+  { id: 6, name: 'Pabeigts projekts 6', slug: 'pabeigts-projekts-6', logo_url: null, sort_order: 60 },
+  { id: 7, name: 'Pabeigts projekts 7', slug: 'pabeigts-projekts-7', logo_url: null, sort_order: 70 },
+];
+
+const databaseProjects = await getPublishedWebsiteProjects();
+const websiteProjects = databaseProjects.length > 0 ? databaseProjects : fallbackProjects;
+const projectCount = websiteProjects.length;
+const projectMarks = websiteProjects.map((project, index) => ({
+  label: project.name,
+  mark: String(index + 1).padStart(2, '0'),
+  logo: project.logo_url,
+}));
+
+const pricing = [
+  {
+    name: 'Landing lapa',
+    price: '500 €',
+    text: 'Vienam piedāvājumam, pakalpojumam vai kampaņai ar vienu skaidru konversijas mērķi.',
+    features: [
+      'Līdz 5 satura sadaļām',
+      'Individuāls responsīvs dizains',
+      'Pieteikuma forma',
+      'SEO pamati',
+    ],
+    action: 'Pārrunāt landing lapu',
+  },
+  {
+    name: 'Biznesa mājaslapa',
+    price: '1 100 €',
+    text: 'Uzņēmumam, kam vajadzīga profesionāla klātbūtne, skaidrs piedāvājums un vieta izaugsmei.',
+    features: [
+      'Līdz 12 lapām',
+      'Satura un UX struktūra',
+      'Analītika un integrācijas',
+      'Tehniskais SEO',
+    ],
+    action: 'Pārrunāt biznesa lapu',
+  },
+  {
+    name: 'Individuāls risinājums',
+    price: '2 700 €',
+    text: 'Sarežģītākiem projektiem ar īpašu funkcionalitāti, integrācijām vai pielāgotām darba plūsmām.',
+    features: [
+      'Pielāgota funkcionalitāte',
+      'Ārējo sistēmu integrācijas',
+      'Mērogojama arhitektūra',
+      'Prioritāra attīstība',
+    ],
+    action: 'Pārrunāt risinājumu',
+  },
+] as const;
+---
+
+<section class="website-process" aria-labelledby="website-process-title">
+  <header class="website-process__header">
+    <h2 id="website-process-title">Kā mēs strādājam?</h2>
+    <p>
+      Mājaslapa nav tikai vizītkarte. Tā ir pārdošanas sistēma, kurā stratēģija, saturs, dizains un
+      tehnoloģija strādā viena mērķa labā.
+    </p>
+  </header>
+
+  <ol class="website-process__track">
+    {
+      processSteps.map((step, index) => (
+        <li>
+          <div class="website-process__marker">
+            <Icon name={step.icon} aria-hidden="true" />
+            <span>{String(index + 1).padStart(2, '0')}</span>
+          </div>
+          <h3>{step.title}</h3>
+          <p>{step.text}</p>
+          <ul>
+            {step.points.map((point) => (
+              <li>{point}</li>
+            ))}
+          </ul>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<section class="website-proof" aria-labelledby="website-proof-title" data-website-proof>
+  <div class="website-proof__atmosphere" aria-hidden="true"></div>
+  <div class="website-proof__marks" data-project-marks>
+    {
+      projectMarks.map((project, index) => (
+        <span
+          class="website-proof__mark"
+          style={`--mark-index:${index};`}
+          aria-label={project.label}
+        >
+          {project.logo ? (
+            <img
+              src={project.logo}
+              alt=""
+              width="512"
+              height="512"
+              loading="lazy"
+              decoding="async"
+            />
+          ) : (
+            <b aria-hidden="true">
+              {project.mark.split('\n').map((line) => (
+                <>
+                  {line}
+                  <br />
+                </>
+              ))}
+            </b>
+          )}
+        </span>
+      ))
+    }
+  </div>
+  <div class="website-proof__content">
+    <h2 id="website-proof-title"><strong data-project-count>{projectCount}</strong> pabeigti<br />{' '}projekti.</h2>
+    <p>
+      Atšķirīgas idejas, nozares un auditorijas — katrai izveidots risinājums, kas atbilst reālam
+      biznesa mērķim.
+    </p>
+    <a href="/portfolio" data-astro-prefetch>Apskatīt projektus <span aria-hidden="true">↗</span></a
+    >
+  </div>
+</section>
+
+<script>
+  import { supabase } from '@/lib/supabase';
+
+  async function refreshProjectProof() {
+    const proof = document.querySelector<HTMLElement>('[data-website-proof]');
+    const marks = proof?.querySelector<HTMLElement>('[data-project-marks]');
+    const count = proof?.querySelector<HTMLElement>('[data-project-count]');
+
+    if (!proof || !marks || !count || !supabase) return;
+
+    const { data, error, count: projectCount } = await supabase
+      .from('projects')
+      .select('id, name, logo_url, sort_order', { count: 'exact' })
+      .eq('type', 'website')
+      .eq('is_published', true)
+      .order('sort_order', { ascending: true })
+      .order('id', { ascending: true });
+
+    if (error || !data) {
+      console.warn(`Could not refresh website projects from Supabase: ${error?.message ?? 'Unknown error'}`);
+      return;
+    }
+
+    proof.dataset.projectSource = 'supabase';
+    count.textContent = String(projectCount ?? data.length);
+
+    const markElements = Array.from(marks.querySelectorAll<HTMLElement>('.website-proof__mark'));
+
+    markElements.forEach((mark, index) => {
+      const project = data[index];
+
+      if (!project) {
+        mark.hidden = true;
+        return;
+      }
+
+      mark.hidden = false;
+      mark.setAttribute('aria-label', project.name);
+      mark.replaceChildren();
+
+      if (project.logo_url) {
+        const logo = document.createElement('img');
+        logo.src = project.logo_url;
+        logo.alt = '';
+        logo.width = 512;
+        logo.height = 512;
+        logo.loading = 'lazy';
+        logo.decoding = 'async';
+        logo.style.width = '72%';
+        logo.style.height = '72%';
+        logo.style.objectFit = 'contain';
+        mark.append(logo);
+      } else {
+        const number = document.createElement('b');
+        number.setAttribute('aria-hidden', 'true');
+        number.textContent = String(index + 1).padStart(2, '0');
+        number.style.textAlign = 'center';
+        number.style.fontSize = 'clamp(0.72rem, 0.85vw, 0.9rem)';
+        number.style.fontWeight = '650';
+        number.style.lineHeight = '1.15';
+        mark.append(number);
+      }
+    });
+  }
+
+  async function refreshPricingCards() {
+    const section = document.querySelector<HTMLElement>('[data-website-pricing]');
+    const grid = section?.querySelector<HTMLElement>('[data-pricing-grid]');
+    const cardTemplate = section?.querySelector<HTMLTemplateElement>('[data-pricing-card-template]');
+    const featureTemplate = section?.querySelector<HTMLTemplateElement>(
+      '[data-pricing-feature-template]',
+    );
+
+    if (!section || !grid || !cardTemplate || !featureTemplate || !supabase) return;
+
+    const serviceKey = section.dataset.serviceKey;
+    if (!serviceKey) return;
+
+    const { data, error } = await supabase
+      .from('pricing_plans')
+      .select(
+        'id, name, price_prefix, price_label, description, features, cta_label, cta_href, sort_order, is_featured',
+      )
+      .eq('is_published', true)
+      .eq('service_key', serviceKey)
+      .order('sort_order', { ascending: true })
+      .order('id', { ascending: true });
+
+    if (error || !data) {
+      console.warn(`Could not refresh pricing plans from Supabase: ${error?.message ?? 'Unknown error'}`);
+      return;
+    }
+
+    const defaultCta = section.dataset.defaultCta ?? '/kontakti';
+    const cards = data.flatMap((plan) => {
+      const card = cardTemplate.content.firstElementChild?.cloneNode(true);
+      if (!(card instanceof HTMLElement)) return [];
+
+      if (plan.is_featured) card.dataset.featured = 'true';
+      else delete card.dataset.featured;
+      card.querySelector<HTMLElement>('[data-plan-name]')!.textContent = plan.name;
+      card.querySelector<HTMLElement>('[data-price-prefix]')!.textContent = plan.price_prefix;
+      card.querySelector<HTMLElement>('[data-price-label]')!.textContent = plan.price_label;
+      card.querySelector<HTMLElement>('[data-plan-description]')!.textContent = plan.description;
+
+      const featureList = card.querySelector<HTMLElement>('[data-plan-features]')!;
+      const features = plan.features.flatMap((feature) => {
+        const item = featureTemplate.content.firstElementChild?.cloneNode(true);
+        if (!(item instanceof HTMLElement)) return [];
+        item.querySelector<HTMLElement>('[data-feature-label]')!.textContent = feature;
+        return [item];
+      });
+      featureList.replaceChildren(...features);
+
+      const cta = card.querySelector<HTMLAnchorElement>('[data-plan-cta]')!;
+      cta.href = plan.cta_href || defaultCta;
+      cta.querySelector<HTMLElement>('[data-cta-label]')!.textContent = plan.cta_label;
+
+      return [card];
+    });
+
+    grid.style.setProperty('--pricing-columns', String(Math.max(1, Math.min(cards.length, 3))));
+    grid.replaceChildren(...cards);
+    section.dataset.pricingSource = 'supabase';
+  }
+
+  void refreshProjectProof();
+  void refreshPricingCards();
+  document.addEventListener('astro:page-load', refreshProjectProof);
+  document.addEventListener('astro:page-load', refreshPricingCards);
+</script>
+
+<section
+  class="website-pricing"
+  aria-labelledby="website-pricing-title"
+  data-website-pricing
+  data-service-key={serviceKey}
+  data-default-cta={contactHref}
+>
+  <header class="website-pricing__header">
+    <h2 id="website-pricing-title">Cik tas maksā?</h2>
+    <p>Orientējošas sākuma cenas. Precīzu apjomu un budžetu nosakām pēc īsas sarunas.</p>
+  </header>
+
+  <div class="website-pricing__grid" data-pricing-grid>
+    {
+      pricing.map((plan, index) => (
+        <article
+          class="website-pricing__plan"
+          data-pricing-card
+          data-featured={index === 1 ? 'true' : undefined}
+        >
+          <div class="website-pricing__field">
+            <h3 data-plan-name>{plan.name}</h3>
+            <p>
+              <span data-price-prefix>Sākot no</span> <strong data-price-label>{plan.price}</strong>
+            </p>
+          </div>
+          <div class="website-pricing__body">
+            <p data-plan-description>{plan.text}</p>
+            <ul data-plan-features>
+              {plan.features.map((feature) => (
+                <li>
+                  <Icon name="lucide:check" aria-hidden="true" />
+                  {feature}
+                </li>
+              ))}
+            </ul>
+            <a href={contactHref} data-plan-cta data-astro-reload>
+              <span data-cta-label>{plan.action}</span> <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+
+  <template data-pricing-card-template>
+    <article class="website-pricing__plan" data-pricing-card>
+      <div class="website-pricing__field">
+        <h3 data-plan-name></h3>
+        <p><span data-price-prefix></span> <strong data-price-label></strong></p>
+      </div>
+      <div class="website-pricing__body">
+        <p data-plan-description></p>
+        <ul data-plan-features></ul>
+        <a href={contactHref} data-plan-cta data-astro-reload>
+          <span data-cta-label></span> <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </article>
+  </template>
+
+  <template data-pricing-feature-template>
+    <li><Icon name="lucide:check" aria-hidden="true" /><span data-feature-label></span></li>
+  </template>
+</section>
+
+<section class="website-value" aria-labelledby="website-value-title">
+  <div class="website-value__copy">
+    <h2 id="website-value-title">Esiet atrodami tur, kur klienti jau meklē.</h2>
+    <p>
+      Mājaslapa kopā ar SEO paplašina jūsu digitālo sasniedzamību — cilvēki var jūs atrast, saprast
+      piedāvājumu un sazināties tieši tad, kad viņiem rodas vajadzība.
+    </p>
+    <a href={contactHref} data-astro-reload>Pārrunāt projektu <span aria-hidden="true">↗</span></a>
+  </div>
+
+  <div class="website-value__comparison" aria-label="Mājaslapas ietekmes salīdzinājums">
+    <div class="website-value__path website-value__path--strong">
+      <span
+        aria-label="Mājaslapa kopā ar SEO: ilustratīvi 90 procenti digitālās sasniedzamības potenciāla"
+        ><b>90%</b></span
+      >
+    </div>
+    <div class="website-value__path website-value__path--weak">
+      <span aria-label="Bez mājaslapas: ilustratīvi 35 procenti digitālās sasniedzamības potenciāla"
+        ><b>35%</b></span
+      >
+    </div>
+    <footer>
+      <div class="website-value__axis">
+        <span>0</span><small>digitālās sasniedzamības potenciāls</small><span>100</span>
+      </div>
+      <div class="website-value__legend" aria-hidden="true">
+        <span><i></i>Mājaslapa + SEO</span>
+        <span><i></i>Bez mājaslapas</span>
+      </div>
+    </footer>
+  </div>
+</section>
+
+<style>
+  .website-process,
+  .website-pricing,
+  .website-value {
+    width: min(calc(100% - 4rem), 94rem);
+    margin-inline: auto;
+    padding-block: clamp(5rem, 9vw, 9rem);
+  }
+
+  .website-process__header,
+  .website-pricing__header {
+    display: grid;
+    grid-template-columns: minmax(18rem, 0.72fr) minmax(0, 1.28fr);
+    align-items: end;
+    gap: clamp(3rem, 6vw, 6rem);
+    margin-bottom: clamp(3rem, 6vw, 6rem);
+  }
+
+  .website-process h2,
+  .website-pricing h2,
+  .website-value h2 {
+    color: white;
+    font-size: clamp(2.3rem, 4.25vw, 4.5rem);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    text-wrap: balance;
+  }
+
+  .website-value h2 {
+    max-width: 14ch;
+    font-size: clamp(2.3rem, 3.6vw, 3.75rem);
+  }
+
+  .website-process__header > p,
+  .website-pricing__header > p,
+  .website-value__copy > p {
+    max-width: 62ch;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.6;
+  }
+
+  .website-process__track {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .website-process__track::before {
+    position: absolute;
+    top: 2rem;
+    right: 0;
+    left: 0;
+    height: 1px;
+    background: linear-gradient(90deg, #e0234e, rgb(255 255 255 / 14%));
+    content: '';
+  }
+
+  .website-process__track > li {
+    position: relative;
+    padding-top: 6.5rem;
+  }
+
+  .website-process__track > li:nth-child(even) {
+    padding-top: 9rem;
+  }
+
+  .website-process__marker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    width: 4rem;
+    height: 4rem;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgb(224 35 78 / 52%);
+    border-radius: 50%;
+    background: #080506;
+    color: #f75f7f;
+  }
+
+  .website-process__marker :global(svg) {
+    width: 1.35rem;
+    height: 1.35rem;
+  }
+  .website-process__marker span {
+    position: absolute;
+    top: -0.2rem;
+    right: -0.5rem;
+    color: var(--text-muted);
+    font: 550 0.72rem/1.6 var(--font-mono);
+  }
+
+  .website-process h3,
+  .website-pricing h3 {
+    color: white;
+    font-size: clamp(1rem, 1.25vw, 1.25rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1.4;
+  }
+
+  .website-process__track > li > p {
+    margin-top: 1rem;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.6;
+  }
+
+  .website-process__track ul {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .website-process__track ul li {
+    position: relative;
+    padding-left: 1rem;
+    color: var(--text-muted);
+    font: 550 0.72rem/1.6 var(--font-mono);
+  }
+
+  .website-process__track ul li::before {
+    position: absolute;
+    top: 0.65em;
+    left: 0;
+    width: 0.3rem;
+    height: 0.3rem;
+    border-radius: 50%;
+    background: #e0234e;
+    content: '';
+  }
+
+  .website-proof {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    width: min(calc(100% - 2rem), 118rem);
+    min-height: clamp(38rem, 78svh, 52rem);
+    margin-inline: auto;
+    overflow: hidden;
+    place-items: center;
+    background: #030303;
+  }
+
+  .website-proof__atmosphere {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background:
+      radial-gradient(circle at 50% 55%, rgb(98 11 34 / 24%), transparent 30rem),
+      radial-gradient(circle at 18% 30%, rgb(224 35 78 / 8%), transparent 18rem), #030303;
+  }
+
+  .website-proof__content {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    max-width: 56rem;
+    justify-items: center;
+    padding: 6rem 2rem;
+    text-align: center;
+  }
+
+  .website-proof h2 {
+    color: white;
+    font-size: clamp(3.4rem, 6vw, 6rem);
+    font-weight: 400;
+    letter-spacing: -0.04em;
+    line-height: 0.98;
+    text-wrap: balance;
+  }
+
+  .website-proof h2 strong {
+    color: #f75f7f;
+    font-weight: inherit;
+  }
+
+  .website-proof__content p {
+    max-width: 62ch;
+    margin-top: 2rem;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.6;
+  }
+
+  .website-proof__content > a,
+  .website-value__copy > a {
+    display: inline-flex;
+    min-height: 3.25rem;
+    margin-top: 2rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    border-radius: 0.75rem;
+    padding-inline: 1.5rem;
+    background: white;
+    color: #090909;
+    font-size: 1rem;
+    font-weight: 650;
+    transition:
+      transform 220ms var(--ease-out-expo),
+      background-color 180ms ease;
+  }
+
+  .website-proof__content > a:hover,
+  .website-value__copy > a:hover {
+    background: rgb(255 255 255 / 90%);
+    transform: translateY(-2px);
+  }
+
+  .website-proof__marks {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .website-proof__mark {
+    --float-small: 0.65rem;
+    --float-large: 1.55rem;
+    position: absolute;
+    display: grid;
+    width: clamp(4.25rem, 6vw, 6.5rem);
+    aspect-ratio: 1;
+    place-items: center;
+    border: 1px solid rgb(224 35 78 / 42%);
+    border-radius: 50%;
+    background: #080607;
+    color: rgb(255 255 255 / 72%);
+    animation: website-mark-float calc(12s + var(--mark-index) * 0.7s) ease-in-out infinite;
+  }
+
+  .website-proof__mark b {
+    text-align: center;
+    font-size: clamp(0.72rem, 0.85vw, 0.9rem);
+    font-weight: 650;
+    line-height: 1.15;
+  }
+  .website-proof__mark b br:last-child {
+    display: none;
+  }
+  .website-proof__mark img {
+    width: 72%;
+    height: 72%;
+    object-fit: contain;
+  }
+  .website-proof__mark:nth-child(1) {
+    top: 18%;
+    left: 8%;
+  }
+  .website-proof__mark:nth-child(2) {
+    --float-large: 1.9rem;
+    right: 9%;
+    bottom: 18%;
+    width: clamp(5rem, 7vw, 7.5rem);
+  }
+  .website-proof__mark:nth-child(3) {
+    top: 10%;
+    right: 24%;
+  }
+  .website-proof__mark:nth-child(4) {
+    --float-large: 1.75rem;
+    bottom: 10%;
+    left: 16%;
+  }
+  .website-proof__mark:nth-child(5) {
+    top: 46%;
+    left: 3%;
+    width: clamp(3.75rem, 5vw, 5.25rem);
+  }
+  .website-proof__mark:nth-child(6) {
+    --float-large: 1.85rem;
+    top: 40%;
+    right: 4%;
+    width: clamp(3.75rem, 5vw, 5.25rem);
+  }
+  .website-proof__mark:nth-child(7) {
+    bottom: 7%;
+    right: 35%;
+    width: clamp(3.5rem, 4.5vw, 4.75rem);
+  }
+
+  @keyframes website-mark-float {
+    0%, 100% {
+      transform: translate3d(0, calc(var(--float-small) * -0.35), 0);
+    }
+    18% {
+      transform: translate3d(0, var(--float-small), 0);
+    }
+    39% {
+      transform: translate3d(0, calc(var(--float-small) * -1), 0);
+    }
+    58% {
+      transform: translate3d(0, calc(var(--float-small) * 0.45), 0);
+    }
+    78% {
+      transform: translate3d(0, calc(var(--float-large) * -1), 0);
+    }
+    90% {
+      transform: translate3d(0, calc(var(--float-large) * 0.7), 0);
+    }
+  }
+
+  .website-pricing__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--pricing-columns, 3), minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+
+  .website-pricing__plan {
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 12%);
+    border-radius: 1rem;
+    background: #090909;
+  }
+
+  .website-pricing__plan[data-featured='true'] {
+    transform: translateY(-1.5rem);
+  }
+  .website-pricing__field {
+    min-height: 12rem;
+    padding: 2rem;
+    background:
+      radial-gradient(circle at 90% 10%, rgb(224 35 78 / 28%), transparent 12rem),
+      linear-gradient(135deg, #100507, #3b0716 58%, #650b25);
+  }
+  .website-pricing__plan:nth-child(2) .website-pricing__field {
+    background:
+      radial-gradient(circle at 72% 18%, rgb(247 95 127 / 24%), transparent 14rem),
+      linear-gradient(135deg, #160508, #620b22 58%, #9a1238);
+  }
+  .website-pricing__plan:nth-child(3) .website-pricing__field {
+    background:
+      radial-gradient(circle at 88% 15%, rgb(224 35 78 / 18%), transparent 12rem),
+      linear-gradient(135deg, #100507, #300615 50%, #58091e);
+  }
+
+  .website-pricing__field > p {
+    margin-top: 2rem;
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  .website-pricing__field strong {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: clamp(2.3rem, 3.3vw, 3.5rem);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums lining-nums;
+    white-space: nowrap;
+  }
+
+  .website-pricing__body {
+    display: grid;
+    gap: 1.5rem;
+    padding: 2rem;
+  }
+  .website-pricing__body > p {
+    min-height: 4.8rem;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  .website-pricing__body ul {
+    display: grid;
+    gap: 0.75rem;
+    padding: 0;
+    list-style: none;
+  }
+  .website-pricing__body li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.45;
+  }
+  .website-pricing__body li :global(svg) {
+    width: 1rem;
+    height: 1rem;
+    flex: none;
+    margin-top: 0.2rem;
+    color: #f75f7f;
+  }
+  .website-pricing__body a {
+    display: flex;
+    min-height: 2.75rem;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid rgb(255 255 255 / 10%);
+    padding-top: 1rem;
+    color: white;
+    font-size: 1rem;
+    font-weight: 650;
+  }
+
+  .website-value {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(28rem, 1.2fr);
+    align-items: center;
+    gap: clamp(3rem, 6vw, 6rem);
+  }
+
+  .website-value__copy > p {
+    margin-top: 2rem;
+  }
+  .website-value__copy > a {
+    margin-top: 1.5rem;
+  }
+  .website-value__comparison {
+    display: grid;
+    gap: 1.5rem;
+  }
+  .website-value__path {
+    display: grid;
+  }
+  .website-value__path > span {
+    position: relative;
+    display: flex;
+    min-height: 7rem;
+    align-items: center;
+    justify-content: flex-end;
+    border-radius: 0 2rem 2rem 0;
+    padding-inline: 2rem;
+    overflow: hidden;
+  }
+  .website-value__path > span::before {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      90deg,
+      rgb(98 11 34 / 0%) 0%,
+      rgb(98 11 34 / 42%) 18%,
+      #8d1232 48%,
+      #e0234e 100%
+    );
+    content: '';
+  }
+  .website-value__path > span b {
+    position: relative;
+    z-index: 1;
+    margin-left: auto;
+    color: white;
+    font-size: clamp(2.5rem, 4vw, 4.5rem);
+    font-weight: 400;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .website-value__path--strong {
+    width: 92%;
+  }
+  .website-value__path--weak {
+    width: 35%;
+  }
+  .website-value__path--weak > span {
+    min-height: 6rem;
+  }
+  .website-value__path--weak > span::before {
+    background: linear-gradient(
+      90deg,
+      rgb(63 8 35 / 0%) 0%,
+      rgb(84 10 48 / 48%) 22%,
+      #72123d 58%,
+      #c32969 100%
+    );
+  }
+  .website-value__comparison footer {
+    display: grid;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+    border-top: 1px solid rgb(255 255 255 / 12%);
+    padding-top: 1rem;
+    color: var(--text-muted);
+    font: 550 clamp(0.72rem, 0.85vw, 0.9rem)/1.6 var(--font-mono);
+  }
+  .website-value__axis,
+  .website-value__legend {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .website-value__axis small {
+    text-align: center;
+  }
+  .website-value__legend {
+    justify-content: flex-start;
+    gap: 2rem;
+  }
+  .website-value__legend span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+  }
+  .website-value__legend i {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: #e0234e;
+  }
+  .website-value__legend span:last-child i {
+    background: #c32969;
+  }
+  .website-value__comparison footer > p {
+    color: var(--text-muted);
+    font: 550 0.72rem/1.6 var(--font-mono);
+  }
+
+  @media (max-width: 980px) {
+    .website-process__track {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 3rem 2rem;
+    }
+    .website-process__track::before {
+      display: none;
+    }
+    .website-process__track > li,
+    .website-process__track > li:nth-child(even) {
+      padding-top: 5.5rem;
+    }
+    .website-value {
+      grid-template-columns: 1fr;
+    }
+    .website-pricing__plan[data-featured='true'] {
+      transform: none;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .website-process,
+    .website-pricing,
+    .website-value {
+      width: 100%;
+      padding: 5rem 1.5rem;
+    }
+    .website-process__header,
+    .website-pricing__header {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    .website-process__track {
+      grid-template-columns: 1fr;
+      gap: 0;
+      padding-left: 1rem;
+    }
+    .website-process__track::after {
+      position: absolute;
+      top: 2rem;
+      bottom: 2rem;
+      left: 3rem;
+      width: 1px;
+      background: rgb(224 35 78 / 36%);
+      content: '';
+    }
+    .website-process__track > li,
+    .website-process__track > li:nth-child(even) {
+      padding: 0 0 3rem 6rem;
+    }
+    .website-process__track > li:last-child {
+      padding-bottom: 0;
+    }
+    .website-process__marker {
+      z-index: 1;
+    }
+    .website-proof {
+      width: 100%;
+      min-height: 42rem;
+    }
+    .website-proof__content {
+      padding-inline: 1.5rem;
+    }
+    .website-proof h2 {
+      font-size: clamp(3rem, 14vw, 4.75rem);
+    }
+    .website-proof__mark {
+      width: 4rem;
+      opacity: 0.7;
+      --float-small: 0.35rem;
+      --float-large: 0.85rem;
+    }
+    .website-proof__mark:nth-child(2) {
+      --float-large: 1rem;
+      right: -1rem;
+      bottom: 14%;
+      width: 5rem;
+    }
+    .website-proof__mark:nth-child(3) {
+      top: 7%;
+      right: 8%;
+    }
+    .website-proof__mark:nth-child(4) {
+      --float-large: 0.95rem;
+      bottom: 8%;
+      left: 4%;
+    }
+    .website-proof__mark:nth-child(5) {
+      top: 36%;
+      left: -1.5rem;
+    }
+    .website-proof__mark:nth-child(6) {
+      --float-large: 1rem;
+      top: 38%;
+      right: -1.5rem;
+    }
+    .website-proof__mark:nth-child(7) {
+      right: auto;
+      bottom: 3%;
+      left: 52%;
+      display: grid;
+      width: 3.5rem;
+    }
+    .website-pricing__grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    .website-pricing__body > p {
+      min-height: 0;
+    }
+    .website-value {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+    .website-value__path--strong {
+      width: 100%;
+    }
+    .website-value__path--weak {
+      width: 38%;
+    }
+    .website-value__path > span {
+      min-height: 5.5rem;
+      border-radius: 0 1rem 1rem 0;
+      padding-inline: 1.5rem;
+    }
+    .website-value__path--weak > span {
+      min-height: 4.75rem;
+    }
+    .website-value__path > span b {
+      font-size: clamp(2rem, 10vw, 3rem);
+    }
+    .website-value__legend {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .website-proof__mark {
+      animation: none;
+    }
+    .website-proof__content > a,
+    .website-value__copy > a {
+      transition: none;
+    }
+  }
+</style>

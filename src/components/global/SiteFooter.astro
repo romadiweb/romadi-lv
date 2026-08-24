@@ -48,8 +48,8 @@ const cta =
 
   {
     ctaVariant && (
-      <section class="site-footer__cta" aria-labelledby="footer-cta-title">
-        <div class="site-footer__cta-copy" data-reveal>
+      <section class="site-footer__cta" aria-labelledby="footer-cta-title" data-reveal>
+        <div class="site-footer__cta-copy">
           <h2 id="footer-cta-title">
             {cta.title.split('\n').map((line, index) => (
               <>
@@ -60,7 +60,7 @@ const cta =
           </h2>
         </div>
 
-        <div class="site-footer__cta-action" data-reveal>
+        <div class="site-footer__cta-action">
           <p>{cta.text}</p>
           <a href={cta.href} data-astro-prefetch>
             {cta.label}

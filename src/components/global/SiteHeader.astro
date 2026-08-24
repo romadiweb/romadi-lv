@@ -266,7 +266,7 @@ function isCurrentPage(href: string): boolean {
         delete document.body.dataset.mobileMenuOpen;
         closeTimer = window.setTimeout(() => {
           menu.open = false;
-        }, 560);
+        }, 340);
       };
 
       summary.addEventListener('click', (event) => {
@@ -837,16 +837,20 @@ function isCurrentPage(href: string): boolean {
     box-shadow: -2rem 0 6rem rgb(0 0 0 / 52%);
     opacity: 0.75;
     pointer-events: none;
-    transform: translateX(105%);
+    clip-path: inset(0 0 0 100%);
+    visibility: hidden;
     transition:
-      transform 580ms var(--ease-out-expo),
-      opacity 420ms ease;
+      clip-path 340ms var(--ease-out-expo),
+      opacity 220ms ease,
+      visibility 0s linear 340ms;
   }
 
   .site-header__mobile-menu[data-mobile-open='true'] .site-header__mobile-panel {
     opacity: 1;
     pointer-events: auto;
-    transform: translateX(0);
+    clip-path: inset(0);
+    visibility: visible;
+    transition-delay: 0s;
   }
 
   .site-header__mobile-navigation {
@@ -914,17 +918,10 @@ function isCurrentPage(href: string): boolean {
   }
 
   [data-mobile-item] {
-    opacity: 0;
-    transform: translate3d(-1.2rem, -1.25rem, 0) rotate(-4deg);
+    opacity: 1;
+    transform: none;
     transform-origin: left top;
-    transition:
-      opacity 180ms ease,
-      transform 280ms ease;
-  }
-
-  .site-header__mobile-menu[data-mobile-open='true'] [data-mobile-item] {
-    animation: mobile-menu-domino 620ms var(--ease-out-expo) both;
-    animation-delay: calc(120ms + var(--mobile-index) * 62ms);
+    transition: color 180ms ease;
   }
 
   .site-header__mobile-footer {

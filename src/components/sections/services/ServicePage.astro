@@ -1,6 +1,7 @@
 ---
 import { Icon } from 'astro-icon/components';
 import ServiceVisual from '@/components/sections/services/ServiceVisual.astro';
+import WebsiteDevelopmentSections from '@/components/sections/services/WebsiteDevelopmentSections.astro';
 import { SERVICES, type ServiceDefinition } from '@/data/services';
 
 interface Props {
@@ -68,39 +69,79 @@ const whatsappHref = `https://wa.me/37126625125?text=${encodeURIComponent(
     </div>
 
     <nav class="service-hero__navigation" aria-label="Citi pakalpojumi">
-      {
-        SERVICES.map((item) => (
-          <a
-            href={item.href}
-            aria-current={item.slug === service.slug ? 'page' : undefined}
-            data-astro-reload
-          >
-            <span>{item.number}</span>
-            {item.shortLabel}
-          </a>
-        ))
-      }
+      <div class="service-hero__navigation-grid">
+        {
+          SERVICES.map((item) => (
+            <a
+              href={item.href}
+              aria-current={item.slug === service.slug ? 'page' : undefined}
+              data-astro-reload
+            >
+              <span>{item.number}</span>
+              {item.shortLabel}
+            </a>
+          ))
+        }
+      </div>
+
+      <details class="service-hero__switcher">
+        <summary>
+          <span>
+            <small>Pakalpojums</small>
+            <strong><i>{service.number}</i>{service.shortLabel}</strong>
+          </span>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M7 10L12 15L17 10"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </summary>
+
+        <div class="service-hero__switcher-list">
+          {
+            SERVICES.map((item) => (
+              <a
+                href={item.href}
+                aria-current={item.slug === service.slug ? 'page' : undefined}
+                data-astro-reload
+              >
+                <span>{item.number}</span>
+                <strong>{item.shortLabel}</strong>
+                {item.slug === service.slug && <small>Pašreizējais</small>}
+              </a>
+            ))
+          }
+        </div>
+      </details>
     </nav>
   </section>
 
-  <section class="service-details" aria-labelledby="service-details-title">
-    <div class="service-details__heading" data-reveal>
-      <p>{service.number} / {service.label}</p>
-      <h2 id="service-details-title">Ko iegūst jūsu uzņēmums.</h2>
-    </div>
+  {
+    service.visual === 'website' ? (
+      <WebsiteDevelopmentSections contactHref={contactHref} serviceKey={service.slug} />
+    ) : (
+      <section class="service-details" aria-labelledby="service-details-title">
+        <div class="service-details__heading" data-reveal>
+          <p>{service.number} / {service.label}</p>
+          <h2 id="service-details-title">Ko iegūst jūsu uzņēmums.</h2>
+        </div>
 
-    <ol class="service-details__grid">
-      {
-        service.details.map((detail, index) => (
-          <li data-reveal>
-            <span>{String(index + 1).padStart(2, '0')}</span>
-            <h3>{detail.title}</h3>
-            <p>{detail.text}</p>
-          </li>
-        ))
-      }
-    </ol>
-  </section>
+        <ol class="service-details__grid">
+          {service.details.map((detail, index) => (
+            <li data-reveal>
+              <span>{String(index + 1).padStart(2, '0')}</span>
+              <h3>{detail.title}</h3>
+              <p>{detail.text}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+    )
+  }
 </article>
 
 <script>
@@ -179,7 +220,7 @@ const whatsappHref = `https://wa.me/37126625125?text=${encodeURIComponent(
     gap: 0.6ch;
     margin-bottom: 1.8rem;
     color: rgb(255 255 255 / 48%);
-    font: 600 0.66rem/1.2 var(--font-mono);
+    font: 550 0.72rem/1.6 var(--font-mono);
     letter-spacing: 0.04em;
   }
 
@@ -197,7 +238,7 @@ const whatsappHref = `https://wa.me/37126625125?text=${encodeURIComponent(
     max-width: 14ch;
     color: white;
     font-size: clamp(3rem, 4vw, 4.4rem);
-    font-weight: 440;
+    font-weight: 400;
     letter-spacing: -0.04em;
     line-height: 1.02;
     text-wrap: balance;
@@ -206,8 +247,8 @@ const whatsappHref = `https://wa.me/37126625125?text=${encodeURIComponent(
   .service-hero__intro {
     max-width: 55ch;
     margin-top: clamp(2.5rem, 4vw, 4rem);
-    color: rgb(255 255 255 / 60%);
-    font: 500 clamp(0.8rem, 0.92vw, 0.94rem)/1.78 var(--font-mono);
+    color: var(--text-secondary);
+    font: 500 1rem/1.6 var(--font-sans);
     text-wrap: pretty;
   }
 
@@ -227,7 +268,7 @@ const whatsappHref = `https://wa.me/37126625125?text=${encodeURIComponent(
     gap: 0.65rem;
     border-radius: 0.75rem;
     padding-inline: 1.3rem;
-    font-size: 0.82rem;
+    font-size: 1rem;
     font-weight: 680;
     line-height: 1;
     transition:
@@ -279,15 +320,18 @@ const whatsappHref = `https://wa.me/37126625125?text=${encodeURIComponent(
   .service-hero__navigation {
     position: relative;
     z-index: 2;
-    display: grid;
     width: min(calc(100% - 3rem), 94rem);
     margin-inline: auto;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-    border-top: 1px solid rgb(255 255 255 / 11%);
     background: #030303;
   }
 
-  .service-hero__navigation a {
+  .service-hero__navigation-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    border-top: 1px solid rgb(255 255 255 / 11%);
+  }
+
+  .service-hero__navigation-grid a {
     display: grid;
     min-width: 0;
     min-height: 5rem;
@@ -295,27 +339,31 @@ const whatsappHref = `https://wa.me/37126625125?text=${encodeURIComponent(
     gap: 0.5rem;
     padding-inline: 0.8rem;
     color: rgb(255 255 255 / 40%);
-    font-size: clamp(0.64rem, 0.78vw, 0.75rem);
+    font-size: clamp(0.72rem, 0.85vw, 0.9rem);
     font-weight: 630;
     transition:
       color 180ms ease,
       background-color 180ms ease;
   }
 
-  .service-hero__navigation a + a {
+  .service-hero__navigation-grid a + a {
     border-left: 1px solid rgb(255 255 255 / 8%);
   }
-  .service-hero__navigation a span {
+  .service-hero__navigation-grid a span {
     color: rgb(255 255 255 / 25%);
     font: 550 0.55rem/1 var(--font-mono);
   }
-  .service-hero__navigation a:hover,
-  .service-hero__navigation a[aria-current='page'] {
+  .service-hero__navigation-grid a:hover,
+  .service-hero__navigation-grid a[aria-current='page'] {
     color: white;
     background: rgb(255 255 255 / 3.5%);
   }
-  .service-hero__navigation a[aria-current='page'] span {
+  .service-hero__navigation-grid a[aria-current='page'] span {
     color: #f75f7f;
+  }
+
+  .service-hero__switcher {
+    display: none;
   }
 
   .service-details {
@@ -330,14 +378,14 @@ const whatsappHref = `https://wa.me/37126625125?text=${encodeURIComponent(
   .service-details__heading p {
     margin-bottom: 1.5rem;
     color: rgb(255 255 255 / 38%);
-    font: 550 0.62rem/1.4 var(--font-mono);
+    font: 550 0.72rem/1.6 var(--font-mono);
   }
 
   .service-details h2 {
     max-width: 11ch;
     color: white;
     font-size: clamp(2.7rem, 4.4vw, 4.5rem);
-    font-weight: 440;
+    font-weight: 500;
     letter-spacing: -0.04em;
     line-height: 1.02;
   }
@@ -367,13 +415,14 @@ const whatsappHref = `https://wa.me/37126625125?text=${encodeURIComponent(
   .service-details__grid h3 {
     color: white;
     font-size: clamp(1.05rem, 1.35vw, 1.3rem);
-    font-weight: 620;
+    font-weight: 600;
     letter-spacing: -0.03em;
     line-height: 1.35;
   }
   .service-details__grid p {
-    color: rgb(255 255 255 / 52%);
-    font: 500 0.78rem/1.72 var(--font-mono);
+    max-width: 65ch;
+    color: var(--text-secondary);
+    font: 500 1rem/1.6 var(--font-sans);
   }
 
   @keyframes service-cursor {
@@ -396,13 +445,13 @@ const whatsappHref = `https://wa.me/37126625125?text=${encodeURIComponent(
       width: clamp(42rem, 61vw, 54rem);
       margin-right: -10rem;
     }
-    .service-hero__navigation {
+    .service-hero__navigation-grid {
       grid-template-columns: repeat(4, 1fr);
     }
-    .service-hero__navigation a:nth-child(5) {
+    .service-hero__navigation-grid a:nth-child(5) {
       border-left: 0;
     }
-    .service-hero__navigation a:nth-child(n + 5) {
+    .service-hero__navigation-grid a:nth-child(n + 5) {
       border-top: 1px solid rgb(255 255 255 / 8%);
     }
   }
@@ -433,16 +482,113 @@ const whatsappHref = `https://wa.me/37126625125?text=${encodeURIComponent(
     }
     .service-hero__navigation {
       width: calc(100% - 1.5rem);
-      grid-template-columns: 1fr 1fr;
+      border-top: 1px solid rgb(255 255 255 / 11%);
     }
-    .service-hero__navigation a {
-      min-height: 4.5rem;
+
+    .service-hero__navigation-grid {
+      display: none;
     }
-    .service-hero__navigation a:nth-child(odd) {
-      border-left: 0;
+
+    .service-hero__switcher {
+      display: block;
     }
-    .service-hero__navigation a:nth-child(n + 3) {
+
+    .service-hero__switcher summary {
+      display: flex;
+      min-height: 5rem;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.85rem 1rem;
+      color: white;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .service-hero__switcher summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .service-hero__switcher summary > span {
+      display: grid;
+      min-width: 0;
+      gap: 0.45rem;
+    }
+
+    .service-hero__switcher summary small {
+      color: rgb(255 255 255 / 38%);
+      font: 550 0.72rem/1.6 var(--font-mono);
+    }
+
+    .service-hero__switcher summary strong {
+      display: flex;
+      min-width: 0;
+      align-items: baseline;
+      gap: 0.7rem;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .service-hero__switcher summary i {
+      color: #f75f7f;
+      font: 550 0.72rem/1.6 var(--font-mono);
+      font-style: normal;
+    }
+
+    .service-hero__switcher summary svg {
+      width: 1.25rem;
+      height: 1.25rem;
+      flex: none;
+      color: rgb(255 255 255 / 54%);
+      transition: transform 240ms var(--ease-out-expo);
+    }
+
+    .service-hero__switcher[open] summary svg {
+      transform: rotate(180deg);
+    }
+
+    .service-hero__switcher-list {
+      display: grid;
       border-top: 1px solid rgb(255 255 255 / 8%);
+    }
+
+    .service-hero__switcher-list a {
+      display: grid;
+      min-height: 3.75rem;
+      grid-template-columns: 2rem minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 0.65rem;
+      border-bottom: 1px solid rgb(255 255 255 / 7%);
+      padding-inline: 1rem;
+      color: rgb(255 255 255 / 58%);
+    }
+
+    .service-hero__switcher-list a:last-child {
+      border-bottom: 0;
+    }
+
+    .service-hero__switcher-list a[aria-current='page'] {
+      background: rgb(255 255 255 / 3.5%);
+      color: white;
+    }
+
+    .service-hero__switcher-list a > span {
+      color: rgb(255 255 255 / 30%);
+      font: 550 0.58rem/1 var(--font-mono);
+    }
+
+    .service-hero__switcher-list a[aria-current='page'] > span {
+      color: #f75f7f;
+    }
+
+    .service-hero__switcher-list a > strong {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .service-hero__switcher-list a > small {
+      color: rgb(255 255 255 / 32%);
+      font: 550 0.72rem/1.6 var(--font-mono);
     }
     .service-details {
       width: calc(100% - 2.5rem);

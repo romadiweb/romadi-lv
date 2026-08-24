@@ -346,9 +346,13 @@
 
   @media (max-width: 700px) {
     .about-intro {
-      width: calc(100% - 1.5rem);
+      width: 100%;
       min-height: 49rem;
-      padding: 10rem 0.75rem 3.5rem;
+      padding: 10rem 1.5rem 3.5rem;
+      background:
+        radial-gradient(circle at 88% 18%, rgb(224 35 78 / 24%), transparent 32rem),
+        radial-gradient(circle at 12% 72%, rgb(98 11 34 / 24%), transparent 24rem),
+        linear-gradient(145deg, #080204, #030303 58%);
     }
 
     .about-intro::after {
@@ -371,10 +375,7 @@
     }
 
     .about-intro__plasma {
-      top: 4.5rem;
-      right: -12rem;
-      width: 40rem;
-      opacity: 0.5;
+      display: none;
     }
 
     .about-intro__quote-mark {

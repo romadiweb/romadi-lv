@@ -6,6 +6,7 @@ export function initRevealAnimations(): void {
   const elements = document.querySelectorAll<HTMLElement>(revealSelector);
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const compactViewport = window.matchMedia('(max-width: 700px)').matches;
 
   elements.forEach((element) => {
     if (element.dataset.revealInitialized === 'true') {
@@ -14,7 +15,10 @@ export function initRevealAnimations(): void {
 
     element.dataset.revealInitialized = 'true';
 
-    if (reducedMotion) {
+    // Content is visible by default. Compact viewports intentionally skip scroll
+    // reveals so fast scrolling and browser back/forward restoration never expose
+    // an empty section while the main thread catches up.
+    if (reducedMotion || compactViewport) {
       element.style.opacity = '1';
       element.style.transform = 'none';
       return;
