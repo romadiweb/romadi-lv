@@ -1,0 +1,176 @@
+---
+interface Props {
+  contactHref: string;
+}
+
+const { contactHref } = Astro.props;
+---
+
+<section class="commerce-reach" aria-labelledby="commerce-reach-title">
+  <div class="commerce-reach__copy" data-reveal>
+    <p>&#123; PĀRDOŠANAS POTENCIĀLS &#125;</p>
+    <h2 id="commerce-reach-title">Vairāk ceļu līdz pirkumam.</h2>
+    <p>
+      Sociālie tīkli palīdz produktu pamanīt. Pilnvērtīgs interneta veikals ļauj to atrast,
+      salīdzināt, apmaksāt un saņemt vienā nepārtrauktā plūsmā.
+    </p>
+    <a href={contactHref} data-astro-reload>Pārrunāt projektu <span aria-hidden="true">↗</span></a>
+  </div>
+
+  <div class="commerce-reach__chart" data-reveal aria-label="Pārdošanas iespēju potenciāla salīdzinājums">
+    <div class="commerce-reach__bar commerce-reach__bar--store">
+      <span><b>85%</b></span>
+    </div>
+    <div class="commerce-reach__bar commerce-reach__bar--social">
+      <span><b>40%</b></span>
+    </div>
+    <footer>
+      <div class="commerce-reach__axis" aria-hidden="true">
+        <small>0</small>
+        <p>pārdošanas iespēju potenciāls</p>
+        <small>100</small>
+      </div>
+      <div class="commerce-reach__legend">
+        <span><i></i>Pilnvērtīgs interneta veikals</span>
+        <span><i></i>Tikai sociālo tīklu veikals</span>
+      </div>
+      <p>* Salīdzinošs iespēju indekss, nevis garantēta pārdošanas prognoze.</p>
+    </footer>
+  </div>
+</section>
+
+<style>
+  .commerce-reach {
+    display: grid;
+    width: min(calc(100% - 4rem), 94rem);
+    grid-template-columns: minmax(18rem, 0.78fr) minmax(0, 1.22fr);
+    align-items: center;
+    gap: clamp(4rem, 9vw, 10rem);
+    margin-inline: auto;
+    padding-block: clamp(5rem, 9vw, 9rem);
+  }
+
+  .commerce-reach__copy > p:first-child {
+    margin: 0 0 1.25rem;
+    color: var(--color-text-muted);
+    font: 550 clamp(0.72rem, 0.85vw, 0.9rem)/1.6 var(--font-mono);
+  }
+
+  .commerce-reach h2 {
+    max-width: 12ch;
+    margin: 0;
+    color: white;
+    font-size: clamp(2.3rem, 4.25vw, 4.5rem);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    text-wrap: balance;
+  }
+
+  .commerce-reach__copy > p:nth-of-type(2) {
+    max-width: 52ch;
+    margin: 1.5rem 0 0;
+    color: var(--color-text-secondary, #b5b5bb);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+
+  .commerce-reach__copy > a {
+    display: inline-flex;
+    min-height: 3.5rem;
+    align-items: center;
+    gap: 2rem;
+    margin-top: 2rem;
+    border-radius: 0.8rem;
+    padding-inline: 1.5rem;
+    background: white;
+    color: #090909;
+    font-size: 1rem;
+    font-weight: 650;
+  }
+
+  .commerce-reach__copy > a span { font-family: var(--font-mono); }
+
+  .commerce-reach__chart {
+    display: grid;
+    gap: 1.5rem;
+    min-width: 0;
+  }
+
+  .commerce-reach__bar {
+    display: flex;
+    height: clamp(5.5rem, 8vw, 7.5rem);
+    justify-content: flex-end;
+    overflow: hidden;
+    border-radius: 0 2rem 2rem 0;
+    background:
+      linear-gradient(90deg, rgb(3 3 3 / 98%) 0%, rgb(26 4 22 / 84%) 28%, transparent 72%),
+      linear-gradient(100deg, #260817, #8b125e 65%, #c91e77);
+  }
+
+  .commerce-reach__bar span {
+    display: flex;
+    width: 85%;
+    align-items: center;
+    justify-content: flex-end;
+    border-radius: 0 2rem 2rem 0;
+    padding-inline: 2rem;
+    background: linear-gradient(95deg, rgb(38 8 23 / 0%), #8e103b 58%, #e0234e);
+  }
+
+  .commerce-reach__bar--social { width: 52%; }
+  .commerce-reach__bar--social span {
+    width: 100%;
+    background: linear-gradient(95deg, rgb(38 5 27 / 0%), #73104e 54%, #c21d70);
+  }
+
+  .commerce-reach__bar b {
+    color: white;
+    font-size: clamp(2.8rem, 5vw, 5rem);
+    font-weight: 400;
+    letter-spacing: -0.055em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  .commerce-reach__chart footer {
+    border-top: 1px solid rgb(255 255 255 / 14%);
+    padding-top: 1rem;
+  }
+
+  .commerce-reach__axis,
+  .commerce-reach__legend {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    color: var(--color-text-muted);
+    font: 550 0.72rem/1.5 var(--font-mono);
+  }
+
+  .commerce-reach__axis p { margin: 0; text-align: center; }
+  .commerce-reach__legend { justify-content: flex-start; gap: 2rem; margin-top: 1.5rem; }
+  .commerce-reach__legend span { display: flex; align-items: center; gap: 0.6rem; }
+  .commerce-reach__legend i { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #e0234e; }
+  .commerce-reach__legend span:last-child i { background: #c21d70; }
+
+  .commerce-reach__chart footer > p {
+    margin: 1rem 0 0;
+    color: rgb(255 255 255 / 42%);
+    font: 500 0.72rem/1.5 var(--font-mono);
+  }
+
+  @media (max-width: 900px) {
+    .commerce-reach { grid-template-columns: 1fr; gap: 4rem; }
+    .commerce-reach h2 { max-width: 14ch; }
+  }
+
+  @media (max-width: 600px) {
+    .commerce-reach { width: calc(100% - 2.5rem); gap: 3rem; }
+    .commerce-reach__bar span { padding-inline: 1.25rem; }
+    .commerce-reach__bar--social { width: 58%; }
+    .commerce-reach__legend { align-items: flex-start; flex-direction: column; gap: 0.75rem; }
+  }
+</style>

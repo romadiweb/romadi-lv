@@ -756,31 +756,74 @@ const pricing = [
   }
 
   .website-pricing__plan {
-    overflow: hidden;
+    --plan-aura: rgb(224 35 78 / 34%);
+    --plan-field-start: #100507;
+    --plan-field-mid: #3b0716;
+    --plan-field-end: #650b25;
+    position: relative;
+    z-index: 0;
+    isolation: isolate;
     border: 1px solid rgb(255 255 255 / 12%);
     border-radius: 1rem;
     background: #090909;
+    transition: transform 280ms var(--ease-out-expo), border-color 220ms ease;
+  }
+  .website-pricing__plan::before {
+    position: absolute;
+    z-index: 0;
+    inset: -0.35rem;
+    border-radius: inherit;
+    background: transparent;
+    box-shadow: 0 0 2.4rem 0.35rem var(--plan-aura);
+    opacity: 0;
+    transform: scale(0.96);
+    transition: opacity 280ms ease, transform 360ms var(--ease-out-expo);
+    content: '';
+    pointer-events: none;
   }
 
   .website-pricing__plan[data-featured='true'] {
     transform: translateY(-1.5rem);
   }
+  .website-pricing__plan:hover,
+  .website-pricing__plan:focus-within {
+    border-color: rgb(255 255 255 / 22%);
+    transform: translateY(-0.4rem);
+  }
+  .website-pricing__plan[data-featured='true']:hover,
+  .website-pricing__plan[data-featured='true']:focus-within {
+    transform: translateY(-1.9rem);
+  }
+  .website-pricing__plan:hover::before,
+  .website-pricing__plan:focus-within::before {
+    opacity: 1;
+    transform: scale(1);
+  }
   .website-pricing__field {
+    position: relative;
+    z-index: 1;
     min-height: 12rem;
+    overflow: hidden;
+    border-radius: calc(1rem - 1px) calc(1rem - 1px) 0 0;
     padding: 2rem;
     background:
-      radial-gradient(circle at 90% 10%, rgb(224 35 78 / 28%), transparent 12rem),
-      linear-gradient(135deg, #100507, #3b0716 58%, #650b25);
+      linear-gradient(rgb(214 218 224 / 10%) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(214 218 224 / 10%) 1px, transparent 1px),
+      radial-gradient(circle at 90% 10%, var(--plan-aura), transparent 12rem),
+      linear-gradient(135deg, var(--plan-field-start), var(--plan-field-mid) 58%, var(--plan-field-end));
+    background-size: 2rem 2rem, 2rem 2rem, auto, auto;
   }
-  .website-pricing__plan:nth-child(2) .website-pricing__field {
-    background:
-      radial-gradient(circle at 72% 18%, rgb(247 95 127 / 24%), transparent 14rem),
-      linear-gradient(135deg, #160508, #620b22 58%, #9a1238);
+  .website-pricing__plan:nth-child(2) {
+    --plan-aura: rgb(247 65 103 / 36%);
+    --plan-field-start: #160508;
+    --plan-field-mid: #620b22;
+    --plan-field-end: #9a1238;
   }
-  .website-pricing__plan:nth-child(3) .website-pricing__field {
-    background:
-      radial-gradient(circle at 88% 15%, rgb(224 35 78 / 18%), transparent 12rem),
-      linear-gradient(135deg, #100507, #300615 50%, #58091e);
+  .website-pricing__plan:nth-child(3) {
+    --plan-aura: rgb(190 24 67 / 30%);
+    --plan-field-start: #0d0406;
+    --plan-field-mid: #300615;
+    --plan-field-end: #58091e;
   }
 
   .website-pricing__field > p {
@@ -801,9 +844,13 @@ const pricing = [
   }
 
   .website-pricing__body {
+    position: relative;
+    z-index: 1;
     display: grid;
     gap: 1.5rem;
+    border-radius: 0 0 calc(1rem - 1px) calc(1rem - 1px);
     padding: 2rem;
+    background: #090909;
   }
   .website-pricing__body > p {
     min-height: 4.8rem;
@@ -1102,6 +1149,10 @@ const pricing = [
   @media (prefers-reduced-motion: reduce) {
     .website-proof__mark {
       animation: none;
+    }
+    .website-pricing__plan,
+    .website-pricing__plan::before {
+      transition: none;
     }
     .website-proof__content > a,
     .website-value__copy > a {

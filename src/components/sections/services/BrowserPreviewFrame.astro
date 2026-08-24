@@ -1,0 +1,120 @@
+---
+interface Props {
+  title: string;
+  src: string;
+  mobileSrc?: string;
+  width: number;
+  height: number;
+  fit?: 'cover' | 'contain';
+  imageBackground?: string;
+  objectPosition?: string;
+}
+
+const {
+  title,
+  src,
+  mobileSrc,
+  width,
+  height,
+  fit = 'cover',
+  imageBackground = '#f5f5f5',
+  objectPosition = 'top center',
+} = Astro.props;
+---
+
+<div class="browser-preview" style={`--preview-fit: ${fit}; --preview-background: ${imageBackground}; --preview-position: ${objectPosition};`}>
+  <div class="browser-preview__chrome">
+    <span aria-hidden="true"><i></i><i></i><i></i></span>
+    <small>{title}</small>
+    <b aria-hidden="true">↗</b>
+  </div>
+  <picture>
+    {mobileSrc && <source media="(max-width: 700px)" srcset={mobileSrc} />}
+    <img
+      src={src}
+      alt=""
+      width={width}
+      height={height}
+      loading="eager"
+      decoding="async"
+    />
+  </picture>
+</div>
+
+<style>
+  .browser-preview {
+    position: relative;
+    display: flex;
+    width: 96%;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    margin-inline: auto;
+    border-radius: 0.75rem;
+    flex: 0 0 auto;
+    flex-direction: column;
+    background: #f5f5f5;
+    box-shadow: 0 1.5rem 3rem rgb(0 0 0 / 48%);
+  }
+
+  .browser-preview__chrome {
+    display: grid;
+    height: 2rem;
+    min-height: 2rem;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid rgb(0 0 0 / 8%);
+    padding-inline: 0.55rem;
+    background: #f5f5f5;
+    color: rgb(0 0 0 / 42%);
+  }
+
+  .browser-preview__chrome > span {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    gap: 0.25rem;
+    line-height: 0;
+  }
+
+  .browser-preview__chrome i {
+    width: 0.32rem;
+    height: 0.32rem;
+    border-radius: 50%;
+    background: #ff5f57;
+  }
+
+  .browser-preview__chrome i:nth-child(2) { background: #febc2e; }
+  .browser-preview__chrome i:nth-child(3) { background: #28c840; }
+
+  .browser-preview__chrome small {
+    overflow: hidden;
+    max-width: 30ch;
+    text-overflow: ellipsis;
+    font: 500 0.42rem/1 var(--font-mono);
+    white-space: nowrap;
+  }
+
+  .browser-preview__chrome b {
+    justify-self: end;
+    font: 500 0.48rem/1 var(--font-mono);
+  }
+
+  picture {
+    display: block;
+    width: 100%;
+    min-height: 0;
+    flex: 1;
+    overflow: hidden;
+    background: var(--preview-background);
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: var(--preview-fit);
+    object-position: var(--preview-position);
+  }
+</style>

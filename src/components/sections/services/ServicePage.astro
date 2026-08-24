@@ -1,7 +1,11 @@
 ---
 import { Icon } from 'astro-icon/components';
 import ServiceVisual from '@/components/sections/services/ServiceVisual.astro';
+import ServicePricing from '@/components/sections/services/ServicePricing.astro';
 import WebsiteDevelopmentSections from '@/components/sections/services/WebsiteDevelopmentSections.astro';
+import EcommerceSalesSection from '@/components/sections/services/EcommerceSalesSection.astro';
+import EcommerceReachSection from '@/components/sections/services/EcommerceReachSection.astro';
+import DigitalProductsSections from '@/components/sections/services/DigitalProductsSections.astro';
 import { SERVICES, type ServiceDefinition } from '@/data/services';
 
 interface Props {
@@ -13,6 +17,30 @@ const contactHref = `/kontakti?pakalpojums=${encodeURIComponent(service.slug)}`;
 const whatsappHref = `https://wa.me/37126625125?text=${encodeURIComponent(
   `Labdien! Vēlos uzzināt vairāk par pakalpojumu “${service.label}”.`,
 )}`;
+
+const ecommercePricing = [
+  {
+    name: 'Pamata veikals',
+    price: '1 200 €',
+    text: 'Nelielam produktu klāstam un uzņēmumam, kas vēlas sākt pārdot tiešsaistē bez liekas sarežģītības.',
+    features: ['Līdz 30 produktiem', 'Maksājumu integrācija', 'Piegādes veidu uzstādīšana', 'Responsīvs dizains'],
+    action: 'Pārrunāt pamata veikalu',
+  },
+  {
+    name: 'Izaugsmes veikals',
+    price: '2 400 €',
+    text: 'Augošam uzņēmumam ar plašāku katalogu, pārdomātu pirkuma ceļu un nepieciešamām biznesa integrācijām.',
+    features: ['Neierobežots produktu katalogs', 'UX un pārdošanas struktūra', 'Noliktavas vai CRM integrācija', 'Analītika un tehniskais SEO'],
+    action: 'Pārrunāt izaugsmes veikalu',
+  },
+  {
+    name: 'Individuāla e-komercija',
+    price: '4 200 €',
+    text: 'Pielāgots e-komercijas risinājums sarežģītākiem procesiem, automatizācijai un lielākam pārdošanas apjomam.',
+    features: ['Individuāla funkcionalitāte', 'ERP un ārējo sistēmu integrācijas', 'Procesu automatizācija', 'Mērogojama arhitektūra'],
+    action: 'Pārrunāt individuālu veikalu',
+  },
+];
 ---
 
 <article class="service-page">
@@ -124,22 +152,42 @@ const whatsappHref = `https://wa.me/37126625125?text=${encodeURIComponent(
     service.visual === 'website' ? (
       <WebsiteDevelopmentSections contactHref={contactHref} serviceKey={service.slug} />
     ) : (
-      <section class="service-details" aria-labelledby="service-details-title">
-        <div class="service-details__heading" data-reveal>
-          <p>{service.number} / {service.label}</p>
-          <h2 id="service-details-title">Ko iegūst jūsu uzņēmums.</h2>
-        </div>
+      <>
+        {service.visual === 'commerce' ? (
+          <EcommerceSalesSection />
+        ) : service.visual === 'product' ? (
+          <DigitalProductsSections contactHref={contactHref} />
+        ) : (
+          <section class="service-details" aria-labelledby="service-details-title">
+            <div class="service-details__heading" data-reveal>
+              <p>{service.number} / {service.label}</p>
+              <h2 id="service-details-title">Ko iegūst jūsu uzņēmums.</h2>
+            </div>
 
-        <ol class="service-details__grid">
-          {service.details.map((detail, index) => (
-            <li data-reveal>
-              <span>{String(index + 1).padStart(2, '0')}</span>
-              <h3>{detail.title}</h3>
-              <p>{detail.text}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
+            <ol class="service-details__grid">
+              {service.details.map((detail, index) => (
+                <li data-reveal>
+                  <span>{String(index + 1).padStart(2, '0')}</span>
+                  <h3>{detail.title}</h3>
+                  <p>{detail.text}</p>
+                </li>
+              ))}
+            </ol>
+          </section>
+        )}
+
+        {service.visual === 'commerce' && (
+          <>
+            <ServicePricing
+              serviceKey={service.slug}
+              contactHref={contactHref}
+              intro="Trīs sākuma līmeņi interneta veikalam — no drošas pirmās versijas līdz pielāgotai e-komercijas sistēmai."
+              fallbackPlans={ecommercePricing}
+            />
+            <EcommerceReachSection contactHref={contactHref} />
+          </>
+        )}
+      </>
     )
   }
 </article>

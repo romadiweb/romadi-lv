@@ -1,0 +1,354 @@
+---
+interface Props {
+  contactHref: string;
+}
+
+const { contactHref } = Astro.props;
+import SystemWorkShowcase from './SystemWorkShowcase.astro';
+---
+
+<div class="digital-products-sections">
+  <section class="systems-intro" aria-labelledby="systems-intro-title">
+    <div class="systems-intro__copy" data-reveal>
+      <p>&#123; DIGITĀLĀS SISTĒMAS &#125;</p>
+      <h2 id="systems-intro-title">Jūsu procesam radīts digitāls rīks.</h2>
+      <p>
+        Rezervāciju sistēma, klientu portāls vai individuāls CMS nav tikai vēl viena
+        programma. Tā ir viena vieta, kur klienti rīkojas paši, bet komanda pārvalda
+        informāciju bez izkaisītām tabulām un atkārtota darba.
+      </p>
+      <a href={contactHref} data-astro-reload>Pārrunāt sistēmas ideju <span aria-hidden="true">↗</span></a>
+    </div>
+
+    <div class="systems-intro__visual" data-reveal>
+      <img
+        src="/images/about-collaboration.jpg"
+        alt="Komanda kopīgi strādā pie digitāla risinājuma"
+        width="1800"
+        height="1168"
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+  </section>
+
+  <section class="systems-story" aria-labelledby="systems-story-title" data-weighted-card>
+    <h2 id="systems-story-title" class="sr-only">Digitālas sistēmas ieguvumu piemērs</h2>
+    <div class="systems-story__glass">
+      <div class="systems-story__profile" data-reveal>
+        <div class="systems-story__avatar" aria-hidden="true">U</div>
+        <strong>Uzņēmuma vadītājs</strong>
+        <p>Tipisks rezervāciju sistēmas scenārijs</p>
+      </div>
+
+      <blockquote data-reveal>
+        <span aria-hidden="true">“</span>
+        <p>
+          Agrāk katrs rezervācijas pieprasījums prasīja saraksti, laika pārbaudi un manuālu
+          apstiprinājumu. Tagad klients pats redz pieejamos laikus, rezervē un saņem
+          apstiprinājumu, bet mēs vienuviet pārvaldām grafiku, klientus un izmaiņas.
+        </p>
+        <footer>
+          Individuāla sistēma ne tikai ietaupa komandas laiku — tā ļauj apkalpot vairāk
+          klientu, nepieņemot darbā vēl vienu administratoru.
+        </footer>
+      </blockquote>
+    </div>
+  </section>
+
+  <SystemWorkShowcase />
+</div>
+
+<script>
+  const initWeightedCards = () => {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+    document.querySelectorAll<HTMLElement>('[data-weighted-card]').forEach((card) => {
+      if (card.dataset.weightedBound === 'true' || reducedMotion || !finePointer) return;
+      card.dataset.weightedBound = 'true';
+
+      const target = { x: 0, y: 0, rx: 0, ry: 0, lightX: 50, lightY: 35 };
+      const current = { ...target };
+      let frame = 0;
+
+      const render = () => {
+        const ease = 0.075;
+        current.x += (target.x - current.x) * ease;
+        current.y += (target.y - current.y) * ease;
+        current.rx += (target.rx - current.rx) * ease;
+        current.ry += (target.ry - current.ry) * ease;
+        current.lightX += (target.lightX - current.lightX) * ease;
+        current.lightY += (target.lightY - current.lightY) * ease;
+
+        card.style.setProperty('--weight-x', `${current.x.toFixed(2)}px`);
+        card.style.setProperty('--weight-y', `${current.y.toFixed(2)}px`);
+        card.style.setProperty('--weight-rx', `${current.rx.toFixed(3)}deg`);
+        card.style.setProperty('--weight-ry', `${current.ry.toFixed(3)}deg`);
+        card.style.setProperty('--light-x', `${current.lightX.toFixed(2)}%`);
+        card.style.setProperty('--light-y', `${current.lightY.toFixed(2)}%`);
+
+        const moving = Object.keys(target).some((key) =>
+          Math.abs(target[key as keyof typeof target] - current[key as keyof typeof current]) > 0.02
+        );
+        frame = moving ? requestAnimationFrame(render) : 0;
+      };
+
+      const wake = () => { if (!frame) frame = requestAnimationFrame(render); };
+
+      card.addEventListener('pointermove', (event) => {
+        const bounds = card.getBoundingClientRect();
+        const nx = (event.clientX - bounds.left) / bounds.width - 0.5;
+        const ny = (event.clientY - bounds.top) / bounds.height - 0.5;
+        target.x = nx * 14;
+        target.y = ny * 11;
+        target.rx = ny * -0.7;
+        target.ry = nx * 0.9;
+        target.lightX = (nx + 0.5) * 100;
+        target.lightY = (ny + 0.5) * 100;
+        wake();
+      });
+
+      card.addEventListener('pointerleave', () => {
+        target.x = 0;
+        target.y = 0;
+        target.rx = 0;
+        target.ry = 0;
+        target.lightX = 50;
+        target.lightY = 35;
+        wake();
+      });
+    });
+  };
+
+  initWeightedCards();
+  document.addEventListener('astro:page-load', initWeightedCards);
+</script>
+
+<style>
+  .digital-products-sections {
+    width: min(calc(100% - 4rem), 94rem);
+    margin-inline: auto;
+    padding-block: clamp(5rem, 9vw, 9rem);
+  }
+
+  .systems-intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(22rem, 0.92fr);
+    align-items: center;
+    gap: clamp(4rem, 9vw, 9rem);
+    min-height: 37rem;
+  }
+
+  .systems-intro__copy > p:first-child {
+    margin: 0 0 1.25rem;
+    color: var(--color-text-muted);
+    font: 550 clamp(0.72rem, 0.85vw, 0.9rem)/1.6 var(--font-mono);
+  }
+
+  .systems-intro h2 {
+    max-width: 14ch;
+    margin: 0;
+    color: white;
+    font-size: clamp(2.3rem, 4.25vw, 4.5rem);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    text-wrap: balance;
+  }
+
+  .systems-intro__copy > p:nth-of-type(2) {
+    max-width: 62ch;
+    margin: 2rem 0 0;
+    color: var(--color-text-secondary, #b5b5bb);
+    font: 500 1rem/1.65 var(--font-mono);
+    text-wrap: pretty;
+  }
+
+  .systems-intro__copy > a {
+    display: inline-flex;
+    min-height: 3.75rem;
+    align-items: center;
+    gap: 2rem;
+    margin-top: 2rem;
+    border-radius: 0.85rem;
+    padding-inline: 1.5rem;
+    background: white;
+    color: #090909;
+    font-size: 1rem;
+    font-weight: 650;
+  }
+
+  .systems-intro__copy > a span { font-family: var(--font-mono); }
+
+  .systems-intro__visual {
+    position: relative;
+    min-height: clamp(24rem, 34vw, 31rem);
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 14%);
+    border-radius: var(--radius-card);
+    background: #111;
+  }
+
+  .systems-intro__visual::after {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 45%, rgb(0 0 0 / 82%));
+    content: '';
+    pointer-events: none;
+  }
+
+  .systems-intro__visual img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 58% center;
+    filter: saturate(0.65) contrast(1.05);
+  }
+
+  .systems-story {
+    --weight-x: 0px;
+    --weight-y: 0px;
+    --weight-rx: 0deg;
+    --weight-ry: 0deg;
+    --light-x: 50%;
+    --light-y: 35%;
+    position: relative;
+    isolation: isolate;
+    min-height: clamp(34rem, 48vw, 43rem);
+    margin-top: clamp(5rem, 9vw, 9rem);
+    border-radius: var(--radius-card);
+    background:
+      radial-gradient(34rem circle at var(--light-x) var(--light-y), rgb(255 255 255 / 14%), transparent 48%),
+      linear-gradient(115deg, rgb(255 255 255 / 8%), rgb(255 255 255 / 2%));
+    padding: 0.55rem;
+    box-shadow: 0 2rem 6rem rgb(0 0 0 / 38%), inset 0 1px 0 rgb(255 255 255 / 16%);
+    transform: perspective(1000px) translate3d(var(--weight-x), var(--weight-y), 0)
+      rotateX(var(--weight-rx)) rotateY(var(--weight-ry));
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+
+  .systems-story::before {
+    position: absolute;
+    z-index: -1;
+    inset: -3rem;
+    border-radius: inherit;
+    background:
+      radial-gradient(ellipse at var(--light-x) var(--light-y), rgb(224 35 78 / 22%), transparent 42%),
+      radial-gradient(ellipse at 68% 18%, rgb(255 255 255 / 8%), transparent 36%);
+    filter: blur(2.5rem);
+    content: '';
+    pointer-events: none;
+  }
+
+  .systems-story__glass {
+    position: relative;
+    display: grid;
+    min-height: inherit;
+    grid-template-columns: minmax(13rem, 0.55fr) minmax(0, 1.45fr);
+    align-items: center;
+    gap: clamp(3rem, 7vw, 7rem);
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 16%);
+    border-radius: calc(var(--radius-card) - 0.3rem);
+    padding: clamp(2.5rem, 7vw, 7rem);
+    background:
+      radial-gradient(32rem circle at var(--light-x) var(--light-y), rgb(255 255 255 / 11%), transparent 48%),
+      radial-gradient(ellipse at 74% 20%, rgb(224 35 78 / 9%), transparent 35%),
+      linear-gradient(115deg, rgb(18 18 18 / 94%), rgb(42 42 42 / 88%) 55%, rgb(17 17 17 / 95%));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 12%), inset 0 0 5rem rgb(255 255 255 / 3%);
+    backdrop-filter: blur(24px) saturate(115%);
+  }
+
+  .systems-story__avatar {
+    display: grid;
+    width: clamp(9rem, 14vw, 12rem);
+    aspect-ratio: 1;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgb(255 255 255 / 16%);
+    border-radius: 0.9rem;
+    place-items: center;
+    background:
+      radial-gradient(circle at 35% 28%, rgb(255 255 255 / 20%), transparent 28%),
+      linear-gradient(145deg, #57122d, #191919 68%);
+    color: white;
+    font-size: clamp(3rem, 6vw, 5rem);
+    font-weight: 500;
+  }
+
+  .systems-story__profile strong {
+    display: block;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .systems-story__profile p {
+    max-width: 22ch;
+    margin: 0.5rem 0 0;
+    color: var(--color-text-secondary, #b5b5bb);
+    font: 500 0.8rem/1.5 var(--font-mono);
+  }
+
+  .systems-story blockquote { margin: 0; }
+  .systems-story blockquote > span {
+    display: block;
+    height: 2.5rem;
+    color: white;
+    font-size: 4rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .systems-story blockquote > p {
+    max-width: 38ch;
+    margin: 1.5rem 0 0;
+    color: white;
+    font-size: clamp(1.35rem, 2.2vw, 2rem);
+    font-weight: 500;
+    letter-spacing: -0.025em;
+    line-height: 1.45;
+    text-wrap: pretty;
+  }
+
+  .systems-story blockquote footer {
+    max-width: 58ch;
+    margin-top: 1.5rem;
+    color: var(--color-text-secondary, #b5b5bb);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.6;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    margin: -1px;
+    padding: 0;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 850px) {
+    .systems-intro,
+    .systems-story__glass { grid-template-columns: 1fr; }
+    .systems-intro { gap: 3rem; }
+    .systems-story { align-items: start; }
+  }
+
+  @media (max-width: 600px) {
+    .digital-products-sections { width: calc(100% - 2.5rem); }
+    .systems-intro__visual { min-height: 22rem; }
+    .systems-story { padding: 0.4rem; transform: none; }
+    .systems-story__glass { padding: 2rem; }
+    .systems-story__avatar { width: 8rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .systems-story { transform: none; will-change: auto; }
+  }
+</style>

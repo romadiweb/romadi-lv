@@ -1,0 +1,192 @@
+---
+import { Icon } from 'astro-icon/components';
+
+const capabilities = [
+  {
+    icon: 'lucide:credit-card',
+    title: 'Automātiski maksājumi',
+    text: 'Droša apmaksa ar karti vai internetbanku bez manuālas pasūtījumu apstrādes.',
+  },
+  {
+    icon: 'lucide:truck',
+    title: 'Automātiska piegāde',
+    text: 'Piegādes veidi, pakomāti, cenu aprēķini un sūtījumu dati vienotā pirkuma plūsmā.',
+  },
+  {
+    icon: 'lucide:boxes',
+    title: 'Sinhronizēti atlikumi',
+    text: 'Produktu pieejamība un noliktavas dati tiek atjaunoti bez atkārtotas ievades.',
+  },
+  {
+    icon: 'lucide:workflow',
+    title: 'Ātrāka pasūtījumu apstrāde',
+    text: 'Rēķini, statusi un klientu paziņojumi virzās uz priekšu automātiski.',
+  },
+  {
+    icon: 'lucide:chart-no-axes-combined',
+    title: 'Pārdošanas analītika',
+    text: 'Redziet, kuri produkti, kanāli un pirkuma soļi rada vislielāko atdevi.',
+  },
+  {
+    icon: 'lucide:plug-zap',
+    title: 'Biznesa rīku integrācijas',
+    text: 'Savienojam veikalu ar grāmatvedību, CRM, noliktavu un mārketinga sistēmām.',
+  },
+] as const;
+---
+
+<section class="commerce-sales" aria-labelledby="commerce-sales-title">
+  <header class="commerce-sales__intro" data-reveal>
+    <div>
+      <p>&#123; E-KOMERCIJAS IZAUGSME &#125;</p>
+      <h2 id="commerce-sales-title">Vairāk pārdošanas.<br />Mazāk manuāla darba.</h2>
+      <strong>
+        Veikals turpina apkalpot klientus un pieņemt pasūtījumus arī tad, kad jūsu komanda
+        nav pie ekrāna.
+      </strong>
+    </div>
+    <p>
+      Mēs savienojam pirkuma ceļu ar uzņēmuma ikdienas procesiem. Rezultātā klients ātrāk
+      nonāk līdz apmaksai, bet jūsu komandai paliek mazāk atkārtojamu darbību.
+    </p>
+  </header>
+
+  <ul class="commerce-sales__grid">
+    {capabilities.map((capability) => (
+      <li data-reveal>
+        <Icon name={capability.icon} aria-hidden="true" />
+        <h3>{capability.title}</h3>
+        <p>{capability.text}</p>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .commerce-sales {
+    width: min(calc(100% - 4rem), 94rem);
+    margin-inline: auto;
+    padding-block: clamp(5rem, 9vw, 9rem);
+  }
+
+  .commerce-sales__intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(17rem, 0.6fr);
+    align-items: end;
+    gap: clamp(3rem, 8vw, 9rem);
+    margin-bottom: clamp(4rem, 8vw, 7rem);
+  }
+
+  .commerce-sales__intro > div > p {
+    margin: 0 0 1.25rem;
+    color: var(--color-text-muted);
+    font: 550 clamp(0.72rem, 0.85vw, 0.9rem)/1.6 var(--font-mono);
+  }
+
+  h2 {
+    max-width: 15ch;
+    margin: 0;
+    color: white;
+    font-size: clamp(2.3rem, 4.25vw, 4.5rem);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    text-wrap: balance;
+  }
+
+  .commerce-sales__intro strong {
+    display: block;
+    max-width: 54ch;
+    margin-top: 1.5rem;
+    color: rgb(255 255 255 / 82%);
+    font-size: clamp(1rem, 1.25vw, 1.25rem);
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .commerce-sales__intro > p {
+    max-width: 48ch;
+    margin: 0;
+    color: var(--color-text-secondary, #b5b5bb);
+    font: 500 1rem/1.6 var(--font-mono);
+    text-wrap: pretty;
+  }
+
+  .commerce-sales__grid {
+    display: grid;
+    overflow: hidden;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 0;
+    border: 1px solid rgb(255 255 255 / 16%);
+    border-radius: var(--radius-card);
+    padding: 0;
+    list-style: none;
+  }
+
+  .commerce-sales__grid li {
+    min-height: clamp(18rem, 24vw, 24rem);
+    border-right: 1px solid rgb(255 255 255 / 14%);
+    border-bottom: 1px solid rgb(255 255 255 / 14%);
+    padding: clamp(2rem, 5vw, 5rem);
+  }
+
+  .commerce-sales__grid li:nth-child(3n) { border-right: 0; }
+  .commerce-sales__grid li:nth-last-child(-n + 3) { border-bottom: 0; }
+
+  .commerce-sales__grid svg {
+    width: 1.75rem;
+    height: 1.75rem;
+    margin-bottom: clamp(3rem, 6vw, 5rem);
+    color: white;
+    stroke-width: 1.65;
+  }
+
+  .commerce-sales__grid h3 {
+    margin: 0;
+    color: white;
+    font-size: clamp(1rem, 1.25vw, 1.25rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1.4;
+    text-wrap: balance;
+  }
+
+  .commerce-sales__grid p {
+    max-width: 38ch;
+    margin: 0.8rem 0 0;
+    color: var(--color-text-secondary, #b5b5bb);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 900px) {
+    .commerce-sales__intro {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .commerce-sales__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .commerce-sales__grid li:nth-child(3n) { border-right: 1px solid rgb(255 255 255 / 14%); }
+    .commerce-sales__grid li:nth-child(2n) { border-right: 0; }
+    .commerce-sales__grid li:nth-last-child(-n + 3) { border-bottom: 1px solid rgb(255 255 255 / 14%); }
+    .commerce-sales__grid li:nth-last-child(-n + 2) { border-bottom: 0; }
+  }
+
+  @media (max-width: 600px) {
+    .commerce-sales { width: calc(100% - 2.5rem); }
+    .commerce-sales__grid { grid-template-columns: 1fr; }
+    .commerce-sales__grid li {
+      min-height: 17rem;
+      border-right: 0;
+      border-bottom: 1px solid rgb(255 255 255 / 14%);
+      padding: 2rem;
+    }
+    .commerce-sales__grid li:nth-child(3n),
+    .commerce-sales__grid li:nth-child(2n) { border-right: 0; }
+    .commerce-sales__grid li:nth-last-child(-n + 2) { border-bottom: 1px solid rgb(255 255 255 / 14%); }
+    .commerce-sales__grid li:last-child { border-bottom: 0; }
+    .commerce-sales__grid svg { margin-bottom: 3rem; }
+  }
+</style>

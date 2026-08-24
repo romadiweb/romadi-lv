@@ -1,0 +1,280 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface FallbackPlan {
+  name: string;
+  price: string;
+  text: string;
+  features: string[];
+  action: string;
+}
+
+interface Props {
+  serviceKey: string;
+  contactHref: string;
+  intro: string;
+  fallbackPlans: FallbackPlan[];
+}
+
+const { serviceKey, contactHref, intro, fallbackPlans } = Astro.props;
+const titleId = `service-pricing-${serviceKey}`;
+---
+
+<section
+  class="service-pricing"
+  aria-labelledby={titleId}
+  data-service-pricing
+  data-service-key={serviceKey}
+  data-default-cta={contactHref}
+>
+  <header class="service-pricing__header">
+    <h2 id={titleId}>Cik tas maksā?</h2>
+    <p>{intro}</p>
+  </header>
+
+  <div class="service-pricing__grid" data-pricing-grid>
+    {fallbackPlans.map((plan, index) => (
+      <article class="service-pricing__plan" data-pricing-card data-featured={index === 1 ? 'true' : undefined}>
+        <div class="service-pricing__field">
+          <h3 data-plan-name>{plan.name}</h3>
+          <p><span data-price-prefix>Sākot no</span> <strong data-price-label>{plan.price}</strong></p>
+        </div>
+        <div class="service-pricing__body">
+          <p data-plan-description>{plan.text}</p>
+          <ul data-plan-features>
+            {plan.features.map((feature) => <li><Icon name="lucide:check" aria-hidden="true" />{feature}</li>)}
+          </ul>
+          <a href={contactHref} data-plan-cta data-astro-reload>
+            <span data-cta-label>{plan.action}</span><span aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </article>
+    ))}
+  </div>
+
+  <template data-pricing-card-template>
+    <article class="service-pricing__plan" data-pricing-card>
+      <div class="service-pricing__field">
+        <h3 data-plan-name></h3>
+        <p><span data-price-prefix></span> <strong data-price-label></strong></p>
+      </div>
+      <div class="service-pricing__body">
+        <p data-plan-description></p>
+        <ul data-plan-features></ul>
+        <a href={contactHref} data-plan-cta data-astro-reload>
+          <span data-cta-label></span><span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </article>
+  </template>
+
+  <template data-pricing-feature-template>
+    <li><Icon name="lucide:check" aria-hidden="true" /><span data-feature-label></span></li>
+  </template>
+</section>
+
+<script>
+  import { supabase } from '@/lib/supabase';
+
+  async function refreshServicePricing() {
+    const sections = document.querySelectorAll<HTMLElement>('[data-service-pricing]');
+
+    await Promise.all(Array.from(sections, async (section) => {
+      const serviceKey = section.dataset.serviceKey;
+      const grid = section.querySelector<HTMLElement>('[data-pricing-grid]');
+      const cardTemplate = section.querySelector<HTMLTemplateElement>('[data-pricing-card-template]');
+      const featureTemplate = section.querySelector<HTMLTemplateElement>('[data-pricing-feature-template]');
+      if (!serviceKey || !grid || !cardTemplate || !featureTemplate || !supabase) return;
+
+      const { data, error } = await supabase
+        .from('pricing_plans')
+        .select('id, name, price_prefix, price_label, description, features, cta_label, cta_href, sort_order, is_featured')
+        .eq('is_published', true)
+        .eq('service_key', serviceKey)
+        .order('sort_order', { ascending: true })
+        .order('id', { ascending: true });
+
+      if (error || !data) {
+        console.warn(`Could not refresh pricing plans from Supabase: ${error?.message ?? 'Unknown error'}`);
+        return;
+      }
+
+      const defaultCta = section.dataset.defaultCta ?? '/kontakti';
+      const cards = data.flatMap((plan) => {
+        const card = cardTemplate.content.firstElementChild?.cloneNode(true);
+        if (!(card instanceof HTMLElement)) return [];
+        if (plan.is_featured) card.dataset.featured = 'true';
+        card.querySelector<HTMLElement>('[data-plan-name]')!.textContent = plan.name;
+        card.querySelector<HTMLElement>('[data-price-prefix]')!.textContent = plan.price_prefix;
+        card.querySelector<HTMLElement>('[data-price-label]')!.textContent = plan.price_label;
+        card.querySelector<HTMLElement>('[data-plan-description]')!.textContent = plan.description;
+
+        const featureList = card.querySelector<HTMLElement>('[data-plan-features]')!;
+        const features = plan.features.flatMap((feature) => {
+          const item = featureTemplate.content.firstElementChild?.cloneNode(true);
+          if (!(item instanceof HTMLElement)) return [];
+          item.querySelector<HTMLElement>('[data-feature-label]')!.textContent = feature;
+          return [item];
+        });
+        featureList.replaceChildren(...features);
+
+        const cta = card.querySelector<HTMLAnchorElement>('[data-plan-cta]')!;
+        cta.href = plan.cta_href || defaultCta;
+        cta.querySelector<HTMLElement>('[data-cta-label]')!.textContent = plan.cta_label;
+        return [card];
+      });
+
+      grid.style.setProperty('--pricing-columns', String(Math.max(1, Math.min(cards.length, 3))));
+      grid.replaceChildren(...cards);
+      section.dataset.pricingSource = 'supabase';
+    }));
+  }
+
+  void refreshServicePricing();
+  document.addEventListener('astro:page-load', refreshServicePricing);
+</script>
+
+<style>
+  .service-pricing {
+    width: min(calc(100% - 4rem), 94rem);
+    margin-inline: auto;
+    padding-block: clamp(5rem, 9vw, 9rem);
+  }
+  .service-pricing__header {
+    display: grid;
+    grid-template-columns: minmax(18rem, 0.72fr) minmax(0, 1.28fr);
+    align-items: end;
+    gap: clamp(3rem, 6vw, 6rem);
+    margin-bottom: clamp(3rem, 6vw, 6rem);
+  }
+  .service-pricing h2 {
+    color: white;
+    font-size: clamp(2.3rem, 4.25vw, 4.5rem);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    text-wrap: balance;
+  }
+  .service-pricing__header > p {
+    max-width: 62ch;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.6;
+  }
+  .service-pricing__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--pricing-columns, 3), minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+  .service-pricing__plan {
+    --plan-aura: rgb(156 47 196 / 32%);
+    --plan-field-start: #0e0611;
+    --plan-field-mid: #310b3d;
+    --plan-field-end: #641578;
+    position: relative;
+    z-index: 0;
+    isolation: isolate;
+    border: 1px solid rgb(255 255 255 / 12%);
+    border-radius: 1rem;
+    background: #090909;
+    transition: transform 280ms var(--ease-out-expo), border-color 220ms ease;
+  }
+  .service-pricing__plan::before {
+    position: absolute;
+    z-index: 0;
+    inset: -0.35rem;
+    border-radius: inherit;
+    background: transparent;
+    box-shadow: 0 0 2.4rem 0.35rem var(--plan-aura);
+    opacity: 0;
+    transform: scale(0.96);
+    transition: opacity 280ms ease, transform 360ms var(--ease-out-expo);
+    content: '';
+    pointer-events: none;
+  }
+  .service-pricing__plan:nth-child(2) {
+    --plan-aura: rgb(177 52 211 / 34%);
+    --plan-field-start: #100611;
+    --plan-field-mid: #3d0b49;
+    --plan-field-end: #711481;
+  }
+  .service-pricing__plan:nth-child(3) {
+    --plan-aura: rgb(132 39 180 / 30%);
+    --plan-field-start: #0c0610;
+    --plan-field-mid: #290934;
+    --plan-field-end: #551167;
+  }
+  .service-pricing__plan[data-featured='true'] {
+    transform: translateY(-1.5rem);
+  }
+  .service-pricing__plan:hover,
+  .service-pricing__plan:focus-within {
+    border-color: rgb(255 255 255 / 22%);
+    transform: translateY(-0.4rem);
+  }
+  .service-pricing__plan[data-featured='true']:hover,
+  .service-pricing__plan[data-featured='true']:focus-within {
+    transform: translateY(-1.9rem);
+  }
+  .service-pricing__plan:hover::before,
+  .service-pricing__plan:focus-within::before {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .service-pricing__field {
+    position: relative;
+    z-index: 1;
+    min-height: 12rem;
+    overflow: hidden;
+    border-radius: calc(1rem - 1px) calc(1rem - 1px) 0 0;
+    padding: 2rem;
+    background:
+      linear-gradient(rgb(214 218 224 / 10%) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(214 218 224 / 10%) 1px, transparent 1px),
+      radial-gradient(circle at 88% 10%, var(--plan-aura), transparent 12rem),
+      linear-gradient(135deg, var(--plan-field-start), var(--plan-field-mid) 58%, var(--plan-field-end));
+    background-size: 2rem 2rem, 2rem 2rem, auto, auto;
+  }
+  .service-pricing h3 {
+    color: white;
+    font-size: clamp(1rem, 1.25vw, 1.25rem);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1.4;
+    text-wrap: balance;
+  }
+  .service-pricing__field > p { margin-top: 2rem; color: white; font-size: 1rem; font-weight: 500; }
+  .service-pricing__field strong {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: clamp(2.3rem, 3.3vw, 3.5rem);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums lining-nums;
+    white-space: nowrap;
+  }
+  .service-pricing__body { position: relative; z-index: 1; display: grid; gap: 1.5rem; padding: 2rem; border-radius: 0 0 calc(1rem - 1px) calc(1rem - 1px); background: #090909; }
+  .service-pricing__body > p { min-height: 4.8rem; color: var(--text-secondary); font-size: 1rem; line-height: 1.6; text-wrap: pretty; }
+  .service-pricing__body ul { display: grid; gap: 0.75rem; padding: 0; list-style: none; }
+  .service-pricing__body li { display: flex; align-items: flex-start; gap: 0.75rem; color: var(--text-secondary); font-size: 1rem; line-height: 1.45; }
+  .service-pricing__body li :global(svg) { width: 1rem; height: 1rem; flex: none; margin-top: 0.2rem; color: #f75f7f; }
+  .service-pricing__body a { display: flex; min-height: 2.75rem; align-items: center; justify-content: space-between; border-top: 1px solid rgb(255 255 255 / 10%); padding-top: 1rem; color: white; font-size: 1rem; font-weight: 650; }
+
+  @media (max-width: 900px) {
+    .service-pricing__grid { grid-template-columns: 1fr; }
+    .service-pricing__plan[data-featured='true'] { transform: none; }
+    .service-pricing__body > p { min-height: 0; }
+  }
+  @media (max-width: 700px) {
+    .service-pricing { width: calc(100% - 2.5rem); padding-block: 5rem; }
+    .service-pricing__header { grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 3rem; }
+    .service-pricing__plan:hover,
+    .service-pricing__plan:focus-within { transform: translateY(-0.2rem); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .service-pricing__plan,
+    .service-pricing__plan::before { transition: none; }
+  }
+</style>

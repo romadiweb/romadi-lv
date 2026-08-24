@@ -1,5 +1,6 @@
 ---
 import type { ServiceDefinition } from '@/data/services';
+import BrowserPreviewFrame from './BrowserPreviewFrame.astro';
 
 interface Props {
   service: ServiceDefinition;
@@ -35,27 +36,13 @@ const websiteProjects = [
         service.visual === 'website' && (
           <div class="visual-website">
             {websiteProjects.map((project) => (
-              <div class="visual-website__project">
-                <div class="visual-website__project-chrome">
-                  <span><i /><i /><i /></span>
-                  <small>{project.name}</small>
-                  <b>↗</b>
-                </div>
-                <picture>
-                  <source
-                    media="(max-width: 700px)"
-                    srcset={`/images/projects/${project.slug}-800.webp`}
-                  />
-                  <img
-                    src={`/images/projects/${project.slug}-1600.webp`}
-                    alt=""
-                    width="1600"
-                    height={project.height}
-                    loading="eager"
-                    decoding="async"
-                  />
-                </picture>
-              </div>
+              <BrowserPreviewFrame
+                title={project.name}
+                src={`/images/projects/${project.slug}-1600.webp`}
+                mobileSrc={`/images/projects/${project.slug}-800.webp`}
+                width={1600}
+                height={project.height}
+              />
             ))}
           </div>
         )
@@ -64,70 +51,28 @@ const websiteProjects = [
       {
         service.visual === 'commerce' && (
           <div class="visual-commerce">
-            <div class="visual-commerce__catalog">
-              <small>JAUNĀ KOLEKCIJA</small>
-              <strong>Atlasīts jums</strong>
-              <div>
-                <>
-                  <i />
-                  <i />
-                  <i />
-                  <i />
-                </>
-              </div>
-            </div>
-            <div class="visual-commerce__order">
-              <span>PASŪTĪJUMS · 0248</span>
-              <>
-                <i />
-                <i />
-                <i />
-              </>
-              <strong>€ 186,00</strong>
-              <b>APMAKSĀTS</b>
-            </div>
+            <BrowserPreviewFrame
+              title="VELA · Your bag"
+              src="/images/projects/commerce-cart-open.png"
+              width={1600}
+              height={900}
+            />
           </div>
         )
       }
 
       {
         service.visual === 'product' && (
-          <div class="visual-product">
-            <aside>
-              <>
-                <b>R / SYS</b>
-                <i />
-                <i />
-                <i />
-                <i />
-              </>
-            </aside>
-            <div class="visual-product__main">
-              <header>
-                <>
-                  <span>Vadības panelis</span>
-                  <b>ŠODIEN</b>
-                </>
-              </header>
-              <div class="visual-product__stats">
-                <>
-                  <i />
-                  <i />
-                  <i />
-                </>
-              </div>
-              <svg viewBox="0 0 620 210" preserveAspectRatio="none">
-                <path d="M0 180 C70 175 94 120 158 138 S253 72 318 92 S415 30 478 57 S558 22 620 8" />
-                <path d="M0 198 H620" />
-              </svg>
-              <div class="visual-product__rows">
-                <>
-                  <i />
-                  <i />
-                  <i />
-                </>
-              </div>
-            </div>
+          <div class="visual-product-preview">
+            <BrowserPreviewFrame
+              title="MARLOW · Front desk"
+              src="/images/projects/marlow-front-desk.png"
+              width={1898}
+              height={835}
+              fit="contain"
+              imageBackground="#f3efe7"
+              objectPosition="left top"
+            />
           </div>
         )
       }
@@ -369,232 +314,15 @@ const websiteProjects = [
     background: var(--color-ink-750);
   }
 
-  .visual-website {
+  .visual-website,
+  .visual-commerce,
+  .visual-product-preview {
     position: absolute;
     inset: clamp(1rem, 3vw, 2.5rem);
     display: flex;
+    align-items: center;
     justify-content: center;
-    flex-direction: column;
     overflow: hidden;
-  }
-
-  .visual-website__project {
-    position: relative;
-    z-index: 1;
-    width: 96%;
-    overflow: hidden;
-    margin-inline: auto;
-    border-radius: 0.55rem;
-    background: #f5f5f5;
-    box-shadow: 0 1.5rem 3rem rgb(0 0 0 / 48%);
-  }
-
-  .visual-website__project + .visual-website__project {
-    z-index: 2;
-    margin-top: clamp(-5rem, -5vw, -3.5rem);
-  }
-
-  .visual-website__project-chrome {
-    display: grid;
-    min-height: 1.7rem;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    gap: 0.5rem;
-    border-bottom: 1px solid rgb(0 0 0 / 8%);
-    padding-inline: 0.55rem;
-    color: rgb(0 0 0 / 42%);
-  }
-
-  .visual-website__project-chrome > span {
-    display: flex;
-    gap: 0.25rem;
-  }
-
-  .visual-website__project-chrome i {
-    width: 0.32rem;
-    height: 0.32rem;
-    border-radius: 50%;
-    background: #ff5f57;
-  }
-
-  .visual-website__project-chrome i:nth-child(2) { background: #febc2e; }
-  .visual-website__project-chrome i:nth-child(3) { background: #28c840; }
-
-  .visual-website__project-chrome small {
-    overflow: hidden;
-    max-width: 30ch;
-    text-overflow: ellipsis;
-    font: 500 0.42rem/1 var(--font-mono);
-    white-space: nowrap;
-  }
-
-  .visual-website__project-chrome b {
-    justify-self: end;
-    font: 500 0.48rem/1 var(--font-mono);
-  }
-
-  .visual-website__project picture,
-  .visual-website__project img {
-    display: block;
-    width: 100%;
-  }
-
-  .visual-website__project img {
-    aspect-ratio: 2.02;
-    object-fit: cover;
-    object-position: top center;
-  }
-
-  .visual-commerce {
-    position: absolute;
-    inset: 9% 7% -5%;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(12rem, 0.58fr);
-    gap: 1rem;
-  }
-  .visual-commerce__catalog,
-  .visual-commerce__order {
-    border: 1px solid rgb(255 255 255 / 11%);
-    border-radius: 0.85rem;
-    background: #090909;
-  }
-  .visual-commerce__catalog {
-    padding: clamp(1.5rem, 3vw, 2.6rem);
-  }
-  .visual-commerce__catalog small,
-  .visual-commerce__order span {
-    color: rgb(255 255 255 / 42%);
-    font: 550 0.58rem/1 var(--font-mono);
-  }
-  .visual-commerce__catalog strong {
-    display: block;
-    margin-top: 0.7rem;
-    color: white;
-    font-size: clamp(1.7rem, 3vw, 2.8rem);
-    font-weight: 480;
-    letter-spacing: -0.04em;
-  }
-  .visual-commerce__catalog > div {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
-    margin-top: 2rem;
-  }
-  .visual-commerce__catalog i {
-    aspect-ratio: 0.88;
-    border-radius: 0.55rem;
-    background: linear-gradient(145deg, #280810, #111 58%);
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 8%);
-  }
-  .visual-commerce__catalog i:nth-child(2),
-  .visual-commerce__catalog i:nth-child(3) {
-    background: linear-gradient(145deg, #202020, #0d0d0d);
-  }
-  .visual-commerce__order {
-    align-self: center;
-    padding: 1.5rem;
-    box-shadow: 0 0.5rem 0.75rem rgb(0 0 0 / 40%);
-  }
-  .visual-commerce__order i {
-    display: block;
-    height: 1px;
-    margin-top: 1.25rem;
-    background: rgb(255 255 255 / 10%);
-  }
-  .visual-commerce__order strong {
-    display: block;
-    margin-top: 1.4rem;
-    color: white;
-    font-size: 1.65rem;
-  }
-  .visual-commerce__order b {
-    display: inline-block;
-    margin-top: 1rem;
-    border-radius: 999px;
-    padding: 0.45rem 0.65rem;
-    background: rgb(224 35 78 / 16%);
-    color: #f75f7f;
-    font: 650 0.55rem/1 var(--font-mono);
-  }
-
-  .visual-product {
-    position: absolute;
-    inset: 8% 6% -9%;
-    display: grid;
-    grid-template-columns: 4.5rem 1fr;
-    border: 1px solid rgb(255 255 255 / 11%);
-    border-radius: 0.85rem 0.85rem 0 0;
-    background: #080808;
-    overflow: hidden;
-  }
-  .visual-product aside {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    gap: 1rem;
-    border-right: 1px solid rgb(255 255 255 / 9%);
-    padding-block: 1.2rem;
-  }
-  .visual-product aside b {
-    margin-bottom: 0.8rem;
-    color: white;
-    font: 650 0.55rem/1 var(--font-mono);
-  }
-  .visual-product aside i {
-    width: 1.5rem;
-    height: 1.5rem;
-    border-radius: 0.35rem;
-    background: rgb(255 255 255 / 7%);
-  }
-  .visual-product__main {
-    padding: clamp(1.2rem, 3vw, 2.5rem);
-  }
-  .visual-product__main header {
-    display: flex;
-    justify-content: space-between;
-    color: white;
-    font-weight: 650;
-  }
-  .visual-product__main header b {
-    color: rgb(255 255 255 / 38%);
-    font: 550 0.56rem/1 var(--font-mono);
-  }
-  .visual-product__stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
-    margin-top: 1.5rem;
-  }
-  .visual-product__stats i {
-    height: 5.5rem;
-    border-radius: 0.55rem;
-    background: rgb(255 255 255 / 4%);
-    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 8%);
-  }
-  .visual-product svg {
-    width: 100%;
-    height: 12rem;
-    margin-top: 1rem;
-    overflow: visible;
-  }
-  .visual-product svg path:first-child {
-    fill: none;
-    stroke: #e0234e;
-    stroke-width: 2;
-    vector-effect: non-scaling-stroke;
-  }
-  .visual-product svg path:last-child {
-    fill: none;
-    stroke: rgb(255 255 255 / 8%);
-  }
-  .visual-product__rows {
-    display: grid;
-    gap: 0.6rem;
-  }
-  .visual-product__rows i {
-    height: 1.8rem;
-    border-radius: 0.25rem;
-    background: rgb(255 255 255 / 3.5%);
   }
 
   .visual-design {
@@ -847,24 +575,10 @@ const websiteProjects = [
     .service-visual__canvas {
       min-height: 27rem;
     }
-    .visual-website {
+    .visual-website,
+    .visual-commerce,
+    .visual-product-preview {
       inset: 0.8rem;
-    }
-    .visual-website__project + .visual-website__project {
-      margin-top: -2rem;
-    }
-    .visual-website__project img {
-      aspect-ratio: 1.45;
-    }
-    .visual-commerce {
-      inset: 6%;
-      grid-template-columns: 1fr;
-    }
-    .visual-commerce__order {
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      width: 48%;
     }
     .visual-design {
       inset: 6%;
