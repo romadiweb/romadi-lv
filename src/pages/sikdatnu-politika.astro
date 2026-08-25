@@ -1,0 +1,236 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { SITE } from '@/config/site';
+
+const lastUpdated = '2026. gada 25. augustā';
+---
+
+<BaseLayout
+  title="Sīkdatņu politika"
+  description="Informācija par sīkdatņu izmantošanu ROMADI tīmekļvietnē un iespējām tās pārvaldīt."
+  footerCta={false}
+>
+  <article class="cookie-policy" aria-labelledby="cookie-policy-title">
+    <div class="cookie-policy__atmosphere" aria-hidden="true"></div>
+
+    <div class="cookie-policy__inner">
+      <header class="cookie-policy__header">
+        <p class="cookie-policy__label">JURIDISKĀ INFORMĀCIJA</p>
+        <h1 id="cookie-policy-title">Sīkdatņu politika</h1>
+        <p class="cookie-policy__lead">
+          Šajā politikā skaidrojam, kas ir sīkdatnes, vai ROMADI tīmekļvietne tās izmanto un kā
+          jūs varat pārvaldīt savas izvēles.
+        </p>
+        <p class="cookie-policy__updated">Pēdējo reizi atjaunināta: {lastUpdated}</p>
+      </header>
+
+      <div class="cookie-policy__content">
+        <section aria-labelledby="cookie-policy-about">
+          <h2 id="cookie-policy-about">Kas ir sīkdatnes?</h2>
+          <p>
+            Sīkdatnes ir nelielas teksta datnes, ko tīmekļvietne var saglabāt jūsu ierīcē, kad to
+            apmeklējat. Tās var būt nepieciešamas vietnes pamatfunkcijām, palīdzēt atcerēties
+            izvēles vai sniegt informāciju par vietnes lietošanu.
+          </p>
+        </section>
+
+        <section aria-labelledby="cookie-policy-current-use">
+          <h2 id="cookie-policy-current-use">Sīkdatņu izmantošana šajā vietnē</h2>
+          <p>
+            Pašlaik ROMADI tīmekļvietne neiestata analītikas, mārketinga vai personalizācijas
+            sīkdatnes. Vietnē nav arī trešo pušu reklāmas izsekotāju vai iegulta satura, kas
+            automātiski iestatītu šādas sīkdatnes.
+          </p>
+          <p>
+            Ja vietnes darbībai nākotnē būs nepieciešamas tehniskās sīkdatnes, tās tiks izmantotas
+            tikai attiecīgās funkcijas nodrošināšanai. Neobligātas sīkdatnes netiks aktivizētas bez
+            iepriekšējas piekrišanas, un šī politika tiks atjaunināta.
+          </p>
+        </section>
+
+        <section aria-labelledby="cookie-policy-external-links">
+          <h2 id="cookie-policy-external-links">Ārējās saites</h2>
+          <p>
+            Tīmekļvietnē var būt saites uz citu personu pārvaldītām vietnēm, piemēram, sociālajiem
+            tīkliem vai sadarbības partneru lapām. Atverot šādu saiti, attiecīgā vietne var izmantot
+            sīkdatnes saskaņā ar savu politiku. ROMADI nekontrolē šo vietņu iestatījumus.
+          </p>
+        </section>
+
+        <section aria-labelledby="cookie-policy-management">
+          <h2 id="cookie-policy-management">Kā pārvaldīt sīkdatnes?</h2>
+          <p>
+            Sīkdatnes var apskatīt, bloķēt vai dzēst savas pārlūkprogrammas privātuma iestatījumos.
+            Precīzas darbības atšķiras atkarībā no pārlūkprogrammas un ierīces. Ņemiet vērā, ka
+            tehniski nepieciešamu sīkdatņu bloķēšana citās vietnēs var ietekmēt to darbību.
+          </p>
+        </section>
+
+        <section aria-labelledby="cookie-policy-changes">
+          <h2 id="cookie-policy-changes">Politikas izmaiņas</h2>
+          <p>
+            Šo politiku varam precizēt, ja mainās tīmekļvietnes funkcijas, izmantotie pakalpojumi vai
+            normatīvās prasības. Aktuālā versija vienmēr būs pieejama šajā lapā kopā ar pēdējās
+            atjaunināšanas datumu.
+          </p>
+        </section>
+
+        <section aria-labelledby="cookie-policy-contact">
+          <h2 id="cookie-policy-contact">Saziņa</h2>
+          <p>
+            Ja jums ir jautājumi par šo sīkdatņu politiku, rakstiet ROMADI uz
+            <a href={`mailto:${SITE.contact.email}`}>{SITE.contact.email}</a>.
+          </p>
+          <p class="cookie-policy__pending">
+            Uzņēmuma juridiskā informācija tiks papildināta pēc tās reģistrācijas datu
+            apstiprināšanas.
+          </p>
+        </section>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .cookie-policy {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    min-height: 70vh;
+    background: #030303;
+  }
+
+  .cookie-policy__atmosphere {
+    position: absolute;
+    z-index: -1;
+    top: -18rem;
+    right: -22rem;
+    width: min(52rem, 70vw);
+    height: 58rem;
+    background: radial-gradient(ellipse, rgb(98 11 34 / 34%), rgb(16 5 7 / 16%) 45%, transparent 72%);
+    filter: blur(22px);
+    pointer-events: none;
+  }
+
+  .cookie-policy__inner {
+    width: min(calc(100% - 3rem), 76rem);
+    margin-inline: auto;
+    padding: clamp(10rem, 16vw, 15rem) 0 clamp(7rem, 12vw, 11rem);
+  }
+
+  .cookie-policy__header,
+  .cookie-policy__content {
+    width: min(100%, 68ch);
+  }
+
+  .cookie-policy__header {
+    padding-bottom: clamp(3rem, 6vw, 5rem);
+    border-bottom: 1px solid rgb(255 255 255 / 11%);
+  }
+
+  .cookie-policy__label,
+  .cookie-policy__updated {
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: clamp(0.72rem, 0.85vw, 0.9rem);
+    font-weight: 550;
+    line-height: 1.6;
+  }
+
+  .cookie-policy__label {
+    letter-spacing: 0.06em;
+  }
+
+  .cookie-policy h1 {
+    max-width: 12ch;
+    margin-top: 1.5rem;
+    color: white;
+    font-size: clamp(3.35rem, 7vw, 6rem);
+    font-weight: 480;
+    letter-spacing: -0.04em;
+    line-height: 0.98;
+    text-wrap: balance;
+  }
+
+  .cookie-policy__lead {
+    max-width: 58ch;
+    margin-top: 2rem;
+    color: var(--text-secondary);
+    font-size: clamp(1.05rem, 1.35vw, 1.22rem);
+    font-weight: 500;
+    line-height: 1.7;
+  }
+
+  .cookie-policy__updated {
+    margin-top: 2rem;
+  }
+
+  .cookie-policy__content {
+    display: grid;
+    gap: clamp(3rem, 6vw, 4.5rem);
+    padding-top: clamp(3.5rem, 7vw, 6rem);
+  }
+
+  .cookie-policy__content section {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .cookie-policy h2 {
+    color: white;
+    font-size: clamp(1.45rem, 2.3vw, 2rem);
+    font-weight: 580;
+    letter-spacing: -0.035em;
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+
+  .cookie-policy__content p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.005em;
+    line-height: 1.75;
+    text-wrap: pretty;
+  }
+
+  .cookie-policy__content a {
+    color: white;
+    text-decoration-line: underline;
+    text-decoration-color: rgb(255 255 255 / 34%);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+    transition: text-decoration-color 180ms ease;
+  }
+
+  .cookie-policy__content a:hover,
+  .cookie-policy__content a:focus-visible {
+    text-decoration-color: var(--accent-hover);
+  }
+
+  .cookie-policy__pending {
+    color: var(--text-muted) !important;
+    font-family: var(--font-mono);
+    font-size: clamp(0.72rem, 0.85vw, 0.9rem) !important;
+    line-height: 1.65 !important;
+  }
+
+  @media (max-width: 700px) {
+    .cookie-policy__atmosphere {
+      top: -10rem;
+      right: -24rem;
+      width: 42rem;
+      opacity: 0.72;
+    }
+
+    .cookie-policy__inner {
+      width: min(calc(100% - 2.5rem), 76rem);
+      padding-top: 8.5rem;
+      padding-bottom: 6rem;
+    }
+
+    .cookie-policy h1 {
+      font-size: clamp(3rem, 15vw, 4.4rem);
+    }
+  }
+</style>

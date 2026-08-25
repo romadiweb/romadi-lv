@@ -1,0 +1,853 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getPublishedPortfolioProjects, type PortfolioProject } from '@/lib/projects';
+
+const fallbackBySlug: Record<string, Partial<PortfolioProject>> = {
+  'diana-hunt': {
+    summary: 'E-komercijas vietne medību preču zīmolam ar skaidru produktu struktūru un izteiktu vizuālo raksturu.',
+    portfolio_image_url: '/images/projects/dianahunt-1600.webp',
+    alt_text: 'Diana Hunt interneta veikala sākumlapa',
+  },
+  'liepajas-teltis': {
+    summary: 'Pakalpojumu vietne, kas palīdz ātri saprast piedāvājumu un nonākt līdz rezervācijas pieprasījumam.',
+    portfolio_image_url: '/images/projects/liepajas-teltis-1600.webp',
+    alt_text: 'Liepājas Teltis vietnes sākumlapa',
+  },
+  'loadmaster-simulator': {
+    summary: 'Specializēta mācību sistēma sarežģītu kravas aprēķinu un darba situāciju apguvei.',
+    portfolio_image_url: '/images/projects/loadmaster-simulator.png',
+    alt_text: 'Loadmaster Simulator sistēmas saskarnes',
+  },
+  'rtu-liepajas-jurniecibas-koledza': {
+    summary: 'Digitāla klātbūtne jūrniecības izglītības iestādei ar pārskatāmu informācijas arhitektūru.',
+    portfolio_image_url: '/images/projects/ljk.png',
+    alt_text: 'RTU Liepājas Jūrniecības koledžas logotips',
+  },
+  'ship-stability-simulator': {
+    summary: 'Profesionāls simulators kuģa stabilitātes aprēķinu apmācībai un praktisku scenāriju izspēlei.',
+    alt_text: 'Ship Stability Simulator logotips',
+  },
+};
+
+const categoryBySlug: Record<string, { name: string; description: string }> = {
+  'diana-hunt': {
+    name: 'Interneta veikali',
+    description: 'Ātra un saprotama iepirkšanās pieredze, veidota pārdošanai un ērtai pārvaldībai.',
+  },
+  'liepajas-teltis': {
+    name: 'Mājaslapas',
+    description: 'Pārdomātas uzņēmumu vietnes, kas skaidri izstāsta vērtību un ved apmeklētāju uz rīcību.',
+  },
+  'rtu-liepajas-jurniecibas-koledza': {
+    name: 'Zīmols & UI/UX',
+    description: 'Vizuālā identitāte un saskarnes, kas veido vienotu, atpazīstamu digitālo pieredzi.',
+  },
+};
+
+const showcaseVisualBySlug: Record<
+  string,
+  { desktop: string; mobile?: string; alt: string }
+> = {
+  'liepajas-teltis': {
+    desktop: '/images/projects/portfolio-web-hero-pc.webp',
+    mobile: '/images/projects/portfolio-web-hero-mobile.webp',
+    alt: 'ROMADI mājaslapu dizaina kategorijas priekšskatījums',
+  },
+  'diana-hunt': {
+    desktop: '/images/projects/portfolio-shop-hero-desktop.webp',
+    mobile: '/images/projects/portfolio-shop-hero-mobile.webp',
+    alt: 'ROMADI interneta veikalu dizaina kategorijas priek\u0161skat\u012bjums',
+  },
+  'rtu-liepajas-jurniecibas-koledza': {
+    desktop: '/images/projects/portfolio-uiux-hero-desktop.webp',
+    mobile: '/images/projects/portfolio-uiux-hero-mobile.webp',
+    alt: 'ROMADI z\u012bmola un UI UX dizaina kategorijas priek\u0161skat\u012bjums',
+  },
+};
+
+const dbProjects = await getPublishedPortfolioProjects();
+const projects = dbProjects.map((project) => {
+  const fallback = fallbackBySlug[project.slug];
+
+  return {
+    ...project,
+    summary: project.summary ?? fallback?.summary ?? null,
+    portfolio_image_url: project.portfolio_image_url ?? fallback?.portfolio_image_url ?? null,
+    alt_text: project.alt_text ?? fallback?.alt_text ?? null,
+  };
+});
+
+const showcaseOrder = ['liepajas-teltis', 'diana-hunt', 'rtu-liepajas-jurniecibas-koledza'];
+const showcaseProjects = [...projects].sort(
+  (a, b) => showcaseOrder.indexOf(a.slug) - showcaseOrder.indexOf(b.slug),
+);
+---
+
+<BaseLayout
+  title="Portfolio"
+  description="ROMADI portfolio — mūsu veidotās mājaslapas, digitālie produkti un specializētās sistēmas."
+  footerCta="portfolio"
+>
+  <section class="portfolio-hero" aria-labelledby="portfolio-title">
+    <div class="portfolio-shell">
+      <div class="portfolio-showcase" data-portfolio-showcase>
+        <header class="portfolio-showcase__header">
+          <p class="portfolio-kicker">ROMADI / Izvēlētie darbi</p>
+          <h1 id="portfolio-title">Digitāli darbi ar skaidru mērķi.</h1>
+          <p>Stratēģija, dizains un tehnoloģija — vienā pārdomātā risinājumā.</p>
+        </header>
+
+        <div class="portfolio-showcase__frame">
+          {showcaseProjects.map((project, index) => (
+            <figure class:list={['portfolio-showcase__visual', { 'is-active': index === 0 }]} data-showcase-visual={project.slug}>
+              <picture>
+                {showcaseVisualBySlug[project.slug]?.mobile && (
+                  <source
+                    media="(max-width: 640px)"
+                    srcset={showcaseVisualBySlug[project.slug]!.mobile!}
+                  />
+                )}
+                <img
+                  src={showcaseVisualBySlug[project.slug]?.desktop ?? project.portfolio_image_url ?? project.logo_url ?? ''}
+                  alt={showcaseVisualBySlug[project.slug]?.alt ?? project.alt_text ?? `${project.name} projekta skats`}
+                  width={showcaseVisualBySlug[project.slug] ? 1280 : 1600}
+                  height={showcaseVisualBySlug[project.slug] ? 960 : 900}
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                  fetchpriority={index === 0 ? 'high' : 'auto'}
+                  decoding={index === 0 ? 'sync' : 'async'}
+                />
+              </picture>
+            </figure>
+          ))}
+        </div>
+
+        <div class="portfolio-showcase__tabs" role="tablist" aria-label="Projektu kategorijas">
+          {showcaseProjects.map((project, index) => (
+            <button
+              class:list={['portfolio-showcase__tab', { 'is-active': index === 0 }]}
+              type="button"
+              role="tab"
+              aria-selected={index === 0 ? 'true' : 'false'}
+              data-showcase-tab={project.slug}
+            >
+              <span>{String(index + 1).padStart(2, '0')} / Kategorija</span>
+              <strong>{categoryBySlug[project.slug]?.name ?? 'Mājaslapas'}</strong>
+              <small>{categoryBySlug[project.slug]?.description ?? project.summary}</small>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="portfolio-work" id="projekti" aria-labelledby="projects-title">
+    <canvas class="portfolio-liquid-line" data-liquid-canvas aria-hidden="true"></canvas>
+    <div class="portfolio-shell">
+      <header class="portfolio-work__header">
+        <p class="portfolio-kicker">Atlasītie projekti</p>
+        <h2 id="projects-title">No idejas līdz<br />strādājošam rezultātam.</h2>
+        <p>{projects.length.toString().padStart(2, '0')} publicēti darbi</p>
+      </header>
+
+      {projects.length > 0 ? (
+        <ol class="portfolio-grid">
+          {projects.map((project, index) => {
+            const content = (
+              <>
+                <figure class:list={['project-card__media', { 'project-card__media--logo': !project.portfolio_image_url }]}>
+                  {project.portfolio_image_url ? (
+                    <img
+                      src={project.portfolio_image_url}
+                      alt={project.alt_text ?? `${project.name} projekta skats`}
+                      width="1600"
+                      height="1000"
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                      fetchpriority={index === 0 ? 'high' : 'auto'}
+                    />
+                  ) : project.logo_url ? (
+                    <img class="project-card__logo" src={project.logo_url} alt={project.alt_text ?? `${project.name} logotips`} loading="lazy" />
+                  ) : (
+                    <span class="project-card__monogram" aria-hidden="true">{project.name.slice(0, 2)}</span>
+                  )}
+                  <span class="project-card__wash" aria-hidden="true"></span>
+                </figure>
+                <div class="project-card__info">
+                  <div>
+                    <p class="project-card__meta">
+                      <span>{String(index + 1).padStart(2, '0')}</span>
+                      <span>{categoryBySlug[project.slug]?.name ?? 'Digitāls projekts'}</span>
+                    </p>
+                    <h3>{project.name}</h3>
+                  </div>
+                  <p class="project-card__summary">{project.summary ?? fallbackBySlug[project.slug]?.summary}</p>
+                  {project.project_url && <span class="project-card__arrow" aria-hidden="true">↗</span>}
+                </div>
+              </>
+            );
+
+            return (
+              <li class:list={['project-card', { 'project-card--featured': index === 0 }]}>
+                {project.project_url ? (
+                  <a href={project.project_url} target="_blank" rel="noreferrer" aria-label={`${project.name} — atvērt projektu jaunā cilnē`}>
+                    {content}
+                  </a>
+                ) : (
+                  <article>{content}</article>
+                )}
+              </li>
+            );
+          })}
+        </ol>
+      ) : (
+        <p class="portfolio-empty">Projektu atlase pašlaik tiek papildināta.</p>
+      )}
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const initPortfolioShowcase = () => {
+    document.querySelectorAll<HTMLElement>('[data-portfolio-showcase]').forEach((showcase) => {
+      const tabs = Array.from(showcase.querySelectorAll<HTMLButtonElement>('[data-showcase-tab]'));
+      const visuals = Array.from(showcase.querySelectorAll<HTMLElement>('[data-showcase-visual]'));
+
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          const selected = tab.dataset.showcaseTab;
+
+          tabs.forEach((item) => {
+            const active = item === tab;
+            item.classList.toggle('is-active', active);
+            item.setAttribute('aria-selected', String(active));
+          });
+
+          visuals.forEach((visual) => {
+            visual.classList.toggle('is-active', visual.dataset.showcaseVisual === selected);
+          });
+        });
+      });
+    });
+  };
+
+  const initLiquidCanvas = () => {
+    document.querySelectorAll<HTMLCanvasElement>('[data-liquid-canvas]').forEach((canvas) => {
+      if (canvas.dataset.liquidReady === 'true') return;
+
+      const gl = canvas.getContext('webgl', {
+        alpha: true,
+        antialias: false,
+        premultipliedAlpha: true,
+      });
+      if (!gl) return;
+
+      const vertexSource = `
+        attribute vec2 aPosition;
+        void main() { gl_Position = vec4(aPosition, 0.0, 1.0); }
+      `;
+      const fragmentSource = `
+        precision highp float;
+        uniform vec2 uResolution;
+        uniform float uTime;
+
+        float hash(vec2 p) {
+          return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+        }
+
+        float noise(vec2 p) {
+          vec2 i = floor(p);
+          vec2 f = fract(p);
+          vec2 u = f * f * (3.0 - 2.0 * f);
+          return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x),
+                     mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
+        }
+
+        void main() {
+          vec2 uv = gl_FragCoord.xy / uResolution;
+          float t = uTime;
+          float broadNoise = noise(vec2(uv.x * 4.0 + t * 0.055, t * 0.09));
+          float edgeNoise = noise(vec2(uv.x * 18.0 - t * 0.1, t * 0.16));
+          float flowNoise = noise(vec2(uv.x * 31.0 + t * 0.14, t * 0.21));
+
+          float center = 0.5
+            + sin((uv.x * 1.82 + 0.08 + t * 0.026) * 6.28318) * 0.13
+            + sin((uv.x * 4.3 + 0.31 - t * 0.041) * 6.28318) * 0.025
+            + sin(t * 0.82 + uv.x * 8.0) * 0.012;
+          center += (broadNoise - 0.5) * 0.06 + (edgeNoise - 0.5) * 0.016;
+
+          float width = 0.032 + broadNoise * 0.024 + (edgeNoise - 0.5) * 0.016;
+          float surfaceNoise = noise(vec2(uv.x * 38.0 - t * 0.11, uv.y * 7.0 + t * 0.18));
+          float distanceToFlow = abs(uv.y - center + (surfaceNoise - 0.5) * 0.015);
+          float bloom = exp(-pow(distanceToFlow / (width * 4.8), 2.0));
+          float body = exp(-pow(distanceToFlow / (width * 1.85), 1.22));
+          float endpointFade = smoothstep(0.0, 0.08, uv.x) * smoothstep(0.0, 0.08, 1.0 - uv.x);
+
+          vec3 wine = vec3(0.33, 0.0, 0.09);
+          vec3 cherry = vec3(1.0, 0.045, 0.27);
+          vec3 pearl = vec3(1.0, 0.68, 0.78);
+          vec3 color = mix(wine, cherry, body);
+          float softLight = body * (0.28 + flowNoise * 0.28);
+          color = mix(color, pearl, softLight);
+          color += cherry * bloom * (0.14 + surfaceNoise * 0.08);
+
+          float alpha = max(bloom * 0.38, body * 0.84) * endpointFade;
+          gl_FragColor = vec4(color * alpha, alpha);
+        }
+      `;
+
+      const compileShader = (type: number, source: string) => {
+        const shader = gl.createShader(type);
+        if (!shader) return null;
+        gl.shaderSource(shader, source);
+        gl.compileShader(shader);
+        return gl.getShaderParameter(shader, gl.COMPILE_STATUS) ? shader : null;
+      };
+
+      const vertexShader = compileShader(gl.VERTEX_SHADER, vertexSource);
+      const fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragmentSource);
+      if (!vertexShader || !fragmentShader) return;
+
+      const program = gl.createProgram();
+      if (!program) return;
+      gl.attachShader(program, vertexShader);
+      gl.attachShader(program, fragmentShader);
+      gl.linkProgram(program);
+      if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return;
+
+      const buffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+      gl.useProgram(program);
+
+      const position = gl.getAttribLocation(program, 'aPosition');
+      gl.enableVertexAttribArray(position);
+      gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
+
+      const resolution = gl.getUniformLocation(program, 'uResolution');
+      const time = gl.getUniformLocation(program, 'uTime');
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      const resize = () => {
+        const rect = canvas.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio, 1.5);
+        canvas.width = Math.max(1, Math.round(rect.width * dpr));
+        canvas.height = Math.max(1, Math.round(rect.height * dpr));
+        gl.viewport(0, 0, canvas.width, canvas.height);
+      };
+
+      const resizeObserver = new ResizeObserver(resize);
+      resizeObserver.observe(canvas);
+      resize();
+      canvas.dataset.liquidReady = 'true';
+
+      const startedAt = performance.now();
+      const render = (now: number) => {
+        if (!canvas.isConnected) {
+          resizeObserver.disconnect();
+          return;
+        }
+
+        gl.clearColor(0, 0, 0, 0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.uniform2f(resolution, canvas.width, canvas.height);
+        gl.uniform1f(time, reduceMotion ? 0 : (now - startedAt) * 0.00115);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+        if (!reduceMotion) requestAnimationFrame(render);
+      };
+
+      requestAnimationFrame(render);
+    });
+  };
+
+  document.addEventListener('astro:page-load', () => {
+    initPortfolioShowcase();
+    initLiquidCanvas();
+  });
+</script>
+
+<style>
+  .portfolio-shell {
+    width: min(100% - 3rem, 92rem);
+    margin-inline: auto;
+  }
+
+  .portfolio-kicker,
+  .project-card__meta,
+  .portfolio-work__header > p {
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  .portfolio-hero {
+    padding: 11.5rem 0 4rem;
+    background: #030303;
+  }
+
+  .portfolio-kicker {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+
+  .portfolio-showcase {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: 1.4rem;
+    background:
+      radial-gradient(circle at 50% 38%, rgba(255, 255, 255, 0.28), transparent 32%),
+      linear-gradient(145deg, #a4a4a4, #686869);
+  }
+
+  .portfolio-showcase::after {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    opacity: 0.055;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 96 96' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.25' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
+    background-size: 96px 96px;
+    animation: portfolio-grain 220ms steps(2, end) infinite;
+    pointer-events: none;
+  }
+
+  @keyframes portfolio-grain {
+    0% { background-position: 0 0; }
+    25% { background-position: 17px -11px; }
+    50% { background-position: -13px 19px; }
+    75% { background-position: 23px 7px; }
+    100% { background-position: -7px -17px; }
+  }
+
+  .portfolio-showcase__header,
+  .portfolio-showcase__frame,
+  .portfolio-showcase__tabs {
+    position: relative;
+    z-index: 1;
+  }
+
+  .portfolio-showcase__header {
+    padding: clamp(3rem, 5vw, 5rem) 2rem 2.5rem;
+    text-align: center;
+  }
+
+  .portfolio-showcase__header .portfolio-kicker { color: rgba(255, 255, 255, 0.72); }
+
+  .portfolio-showcase h1 {
+    margin: 0;
+    margin-top: 1.25rem;
+    color: #fff;
+    font-size: clamp(2.8rem, 5vw, 5rem);
+    font-weight: 470;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    text-wrap: balance;
+  }
+
+  .portfolio-showcase__header > p:last-child {
+    max-width: 42rem;
+    margin: 1.25rem auto 0;
+    color: rgba(255, 255, 255, 0.88);
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    font-weight: 500;
+    line-height: 1.6;
+    text-wrap: pretty;
+  }
+
+  .portfolio-showcase__frame {
+    position: relative;
+    width: min(72%, 60rem);
+    aspect-ratio: 4 / 3;
+    margin-inline: auto;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.34);
+    border-bottom: 0;
+    border-radius: 1.25rem 1.25rem 0 0;
+    padding: 1rem 1rem 0;
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.055) 42%, rgba(18, 18, 20, 0.2)),
+      rgba(42, 42, 44, 0.28);
+
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.34),
+      inset 1px 0 0 rgba(255, 255, 255, 0.12),
+      inset -1px 0 0 rgba(0, 0, 0, 0.18),
+      0 18px 46px rgba(0, 0, 0, 0.14);
+
+    backdrop-filter: blur(18px) saturate(125%);
+    -webkit-backdrop-filter: blur(18px) saturate(125%);
+
+    contain: layout paint;
+  }
+
+  .portfolio-showcase__frame::before {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+
+    border-radius: inherit;
+
+    background:
+      linear-gradient(115deg, rgba(255, 255, 255, 0.16), transparent 24% 72%, rgba(255, 255, 255, 0.07)),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.08), transparent 22%);
+
+    content: '';
+    pointer-events: none;
+  }
+
+  .portfolio-showcase__frame::after {
+    position: absolute;
+    z-index: 2;
+    inset: 0.45rem 0.45rem 0;
+
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 0;
+    border-radius: 0.9rem 0.9rem 0 0;
+
+    content: '';
+    pointer-events: none;
+  }
+
+  .portfolio-showcase__visual {
+    position: absolute;
+    z-index: 1;
+    inset: 1rem 1rem 0;
+    margin: 0;
+    overflow: hidden;
+    opacity: 0;
+    border-radius: 0.65rem 0.65rem 0 0;
+    background: #111;
+    pointer-events: none;
+
+    contain: layout paint;
+  }
+
+  .portfolio-showcase__visual.is-active { opacity: 1; }
+
+  .portfolio-showcase__visual img {
+    position: absolute;
+    inset: 0;
+
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    max-width: none;
+
+    object-fit: cover;
+    object-position: top center;
+  }
+
+  .portfolio-showcase__visual picture {
+    position: absolute;
+    inset: 0;
+
+    display: block;
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+  }
+
+  .portfolio-showcase__visual[data-showcase-visual='liepajas-teltis'] img,
+  .portfolio-showcase__visual[data-showcase-visual='diana-hunt'] img,
+  .portfolio-showcase__visual[data-showcase-visual='rtu-liepajas-jurniecibas-koledza'] img {
+    object-fit: fill;
+    object-position: center;
+
+    background: #111315;
+  }
+
+  .portfolio-showcase__tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2rem;
+    padding: 2.5rem 3rem 2.25rem;
+    background: #1b1b1c;
+  }
+
+  .portfolio-showcase__tab {
+    position: relative;
+    min-width: 0;
+    padding: 0 0 2rem;
+    border: 0;
+    border-bottom: 1px solid #3d3d3f;
+    background: transparent;
+    color: #6f6f72;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .portfolio-showcase__tab::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 0;
+    height: 1px;
+    background: #d8d8da;
+  }
+
+  .portfolio-showcase__tab.is-active { color: #f4f4f5; }
+  .portfolio-showcase__tab.is-active::after { width: 52%; }
+
+  .portfolio-showcase__tab span {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .portfolio-showcase__tab strong {
+    display: block;
+    font-size: 1.05rem;
+    font-weight: 580;
+  }
+
+  .portfolio-showcase__tab small {
+    display: block;
+    margin-top: 0.65rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    line-height: 1.55;
+  }
+
+  .portfolio-work {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(6rem, 10vw, 10rem) 0;
+    background: #030303;
+  }
+
+  .portfolio-work > .portfolio-shell {
+    position: relative;
+    z-index: 1;
+  }
+
+  .portfolio-liquid-line {
+    position: absolute;
+    z-index: 0;
+    top: clamp(7.5rem, 11vw, 11rem);
+    left: -2%;
+    width: 104%;
+    height: clamp(13rem, 20vw, 19rem);
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .portfolio-work__header {
+    display: grid;
+    grid-template-columns: 0.7fr 1.5fr 0.5fr;
+    gap: 3rem;
+    align-items: end;
+    margin-bottom: clamp(4rem, 8vw, 7rem);
+  }
+
+  .portfolio-work__header > p,
+  .project-card__meta {
+    color: #77777d;
+  }
+
+  .portfolio-work__header h2 {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(2.35rem, 4.3vw, 4.8rem);
+    font-weight: 470;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    text-wrap: balance;
+  }
+
+  .portfolio-work__header > p:last-child {
+    justify-self: end;
+    margin: 0;
+    font-size: 0.7rem;
+  }
+
+  .portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: clamp(4rem, 7vw, 7rem) clamp(1.25rem, 2.8vw, 3rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .project-card { grid-column: span 5; }
+  .project-card--featured { grid-column: 1 / -1; }
+  .project-card:nth-child(4n + 2) { grid-column: span 7; }
+  .project-card:nth-child(4n + 5) { grid-column: span 7; }
+
+  .project-card > a,
+  .project-card > article {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .project-card__media {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    margin: 0;
+    border-radius: 1rem;
+    background: #101012;
+  }
+
+  .project-card--featured .project-card__media { aspect-ratio: 16 / 7.5; }
+
+  .project-card__media > img:not(.project-card__logo) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 600ms cubic-bezier(0.2, 0.75, 0.2, 1);
+  }
+
+  .project-card__media--logo {
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(circle at 72% 24%, rgba(142, 0, 40, 0.38), transparent 44%),
+      linear-gradient(145deg, #151517, #070708 68%);
+  }
+
+  .project-card__logo {
+    position: relative;
+    z-index: 1;
+    width: min(46%, 17rem);
+    max-height: 34%;
+    object-fit: contain;
+  }
+
+  .project-card__monogram {
+    position: relative;
+    z-index: 1;
+    color: rgba(255, 255, 255, 0.22);
+    font-size: 5rem;
+    letter-spacing: -0.06em;
+  }
+
+  .project-card__wash {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 62%, rgba(40, 0, 12, 0.12));
+    pointer-events: none;
+  }
+
+  .project-card__info {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(12rem, 0.7fr);
+    gap: 2rem;
+    padding-top: 1.5rem;
+  }
+
+  .project-card__meta {
+    display: flex;
+    gap: 1rem;
+    margin: 0 0 0.75rem;
+    font-size: 0.66rem;
+  }
+
+  .project-card h3 {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(1.45rem, 2.3vw, 2.35rem);
+    font-weight: 520;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    text-wrap: balance;
+  }
+
+  .project-card__summary {
+    max-width: 32rem;
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.65;
+    text-wrap: pretty;
+  }
+
+  .project-card__arrow {
+    position: absolute;
+    right: 0;
+    top: 1.5rem;
+    color: var(--color-accent);
+    font-size: 1.25rem;
+  }
+
+  .project-card > a:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 0.5rem;
+    border-radius: 0.75rem;
+  }
+
+  .portfolio-empty {
+    color: var(--color-text-secondary);
+    font-size: 1.1rem;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .project-card > a:hover .project-card__media > img:not(.project-card__logo) { transform: scale(1.025); }
+    .portfolio-hero__jump:hover { color: #fff; }
+  }
+
+  @media (max-width: 900px) {
+    .portfolio-showcase__tabs { gap: 1rem; padding-inline: 1.5rem; }
+    .portfolio-work__header { grid-template-columns: 1fr; gap: 1.5rem; }
+    .portfolio-work__header > p:last-child { justify-self: start; }
+    .project-card,
+    .project-card:nth-child(4n + 2),
+    .project-card:nth-child(4n + 5) { grid-column: span 6; }
+    .project-card--featured { grid-column: 1 / -1; }
+    .project-card__info { grid-template-columns: 1fr; gap: 1rem; }
+  }
+
+  @media (max-width: 640px) {
+    .portfolio-shell { width: min(100% - 2rem, 92rem); }
+    .portfolio-hero { padding: 9rem 0 2.5rem; }
+    .portfolio-showcase { border-radius: 1rem; }
+    .portfolio-showcase__header { padding: 2.75rem 1.25rem 2rem; }
+    .portfolio-showcase h1 { font-size: clamp(2.6rem, 12vw, 4rem); }
+    .portfolio-showcase__frame {
+      width: min(calc(100% - 2rem), 24rem);
+      aspect-ratio: 9 / 16;
+      padding: 0.5rem 0.5rem 0;
+    }
+    .portfolio-showcase__visual { inset: 0.5rem 0.5rem 0; }
+    .portfolio-showcase__tabs {
+      display: flex;
+      overflow-x: auto;
+      gap: 1.5rem;
+      padding: 1.5rem 1.25rem;
+      scroll-snap-type: x mandatory;
+    }
+    .portfolio-showcase__tab { flex: 0 0 76vw; scroll-snap-align: start; }
+    .portfolio-work { padding: 5rem 0 6rem; }
+    .portfolio-liquid-line {
+      top: 8.5rem;
+      left: -36%;
+      width: 172%;
+      height: 14rem;
+      opacity: 0.78;
+    }
+    .portfolio-work__header { margin-bottom: 4rem; }
+    .portfolio-grid { display: flex; flex-direction: column; gap: 4.5rem; }
+    .project-card__media,
+    .project-card--featured .project-card__media { aspect-ratio: 4 / 3; border-radius: 0.75rem; }
+    .project-card__info { padding-top: 1.25rem; }
+    .project-card h3 { font-size: 1.6rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .project-card__media > img { transition: none !important; }
+    .portfolio-showcase::after { animation: none; }
+  }
+</style>

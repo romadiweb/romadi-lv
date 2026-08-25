@@ -2,6 +2,23 @@
   <div class="home-hero__background" aria-hidden="true">
     <div class="home-hero__base"></div>
 
+    <picture class="home-hero__image">
+      <source media="(max-width: 700px)" srcset="/images/home/hero-landscape-900.webp" />
+      <img
+        src="/images/home/hero-landscape-1600.webp"
+        srcset="/images/home/hero-landscape-900.webp 900w, /images/home/hero-landscape-1600.webp 1600w"
+        sizes="100vw"
+        width="1600"
+        height="878"
+        alt=""
+        fetchpriority="high"
+        decoding="async"
+      />
+    </picture>
+
+    <!--
+      LEGACY ROMADI GOO — intentionally retained for quick rollback.
+      Remove this comment wrapper and remove the home-hero__image picture above to restore it.
     <div class="home-hero__ambient">
       <div class="home-hero__goo home-hero__goo--left"></div>
       <div class="home-hero__goo home-hero__goo--bottom"></div>
@@ -10,6 +27,7 @@
       <div class="home-hero__goo home-hero__goo--satellite-left"></div>
       <div class="home-hero__goo home-hero__goo--satellite-right"></div>
     </div>
+    -->
 
     <div class="home-hero__flashlight"></div>
 
@@ -38,6 +56,11 @@
   </div>
 
   <div class="home-hero__content">
+    <div class="home-hero__meta" data-reveal>
+      <span>ROMADI / Digit&#257;l&#257; pieredze</span>
+      <span>56.5047&#176; N / 21.0108&#176; E</span>
+    </div>
+
     <h1 data-reveal>
       Vairāk nekā tikai
       <span>mājaslapa</span>
@@ -90,6 +113,7 @@
       <dd>Liepāja / Latvija</dd>
     </div>
   </dl>
+
 </section>
 
 <script>
@@ -164,8 +188,107 @@
       linear-gradient(115deg, #620b22, #100507 44%, #190509 68%, #58091e);
   }
 
+  .home-hero__image {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+
+    display: block;
+
+    overflow: hidden;
+  }
+
+  .home-hero__image img {
+    position: relative;
+    z-index: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center;
+
+    animation: home-hero-landscape-drift 22s cubic-bezier(0.42, 0, 0.2, 1) infinite;
+
+    will-change: transform;
+  }
+
+  .home-hero__image::before,
+  .home-hero__image::after {
+    position: absolute;
+    z-index: 1;
+
+    content: '';
+    pointer-events: none;
+
+    will-change: transform, opacity;
+  }
+
+  .home-hero__image::before {
+    top: -24%;
+    left: -18%;
+
+    width: 86%;
+    height: 74%;
+
+    border-radius: 50%;
+
+    background:
+      radial-gradient(ellipse at 36% 55%, rgb(225 214 218 / 18%), transparent 52%),
+      radial-gradient(ellipse at 72% 42%, rgb(129 101 111 / 15%), transparent 58%);
+
+    mix-blend-mode: screen;
+
+    opacity: 0.22;
+
+    filter: blur(42px);
+
+    animation: home-hero-smoke-left 17s ease-in-out infinite alternate;
+  }
+
+  .home-hero__image::after {
+    right: -24%;
+    bottom: 4%;
+
+    width: 92%;
+    height: 66%;
+
+    border-radius: 48% 52% 60% 40%;
+
+    background:
+      radial-gradient(ellipse at 44% 50%, rgb(154 128 137 / 15%), transparent 48%),
+      radial-gradient(ellipse at 68% 64%, rgb(105 79 89 / 12%), transparent 60%);
+
+    mix-blend-mode: screen;
+
+    opacity: 0.18;
+
+    filter: blur(52px);
+
+    animation: home-hero-smoke-right 23s ease-in-out infinite alternate;
+  }
+
+  @keyframes home-hero-landscape-drift {
+    0% { transform: scale(1.045) translate3d(-0.18%, 0.08%, 0) rotate(-0.16deg); }
+    31% { transform: scale(1.045) translate3d(0.14%, -0.12%, 0) rotate(0.1deg); }
+    63% { transform: scale(1.045) translate3d(0.08%, 0.11%, 0) rotate(0.18deg); }
+    100% { transform: scale(1.045) translate3d(-0.12%, -0.06%, 0) rotate(-0.09deg); }
+  }
+
+  @keyframes home-hero-smoke-left {
+    0% { opacity: 0.13; transform: translate3d(-5%, 1%, 0) scale(0.92) rotate(-3deg); }
+    45% { opacity: 0.24; transform: translate3d(13%, 8%, 0) scale(1.08) rotate(2deg); }
+    100% { opacity: 0.17; transform: translate3d(25%, -3%, 0) scale(1.16) rotate(5deg); }
+  }
+
+  @keyframes home-hero-smoke-right {
+    0% { opacity: 0.1; transform: translate3d(7%, 5%, 0) scale(1.08) rotate(4deg); }
+    52% { opacity: 0.2; transform: translate3d(-12%, -4%, 0) scale(0.96) rotate(-2deg); }
+    100% { opacity: 0.14; transform: translate3d(-24%, 6%, 0) scale(1.12) rotate(-5deg); }
+  }
+
   /* =========================================================
-     LIQUID GOO FIELD
+     LEGACY LIQUID GOO FIELD — retained for rollback
      ========================================================= */
 
   .home-hero__ambient {
@@ -436,26 +559,43 @@
      ========================================================= */
 
   .home-hero__content {
-    position: relative;
+    position: absolute;
     z-index: 2;
+    inset: 0;
 
-    width: min(100% - 3rem, 74rem);
-    padding-top: 8rem;
+    width: auto;
+    padding: clamp(10rem, 18vh, 12rem) clamp(2.5rem, 5vw, 5.5rem) 8rem;
 
-    text-align: center;
+    text-align: left;
+  }
+
+  .home-hero__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+
+    color: rgb(255 255 255 / 66%);
+
+    font-family: var(--font-mono);
+    font-size: clamp(0.62rem, 0.72vw, 0.72rem);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }
 
   .home-hero h1 {
-    max-width: 70rem;
-    margin-inline: auto;
+    max-width: 10ch;
+    margin: clamp(2rem, 4vh, 3.25rem) 0 0;
 
     color: white;
 
-    font-size: clamp(3.75rem, 7.25vw, 7rem);
+    font-size: clamp(4rem, 7vw, 6.75rem);
     font-weight: 500;
     letter-spacing: -0.035em;
-    word-spacing: 0.25em;
-    line-height: 1.1;
+    word-spacing: 0.05em;
+    line-height: 0.94;
+    text-wrap: balance;
   }
 
   .home-hero h1 span {
@@ -463,8 +603,8 @@
   }
 
   .home-hero__description {
-    max-width: 48rem;
-    margin: 2.4rem auto 0;
+    max-width: 34rem;
+    margin: 1.5rem 0 0;
 
     color: rgb(255 255 255 / 68%);
 
@@ -479,12 +619,16 @@
   }
 
   .home-hero__actions {
+    position: absolute;
+    right: clamp(2.5rem, 5vw, 5.5rem);
+    bottom: clamp(5.25rem, 8vh, 6.25rem);
+
     display: flex;
-    margin-top: 3.5rem;
+    margin: 0;
 
     align-items: center;
-    justify-content: center;
-    gap: 2rem;
+    justify-content: flex-end;
+    gap: 1.25rem;
   }
 
   .home-hero__primary-action {
@@ -550,23 +694,23 @@
     position: absolute;
     z-index: 2;
 
-    right: clamp(2.5rem, 5vw, 5.5rem);
-    bottom: clamp(2.5rem, 5vw, 4.75rem);
+    right: auto;
+    left: clamp(2.5rem, 5vw, 5.5rem);
+    bottom: clamp(5.25rem, 8vh, 6.25rem);
 
     display: flex;
-    flex-direction: column;
-    gap: 1.15rem;
+    flex-direction: row;
+    gap: clamp(2rem, 4vw, 4.5rem);
 
     width: max-content;
     margin: 0;
   }
 
   .home-hero__details > div {
-    display: grid;
-    grid-template-columns: max-content max-content;
-    justify-content: end;
-    align-items: baseline;
-    column-gap: clamp(1.1rem, 1.6vw, 1.45rem);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
   }
 
   .home-hero__details dt,
@@ -583,15 +727,16 @@
     color: rgb(255 224 231 / 58%);
 
     font-weight: 450;
-    text-align: right;
+    text-align: left;
   }
 
   .home-hero__details dd {
     color: rgb(255 255 255 / 94%);
 
     font-weight: 650;
-    text-align: right;
+    text-align: left;
   }
+
 
   .home-hero__count {
     display: inline-block;
@@ -772,8 +917,7 @@
     }
 
     .home-hero__content {
-      padding-top: 9rem;
-      padding-bottom: 13rem;
+      padding: 9.5rem 2rem 13rem;
     }
 
     .home-hero h1 {
@@ -784,10 +928,16 @@
     }
 
     .home-hero__details {
-      right: 2rem;
-      bottom: 2rem;
+      right: auto;
+      left: 2rem;
+      bottom: 5.25rem;
 
       gap: 1rem;
+    }
+
+    .home-hero__actions {
+      right: 2rem;
+      bottom: 5.25rem;
     }
 
     .home-hero__details > div {
@@ -819,10 +969,23 @@
     }
 
     .home-hero__content {
+      position: relative;
+      inset: auto;
+
       width: min(100% - 2rem, 34rem);
 
       padding-top: 11.25rem;
       padding-bottom: 12.5rem;
+
+      text-align: center;
+    }
+
+    .home-hero__meta {
+      justify-content: center;
+    }
+
+    .home-hero__meta span:last-child {
+      display: none;
     }
 
     .home-hero h1 {
@@ -830,6 +993,7 @@
       top: 0;
 
       max-width: 28rem;
+      margin-inline: auto;
 
       font-size: clamp(2.7rem, 12.6vw, 4.25rem);
       font-weight: 430;
@@ -843,9 +1007,12 @@
       top: 0;
 
       margin-top: 1.75rem;
+      margin-inline: auto;
     }
 
     .home-hero__actions {
+      position: static;
+
       flex-direction: column;
 
       margin-top: 2.5rem;
@@ -879,9 +1046,10 @@
 
     .home-hero__details > div {
       display: flex;
+      flex-direction: column;
       justify-content: center;
-      align-items: baseline;
-      gap: 0.95rem;
+      align-items: center;
+      gap: 0.25rem;
     }
 
     .home-hero__details dt,
@@ -902,13 +1070,21 @@
         transparent 75%
       );
     }
+
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .home-hero__image img,
+    .home-hero__image::before,
+    .home-hero__image::after,
     .home-hero__goo,
     .home-hero__goo::before,
     .home-hero__goo::after {
       animation: none;
+    }
+
+    .home-hero__image img {
+      transform: scale(1.045);
     }
 
     .home-hero__ambient {

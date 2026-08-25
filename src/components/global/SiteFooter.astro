@@ -149,7 +149,10 @@ const cta =
       </div>
 
       <div class="site-footer__bottom">
-        <p>© {currentYear} ROMADI. VISAS TIESĪBAS AIZSARGĀTAS.</p>
+        <p>
+          © {currentYear} ROMADI. VISAS TIESĪBAS AIZSARGĀTAS.
+          <a class="site-footer__legal-link" href="/sikdatnu-politika">SĪKDATŅU POLITIKA</a>
+        </p>
         <p>DIGITĀLI RISINĀJUMI UZŅĒMUMA IZAUGSMEI.</p>
       </div>
     </div>
@@ -456,6 +459,22 @@ const cta =
     padding-top: 1.5rem;
     color: rgb(255 255 255 / 34%);
     font: 550 clamp(0.55rem, 0.7vw, 0.68rem)/1.5 var(--font-mono);
+  }
+  .site-footer__legal-link {
+    margin-left: 0.9rem;
+    color: inherit;
+    text-decoration-line: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+    transition:
+      color 180ms ease,
+      text-decoration-color 180ms ease;
+  }
+  .site-footer__legal-link:hover,
+  .site-footer__legal-link:focus-visible {
+    color: rgb(255 255 255 / 58%);
+    text-decoration-color: currentColor;
   }
 
   @keyframes footer-wave {
