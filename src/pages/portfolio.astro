@@ -826,10 +826,14 @@ const showcaseProjects = [...projects].sort(
     .portfolio-shell { width: min(100% - 2rem, 92rem); }
     .portfolio-hero { padding: 9rem 0 2.5rem; }
     .portfolio-showcase { border-radius: 1rem; }
-    .portfolio-showcase__header { padding: 2.75rem 1.25rem 2rem; }
-    .portfolio-showcase h1 { font-size: clamp(2.6rem, 12vw, 4rem); }
+    .portfolio-showcase__header { padding: 2.15rem 1.25rem 1.5rem; }
+    .portfolio-showcase h1 {
+      margin-top: 1rem;
+      font-size: clamp(2.25rem, 10.5vw, 3.25rem);
+    }
+    .portfolio-showcase__header > p:last-child { margin-top: 1rem; }
     .portfolio-showcase__frame {
-      width: min(calc(100% - 2rem), 24rem);
+      width: min(72vw, 17.5rem);
       aspect-ratio: 9 / 16;
       padding: 0.5rem 0.5rem 0;
       scroll-margin-top: 7rem;
