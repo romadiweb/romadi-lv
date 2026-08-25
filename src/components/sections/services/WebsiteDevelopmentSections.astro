@@ -63,21 +63,19 @@ const fallbackProjects: ProjectProof[] = [
     sort_order: 30,
   },
   {
-    id: 4,
-    name: 'Loadmaster Simulator',
-    slug: 'loadmaster-simulator',
-    logo_url: '/images/projects/loadmaster-logo-metallic.webp',
-    sort_order: 40,
+    id: 6,
+    name: 'Pabeigts projekts 6',
+    slug: 'pabeigts-projekts-6',
+    logo_url: null,
+    sort_order: 60,
   },
   {
-    id: 5,
-    name: 'Ship Stability Simulator',
-    slug: 'ship-stability-simulator',
-    logo_url: '/images/projects/shipstability-logo-metallic.webp',
-    sort_order: 50,
+    id: 7,
+    name: 'Pabeigts projekts 7',
+    slug: 'pabeigts-projekts-7',
+    logo_url: null,
+    sort_order: 70,
   },
-  { id: 6, name: 'Pabeigts projekts 6', slug: 'pabeigts-projekts-6', logo_url: null, sort_order: 60 },
-  { id: 7, name: 'Pabeigts projekts 7', slug: 'pabeigts-projekts-7', logo_url: null, sort_order: 70 },
 ];
 
 const databaseProjects = await getPublishedWebsiteProjects();
@@ -193,7 +191,9 @@ const pricing = [
     }
   </div>
   <div class="website-proof__content">
-    <h2 id="website-proof-title"><strong data-project-count>{projectCount}</strong> pabeigti<br />{' '}projekti.</h2>
+    <h2 id="website-proof-title">
+      <strong data-project-count>{projectCount}</strong> pabeigti<br />{' '}projekti.
+    </h2>
     <p>
       Atšķirīgas idejas, nozares un auditorijas — katrai izveidots risinājums, kas atbilst reālam
       biznesa mērķim.
@@ -213,7 +213,11 @@ const pricing = [
 
     if (!proof || !marks || !count || !supabase) return;
 
-    const { data, error, count: projectCount } = await supabase
+    const {
+      data,
+      error,
+      count: projectCount,
+    } = await supabase
       .from('projects')
       .select('id, name, logo_url, sort_order', { count: 'exact' })
       .eq('type', 'website')
@@ -222,7 +226,9 @@ const pricing = [
       .order('id', { ascending: true });
 
     if (error || !data) {
-      console.warn(`Could not refresh website projects from Supabase: ${error?.message ?? 'Unknown error'}`);
+      console.warn(
+        `Could not refresh website projects from Supabase: ${error?.message ?? 'Unknown error'}`,
+      );
       return;
     }
 
@@ -271,7 +277,9 @@ const pricing = [
   async function refreshPricingCards() {
     const section = document.querySelector<HTMLElement>('[data-website-pricing]');
     const grid = section?.querySelector<HTMLElement>('[data-pricing-grid]');
-    const cardTemplate = section?.querySelector<HTMLTemplateElement>('[data-pricing-card-template]');
+    const cardTemplate = section?.querySelector<HTMLTemplateElement>(
+      '[data-pricing-card-template]',
+    );
     const featureTemplate = section?.querySelector<HTMLTemplateElement>(
       '[data-pricing-feature-template]',
     );
@@ -292,7 +300,9 @@ const pricing = [
       .order('id', { ascending: true });
 
     if (error || !data) {
-      console.warn(`Could not refresh pricing plans from Supabase: ${error?.message ?? 'Unknown error'}`);
+      console.warn(
+        `Could not refresh pricing plans from Supabase: ${error?.message ?? 'Unknown error'}`,
+      );
       return;
     }
 
@@ -390,7 +400,8 @@ const pricing = [
         <p data-plan-description></p>
         <ul data-plan-features></ul>
         <a href={contactHref} data-plan-cta data-astro-reload>
-          <span data-cta-label></span> <span aria-hidden="true">↗</span>
+          <span data-cta-label></span>
+          <span aria-hidden="true">↗</span>
         </a>
       </div>
     </article>
@@ -729,7 +740,8 @@ const pricing = [
   }
 
   @keyframes website-mark-float {
-    0%, 100% {
+    0%,
+    100% {
       transform: translate3d(0, calc(var(--float-small) * -0.35), 0);
     }
     18% {
@@ -766,7 +778,9 @@ const pricing = [
     border: 1px solid rgb(255 255 255 / 12%);
     border-radius: 1rem;
     background: #090909;
-    transition: transform 280ms var(--ease-out-expo), border-color 220ms ease;
+    transition:
+      transform 280ms var(--ease-out-expo),
+      border-color 220ms ease;
   }
   .website-pricing__plan::before {
     position: absolute;
@@ -777,7 +791,9 @@ const pricing = [
     box-shadow: 0 0 2.4rem 0.35rem var(--plan-aura);
     opacity: 0;
     transform: scale(0.96);
-    transition: opacity 280ms ease, transform 360ms var(--ease-out-expo);
+    transition:
+      opacity 280ms ease,
+      transform 360ms var(--ease-out-expo);
     content: '';
     pointer-events: none;
   }
@@ -810,8 +826,17 @@ const pricing = [
       linear-gradient(rgb(214 218 224 / 10%) 1px, transparent 1px),
       linear-gradient(90deg, rgb(214 218 224 / 10%) 1px, transparent 1px),
       radial-gradient(circle at 90% 10%, var(--plan-aura), transparent 12rem),
-      linear-gradient(135deg, var(--plan-field-start), var(--plan-field-mid) 58%, var(--plan-field-end));
-    background-size: 2rem 2rem, 2rem 2rem, auto, auto;
+      linear-gradient(
+        135deg,
+        var(--plan-field-start),
+        var(--plan-field-mid) 58%,
+        var(--plan-field-end)
+      );
+    background-size:
+      2rem 2rem,
+      2rem 2rem,
+      auto,
+      auto;
   }
   .website-pricing__plan:nth-child(2) {
     --plan-aura: rgb(247 65 103 / 36%);

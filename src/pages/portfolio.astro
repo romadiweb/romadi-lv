@@ -5,9 +5,28 @@ import { getPublishedPortfolioProjects, type PortfolioProject } from '@/lib/proj
 const fallbackBySlug: Record<string, Partial<PortfolioProject>> = {
   'diana-hunt': {
     summary:
-      'E-komercijas vietne medību preču zīmolam ar skaidru produktu struktūru un izteiktu vizuālo raksturu.',
+      'Medību preču kataloga vietne ar Latvijā izstrādātu mednieku eksāmena testa sistēmu, lietotāju kontiem un īpašnieka pārvaldības vidi.',
     portfolio_image_url: '/images/projects/dianahunt-1600.webp',
     alt_text: 'Diana Hunt interneta veikala sākumlapa',
+    project_url: 'https://dianahunt.lv',
+    challenge:
+      'Vienā saprotamā vietnē bija jāapvieno medību preču katalogs, mācību saturs un droša piekļuve eksāmena testa sistēmai.',
+    solution:
+      'Izveidojām individuālu vietni ar lietotāju kontiem, mednieku eksāmena treniņtestu un īpašnieka CMS produktu un lietotāju pārvaldībai.',
+    features: [
+      'Latvijas mednieku eksāmena testa sistēma',
+      'Lietotāju konti un piekļuves pārvaldība',
+      'Produktu katalogs bez tiešsaistes apmaksas',
+      'CMS produktu un lietotāju pārvaldībai',
+      'Pieteikuma forma ar nosūtīšanu uz e-pastu',
+    ],
+    technologies: ['Custom izstrāde', 'Pielāgots CMS'],
+    integrations: [
+      'Lietotāju konti',
+      'E-pasta forma',
+      'Produktu kataloga pārvaldība',
+      'Eksāmena testa sistēma',
+    ],
   },
   'liepajas-teltis': {
     summary:
@@ -15,21 +34,11 @@ const fallbackBySlug: Record<string, Partial<PortfolioProject>> = {
     portfolio_image_url: '/images/projects/liepajas-teltis-1600.webp',
     alt_text: 'Liepājas Teltis vietnes sākumlapa',
   },
-  'loadmaster-simulator': {
-    summary: 'Specializēta mācību sistēma sarežģītu kravas aprēķinu un darba situāciju apguvei.',
-    portfolio_image_url: '/images/projects/loadmaster-simulator.png',
-    alt_text: 'Loadmaster Simulator sistēmas saskarnes',
-  },
   'rtu-liepajas-jurniecibas-koledza': {
     summary:
       'Digitāla klātbūtne jūrniecības izglītības iestādei ar pārskatāmu informācijas arhitektūru.',
     portfolio_image_url: '/images/projects/ljk.png',
     alt_text: 'RTU Liepājas Jūrniecības koledžas logotips',
-  },
-  'ship-stability-simulator': {
-    summary:
-      'Profesionāls simulators kuģa stabilitātes aprēķinu apmācībai un praktisku scenāriju izspēlei.',
-    alt_text: 'Ship Stability Simulator logotips',
   },
 };
 
@@ -77,6 +86,14 @@ const projects = dbProjects.map((project) => {
     summary: project.summary ?? fallback?.summary ?? null,
     portfolio_image_url: project.portfolio_image_url ?? fallback?.portfolio_image_url ?? null,
     alt_text: project.alt_text ?? fallback?.alt_text ?? null,
+    project_url: project.project_url ?? fallback?.project_url ?? null,
+    challenge: project.challenge ?? fallback?.challenge ?? null,
+    solution: project.solution ?? fallback?.solution ?? null,
+    features: project.features.length > 0 ? project.features : (fallback?.features ?? []),
+    technologies:
+      project.technologies.length > 0 ? project.technologies : (fallback?.technologies ?? []),
+    integrations:
+      project.integrations.length > 0 ? project.integrations : (fallback?.integrations ?? []),
   };
 });
 
@@ -210,29 +227,174 @@ const showcaseProjects = [...projects].sort(
                   <figcaption class="project-card__info">
                     <p>{categoryBySlug[project.slug]?.name ?? 'Digitāls projekts'}</p>
                     <h3>{project.name}</h3>
-                    {project.project_url && (
-                      <span class="project-card__action">
-                        Atvērt projektu <span aria-hidden="true">↗</span>
-                      </span>
-                    )}
+                    <span class="project-card__action">
+                      Atvērt apskatu <span aria-hidden="true">→</span>
+                    </span>
                   </figcaption>
                 </figure>
               );
 
+              const dialogId = `project-dialog-${project.slug}`;
+              const projectCategory = categoryBySlug[project.slug];
+              const projectSummary =
+                project.summary ??
+                fallbackBySlug[project.slug]?.summary ??
+                projectCategory?.description ??
+                'Individuāli izstrādāts digitālais risinājums ar skaidru struktūru un pārdomātu lietotāja pieredzi.';
+              const challenge = project.challenge ?? projectSummary;
+              const solution =
+                project.solution ??
+                projectCategory?.description ??
+                'Stratēģija, dizains un izstrāde savienota vienotā, mērķtiecīgā risinājumā.';
+              const hasCapabilities = project.features.length > 0;
+              const hasTechnologyDetails =
+                project.technologies.length > 0 || project.integrations.length > 0;
+
               return (
                 <li class="project-card">
-                  {project.project_url ? (
-                    <a
-                      href={project.project_url}
-                      target="_blank"
-                      rel="noreferrer"
-                      aria-label={`${project.name} — atvērt projektu jaunā cilnē`}
-                    >
-                      {content}
-                    </a>
-                  ) : (
-                    <article>{content}</article>
-                  )}
+                  {content}
+                  <button
+                    class="project-card__trigger"
+                    type="button"
+                    aria-label={`${project.name} — atvērt projekta apskatu`}
+                    aria-haspopup="dialog"
+                    aria-controls={dialogId}
+                    data-open-project={dialogId}
+                  />
+
+                  <dialog
+                    class="project-dialog"
+                    id={dialogId}
+                    aria-labelledby={`${dialogId}-title`}
+                    data-project-dialog
+                  >
+                    <div class="project-dialog__surface">
+                      <header class="project-dialog__topbar">
+                        <p>
+                          <span aria-hidden="true">{'{ }'}</span>
+                          ROMADI / PROJEKTA APSKATS
+                        </p>
+                        <button
+                          type="button"
+                          aria-label="Aizvērt projekta apskatu"
+                          data-close-project
+                          autofocus
+                        >
+                          <span aria-hidden="true" />
+                          <span aria-hidden="true" />
+                        </button>
+                      </header>
+
+                      <div class="project-dialog__content">
+                        <figure
+                          class:list={[
+                            'project-dialog__media',
+                            { 'project-dialog__media--logo': !project.portfolio_image_url },
+                          ]}
+                        >
+                          {project.portfolio_image_url ? (
+                            <img
+                              src={project.portfolio_image_url}
+                              alt={project.alt_text ?? `${project.name} projekta skats`}
+                              width="1600"
+                              height="1000"
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          ) : project.logo_url ? (
+                            <img
+                              src={project.logo_url}
+                              alt={project.alt_text ?? `${project.name} logotips`}
+                              loading="lazy"
+                            />
+                          ) : (
+                            <span aria-hidden="true">{project.name.slice(0, 2)}</span>
+                          )}
+                        </figure>
+
+                        <section class="project-dialog__intro">
+                          <div>
+                            <p>{projectCategory?.name ?? 'Digitāls projekts'}</p>
+                            <h2 id={`${dialogId}-title`}>{project.name}</h2>
+                          </div>
+                          <dl>
+                            <div>
+                              <dt>Izstrādes veids</dt>
+                              <dd>{project.build_platform}</dd>
+                            </div>
+                            <div>
+                              <dt>Virziens</dt>
+                              <dd>{projectCategory?.name ?? 'Digitālā pieredze'}</dd>
+                            </div>
+                          </dl>
+                        </section>
+
+                        <section class="project-dialog__story" aria-label="Par projektu">
+                          <div>
+                            <h3>Izaicinājums</h3>
+                            <p>{challenge}</p>
+                          </div>
+                          <div>
+                            <h3>Risinājums</h3>
+                            <p>{solution}</p>
+                          </div>
+                        </section>
+
+                        {hasCapabilities && (
+                          <section class="project-dialog__features" aria-labelledby={`${dialogId}-features`}>
+                            <h3 id={`${dialogId}-features`}>Izveidotā funkcionalitāte</h3>
+                            <ul>
+                              {project.features.map((feature) => (
+                                <li>{feature}</li>
+                              ))}
+                            </ul>
+                          </section>
+                        )}
+
+                        {hasTechnologyDetails && (
+                          <section class="project-dialog__technology" aria-labelledby={`${dialogId}-technology`}>
+                            <header>
+                              <h3 id={`${dialogId}-technology`}>Tehnoloģijas un integrācijas</h3>
+                              <p>Risinājuma pamats un galvenie savienojumi.</p>
+                            </header>
+                            <div>
+                              {project.technologies.length > 0 && (
+                                <section aria-label="Izstrādes tehnoloģijas">
+                                  <h4>Izstrāde</h4>
+                                  <ul>
+                                    {project.technologies.map((technology) => (
+                                      <li>{technology}</li>
+                                    ))}
+                                  </ul>
+                                </section>
+                              )}
+                              {project.integrations.length > 0 && (
+                                <section aria-label="Galvenās integrācijas">
+                                  <h4>Galvenās integrācijas</h4>
+                                  <ul>
+                                    {project.integrations.map((integration) => (
+                                      <li>{integration}</li>
+                                    ))}
+                                  </ul>
+                                </section>
+                              )}
+                            </div>
+                          </section>
+                        )}
+
+                        <footer class="project-dialog__footer">
+                          {project.project_url && (
+                            <a href={project.project_url} target="_blank" rel="noreferrer">
+                              Apmeklēt vietni <span aria-hidden="true">↗</span>
+                            </a>
+                          )}
+                          <a href="/kontakti" data-astro-prefetch>
+                            Pārrunāt līdzīgu projektu <span aria-hidden="true">↗</span>
+                          </a>
+                        </footer>
+                      </div>
+                    </div>
+                  </dialog>
                 </li>
               );
             })}
@@ -411,9 +573,67 @@ const showcaseProjects = [...projects].sort(
     });
   };
 
+  const initProjectDialogs = () => {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    document.querySelectorAll<HTMLButtonElement>('[data-open-project]').forEach((trigger) => {
+      if (trigger.dataset.dialogInitialized === 'true') return;
+
+      const dialogId = trigger.dataset.openProject;
+      const dialog = dialogId
+        ? (document.getElementById(dialogId) as HTMLDialogElement | null)
+        : null;
+      const closeButton = dialog?.querySelector<HTMLButtonElement>('[data-close-project]');
+
+      if (!dialog || !closeButton) return;
+      trigger.dataset.dialogInitialized = 'true';
+
+      let closeTimer = 0;
+
+      const unlockPage = () => {
+        delete document.body.dataset.projectDialogOpen;
+        delete dialog.dataset.closing;
+      };
+
+      const closeDialog = () => {
+        if (!dialog.open || dialog.dataset.closing === 'true') return;
+
+        window.clearTimeout(closeTimer);
+        dialog.dataset.closing = 'true';
+        closeTimer = window.setTimeout(() => dialog.close(), reducedMotion.matches ? 0 : 180);
+      };
+
+      trigger.addEventListener('click', () => {
+        window.clearTimeout(closeTimer);
+        delete dialog.dataset.closing;
+        document.body.dataset.projectDialogOpen = 'true';
+        dialog.showModal();
+        dialog.scrollTop = 0;
+      });
+
+      closeButton.addEventListener('click', closeDialog);
+      dialog.addEventListener('click', (event) => {
+        if (event.target === dialog) closeDialog();
+      });
+      dialog.addEventListener('cancel', (event) => {
+        event.preventDefault();
+        closeDialog();
+      });
+      dialog.addEventListener('close', unlockPage);
+    });
+  };
+
   document.addEventListener('astro:page-load', () => {
     initPortfolioShowcase();
     initLiquidCanvas();
+    initProjectDialogs();
+  });
+
+  document.addEventListener('astro:before-swap', () => {
+    document
+      .querySelectorAll<HTMLDialogElement>('[data-project-dialog][open]')
+      .forEach((dialog) => dialog.close());
+    delete document.body.dataset.projectDialogOpen;
   });
 </script>
 
@@ -754,12 +974,18 @@ const showcaseProjects = [...projects].sort(
     list-style: none;
   }
 
-  .project-card > a,
-  .project-card > article {
-    display: block;
-    height: 100%;
-    color: inherit;
-    text-decoration: none;
+  .project-card__trigger {
+    position: absolute;
+    z-index: 3;
+    inset: 0;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .project-card {
+    position: relative;
   }
 
   .project-card__media {
@@ -776,7 +1002,7 @@ const showcaseProjects = [...projects].sort(
     height: 100%;
     object-fit: cover;
     object-position: center;
-    transition: transform 500ms var(--ease-out-quart);
+    transition: transform 650ms var(--ease-out-expo);
   }
 
   .project-card__media--logo {
@@ -876,10 +1102,372 @@ const showcaseProjects = [...projects].sort(
     font-weight: 650;
   }
 
-  .project-card > a:focus-visible {
+  .project-card__trigger:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 0.5rem;
     border-radius: 0.875rem;
+  }
+
+  :global(body[data-project-dialog-open='true']) {
+    overflow: hidden;
+  }
+
+  .project-dialog {
+    width: min(calc(100% - 2rem), 76rem);
+    max-width: none;
+    max-height: min(90dvh, 56rem);
+    margin: auto;
+    overflow: hidden;
+    border: 0;
+    border-radius: 1rem;
+    padding: 0;
+    background: #09090a;
+    box-shadow: 0 1.5rem 5rem rgb(0 0 0 / 62%);
+    color: #fff;
+    opacity: 0;
+    transform: translateY(1rem) scale(0.985);
+    transition:
+      opacity 220ms ease,
+      transform 320ms var(--ease-out-expo),
+      display 220ms allow-discrete,
+      overlay 220ms allow-discrete;
+  }
+
+  .project-dialog[open] {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .project-dialog[data-closing='true'] {
+    opacity: 0;
+    transform: translateY(0.65rem) scale(0.99);
+  }
+
+  @starting-style {
+    .project-dialog[open] {
+      opacity: 0;
+      transform: translateY(1rem) scale(0.985);
+    }
+  }
+
+  .project-dialog::backdrop {
+    background: rgb(0 0 0 / 82%);
+  }
+
+  .project-dialog__surface {
+    max-height: min(90dvh, 56rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-color: rgb(224 35 78 / 70%) #171719;
+  }
+
+  .project-dialog__topbar {
+    position: sticky;
+    z-index: 3;
+    top: 0;
+    display: flex;
+    min-height: 4.5rem;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgb(255 255 255 / 9%);
+    padding: 0.75rem 1rem 0.75rem 1.5rem;
+    background: rgb(9 9 10 / 96%);
+  }
+
+  .project-dialog__topbar p {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin: 0;
+    color: rgb(255 255 255 / 56%);
+    font: 650 0.66rem/1 var(--font-mono);
+    letter-spacing: 0.08em;
+  }
+
+  .project-dialog__topbar p span {
+    color: var(--accent);
+  }
+
+  .project-dialog__topbar button {
+    position: relative;
+    width: 3rem;
+    height: 3rem;
+    border: 0;
+    border-radius: 50%;
+    background: #171719;
+    color: #fff;
+    cursor: pointer;
+    transition:
+      background-color 180ms ease,
+      transform 220ms var(--ease-out-quart);
+  }
+
+  .project-dialog__topbar button span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1.15rem;
+    height: 1.5px;
+    border-radius: 999px;
+    background: currentColor;
+  }
+
+  .project-dialog__topbar button span:first-child {
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  .project-dialog__topbar button span:last-child {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+
+  .project-dialog__topbar button:hover {
+    background: var(--accent);
+    transform: rotate(4deg);
+  }
+
+  .project-dialog__topbar button:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+  }
+
+  .project-dialog__content {
+    padding: 1rem clamp(1rem, 2.8vw, 2.5rem) clamp(1.5rem, 4vw, 3.5rem);
+  }
+
+  .project-dialog__media {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 16 / 8.5;
+    margin: 0;
+    border-radius: 0.75rem;
+    background: #131315;
+  }
+
+  .project-dialog__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .project-dialog__media--logo {
+    display: grid;
+    place-items: center;
+    background: radial-gradient(circle at 68% 26%, rgb(125 6 38 / 42%), transparent 38%), #131315;
+  }
+
+  .project-dialog__media--logo img {
+    width: min(38%, 18rem);
+    height: auto;
+    max-height: 42%;
+    object-fit: contain;
+  }
+
+  .project-dialog__media > span {
+    color: rgb(255 255 255 / 18%);
+    font-size: clamp(4rem, 10vw, 8rem);
+    letter-spacing: -0.04em;
+  }
+
+  .project-dialog__intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.65fr);
+    gap: clamp(2rem, 5vw, 5rem);
+    align-items: end;
+    border-bottom: 1px solid rgb(255 255 255 / 10%);
+    padding: clamp(2rem, 4vw, 3.5rem) 0;
+  }
+
+  .project-dialog__intro p {
+    margin: 0 0 0.8rem;
+    color: #a6a6ac;
+    font: 600 0.72rem/1.3 var(--font-mono);
+  }
+
+  .project-dialog__intro h2 {
+    max-width: 16ch;
+    margin: 0;
+    font-size: clamp(2.5rem, 5vw, 5rem);
+    font-weight: 480;
+    letter-spacing: -0.04em;
+    line-height: 0.98;
+    text-wrap: balance;
+  }
+
+  .project-dialog__intro dl {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+  }
+
+  .project-dialog__intro dl > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    border-top: 1px solid rgb(255 255 255 / 10%);
+    padding-top: 0.85rem;
+  }
+
+  .project-dialog__intro dt,
+  .project-dialog__intro dd {
+    margin: 0;
+    font: 600 0.7rem/1.45 var(--font-mono);
+  }
+
+  .project-dialog__intro dt {
+    color: #85858b;
+  }
+
+  .project-dialog__intro dd {
+    color: #f2f2f3;
+    text-align: right;
+  }
+
+  .project-dialog__story {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(2rem, 6vw, 6rem);
+    padding: clamp(2.5rem, 5vw, 4.5rem) 0;
+  }
+
+  .project-dialog__story h3 {
+    margin: 0 0 1rem;
+    font-size: clamp(1.25rem, 2vw, 1.65rem);
+    font-weight: 580;
+    letter-spacing: -0.02em;
+  }
+
+  .project-dialog__story p {
+    max-width: 58ch;
+    margin: 0;
+    color: #b5b5bb;
+    font-size: 0.96rem;
+    line-height: 1.75;
+    text-wrap: pretty;
+  }
+
+  .project-dialog__features {
+    border-top: 1px solid rgb(255 255 255 / 10%);
+    padding: clamp(2.5rem, 5vw, 4rem) 0;
+  }
+
+  .project-dialog__features h3,
+  .project-dialog__technology h3 {
+    margin: 0;
+    font-size: clamp(1.25rem, 2vw, 1.65rem);
+    font-weight: 580;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  .project-dialog__features > ul {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .project-dialog__features li {
+    position: relative;
+    min-height: 3.5rem;
+    border-top: 1px solid rgb(255 255 255 / 10%);
+    padding: 1rem 1rem 1rem 1.75rem;
+    color: #c4c4c9;
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+
+  .project-dialog__features li::before {
+    position: absolute;
+    top: 1.5rem;
+    left: 0.25rem;
+    width: 0.35rem;
+    height: 0.35rem;
+    border-radius: 50%;
+    background: var(--accent);
+    content: '';
+  }
+
+  .project-dialog__technology {
+    display: grid;
+    grid-template-columns: minmax(14rem, 0.7fr) minmax(0, 1.3fr);
+    gap: clamp(2rem, 6vw, 6rem);
+    border-top: 1px solid rgb(255 255 255 / 10%);
+    padding: clamp(2.5rem, 5vw, 4rem) 0;
+  }
+
+  .project-dialog__technology > header p {
+    max-width: 28rem;
+    margin: 0.85rem 0 0;
+    color: #85858b;
+    font: 550 0.72rem/1.6 var(--font-mono);
+  }
+
+  .project-dialog__technology > div {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .project-dialog__technology h4 {
+    margin: 0 0 0.85rem;
+    color: #85858b;
+    font: 600 0.68rem/1.4 var(--font-mono);
+  }
+
+  .project-dialog__technology ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .project-dialog__technology li {
+    border-radius: 999px;
+    padding: 0.65rem 0.85rem;
+    background: #19191b;
+    color: #d2d2d6;
+    font: 600 0.72rem/1 var(--font-mono);
+  }
+
+  .project-dialog__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border-top: 1px solid rgb(255 255 255 / 10%);
+    padding-top: 1.5rem;
+  }
+
+  .project-dialog__footer a {
+    display: inline-flex;
+    min-height: 3.25rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    border-radius: 999px;
+    padding: 0.8rem 1.25rem;
+    background: #fff;
+    color: #070708;
+    font-size: 0.82rem;
+    font-weight: 700;
+    transition:
+      background-color 180ms ease,
+      color 180ms ease,
+      transform 220ms var(--ease-out-quart);
+  }
+
+  .project-dialog__footer a + a {
+    background: #1a1a1c;
+    color: #fff;
+  }
+
+  .project-dialog__footer a:hover {
+    background: var(--accent);
+    color: #fff;
+    transform: translateY(-2px);
   }
 
   .portfolio-empty {
@@ -888,8 +1476,8 @@ const showcaseProjects = [...projects].sort(
   }
 
   @media (hover: hover) and (pointer: fine) {
-    .project-card > a:hover .project-card__media > img:not(.project-card__logo) {
-      transform: scale(1.018);
+    .project-card:hover .project-card__media > img:not(.project-card__logo) {
+      transform: scale(1.045);
     }
     .portfolio-hero__jump:hover {
       color: #fff;
@@ -1012,10 +1600,94 @@ const showcaseProjects = [...projects].sort(
       max-width: 19rem;
       font-size: clamp(1.55rem, 7vw, 2rem);
     }
+
+    .project-dialog {
+      width: calc(100% - 1rem);
+      max-height: calc(100dvh - 1rem);
+      border-radius: 0.85rem;
+    }
+
+    .project-dialog__surface {
+      max-height: calc(100dvh - 1rem);
+    }
+
+    .project-dialog__topbar {
+      min-height: 4rem;
+      padding: 0.5rem 0.5rem 0.5rem 1rem;
+    }
+
+    .project-dialog__topbar p {
+      font-size: 0.58rem;
+      letter-spacing: 0.05em;
+    }
+
+    .project-dialog__topbar button {
+      width: 3rem;
+      height: 3rem;
+    }
+
+    .project-dialog__content {
+      padding: 0.5rem 0.5rem 1.5rem;
+    }
+
+    .project-dialog__media {
+      aspect-ratio: 4 / 3;
+      border-radius: 0.65rem;
+    }
+
+    .project-dialog__intro {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      padding: 2rem 0.75rem;
+    }
+
+    .project-dialog__intro h2 {
+      font-size: clamp(2.3rem, 12vw, 3.65rem);
+    }
+
+    .project-dialog__story {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+      padding: 2.5rem 0.75rem;
+    }
+
+    .project-dialog__features,
+    .project-dialog__technology {
+      margin-inline: 0.75rem;
+      padding-block: 2.5rem;
+    }
+
+    .project-dialog__features > ul,
+    .project-dialog__technology {
+      grid-template-columns: 1fr;
+    }
+
+    .project-dialog__features li {
+      padding-right: 0;
+    }
+
+    .project-dialog__technology {
+      gap: 2rem;
+    }
+
+    .project-dialog__footer {
+      align-items: stretch;
+      flex-direction: column;
+      padding: 1.25rem 0.75rem 0;
+    }
+
+    .project-dialog__footer a {
+      width: 100%;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .project-card__media > img {
+      transition: none !important;
+    }
+    .project-dialog,
+    .project-dialog__topbar button,
+    .project-dialog__footer a {
       transition: none !important;
     }
     .portfolio-showcase::after {

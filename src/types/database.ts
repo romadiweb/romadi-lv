@@ -61,11 +61,14 @@ export interface Database {
         Row: {
           alt_text: string | null;
           build_platform: string;
+          challenge: string | null;
           completed_at: string | null;
           created_at: string;
           id: number;
           is_featured: boolean;
           is_published: boolean;
+          features: string[];
+          integrations: string[];
           logo_url: string | null;
           name: string;
           portfolio_image_url: string | null;
@@ -73,17 +76,22 @@ export interface Database {
           slug: string;
           sort_order: number;
           summary: string | null;
+          solution: string | null;
+          technologies: string[];
           type: string;
           updated_at: string;
         };
         Insert: {
           alt_text?: string | null;
           build_platform?: string;
+          challenge?: string | null;
           completed_at?: string | null;
           created_at?: string;
           id?: never;
           is_featured?: boolean;
           is_published?: boolean;
+          features?: string[];
+          integrations?: string[];
           logo_url?: string | null;
           name: string;
           portfolio_image_url?: string | null;
@@ -91,17 +99,22 @@ export interface Database {
           slug: string;
           sort_order?: number;
           summary?: string | null;
+          solution?: string | null;
+          technologies?: string[];
           type: string;
           updated_at?: string;
         };
         Update: {
           alt_text?: string | null;
           build_platform?: string;
+          challenge?: string | null;
           completed_at?: string | null;
           created_at?: string;
           id?: never;
           is_featured?: boolean;
           is_published?: boolean;
+          features?: string[];
+          integrations?: string[];
           logo_url?: string | null;
           name?: string;
           portfolio_image_url?: string | null;
@@ -109,6 +122,8 @@ export interface Database {
           slug?: string;
           sort_order?: number;
           summary?: string | null;
+          solution?: string | null;
+          technologies?: string[];
           type?: string;
           updated_at?: string;
         };

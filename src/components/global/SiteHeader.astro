@@ -258,10 +258,8 @@ function isCurrentPage(href: string): boolean {
         window.clearTimeout(closeTimer);
         menu.open = true;
         document.body.dataset.mobileMenuOpen = 'true';
-        window.requestAnimationFrame(() => {
-          menu.dataset.mobileOpen = 'true';
-          summary.setAttribute('aria-expanded', 'true');
-        });
+        menu.dataset.mobileOpen = 'true';
+        summary.setAttribute('aria-expanded', 'true');
       };
 
       const closeMenu = (): void => {
@@ -271,8 +269,10 @@ function isCurrentPage(href: string): boolean {
         delete document.body.dataset.mobileMenuOpen;
         closeTimer = window.setTimeout(() => {
           menu.open = false;
-        }, 340);
+        }, 280);
       };
+
+      if (menu.open) openMenu();
 
       summary.addEventListener('click', (event) => {
         event.preventDefault();
@@ -739,6 +739,7 @@ function isCurrentPage(href: string): boolean {
 
     cursor: pointer;
     list-style: none;
+    touch-action: manipulation;
 
     transition:
       color 180ms ease,
@@ -814,9 +815,7 @@ function isCurrentPage(href: string): boolean {
     background: rgb(4 4 5 / 66%);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 420ms ease;
-    -webkit-backdrop-filter: blur(4px);
-    backdrop-filter: blur(4px);
+    transition: opacity 240ms ease;
   }
 
   .site-header__mobile-menu[data-mobile-open='true'] .site-header__mobile-backdrop {
@@ -834,28 +833,44 @@ function isCurrentPage(href: string): boolean {
     height: 100dvh;
     grid-template-rows: 1fr auto;
     overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
     border-left: 1px solid rgb(255 255 255 / 8%);
     padding: clamp(6rem, 13vh, 8rem) clamp(1.5rem, 7vw, 2.5rem) 2rem;
     background:
       radial-gradient(circle at 100% 0%, rgb(126 8 39 / 20%), transparent 34%),
       radial-gradient(circle at 0% 100%, rgb(224 35 78 / 8%), transparent 30%), #0b0b0c;
     box-shadow: -2rem 0 6rem rgb(0 0 0 / 52%);
-    opacity: 0.75;
+    opacity: 0;
     pointer-events: none;
-    clip-path: inset(0 0 0 100%);
+    transform: translate3d(100%, 0, 0);
     visibility: hidden;
     transition:
-      clip-path 340ms var(--ease-out-expo),
-      opacity 220ms ease,
-      visibility 0s linear 340ms;
+      transform 280ms var(--ease-out-expo),
+      opacity 180ms ease,
+      visibility 0s linear 280ms;
+    contain: layout paint;
   }
 
   .site-header__mobile-menu[data-mobile-open='true'] .site-header__mobile-panel {
     opacity: 1;
     pointer-events: auto;
-    clip-path: inset(0);
+    transform: translate3d(0, 0, 0);
     visibility: visible;
     transition-delay: 0s;
+  }
+
+  .site-header__mobile-menu[open]:not([data-mobile-initialized='true'])
+    .site-header__mobile-backdrop {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .site-header__mobile-menu[open]:not([data-mobile-initialized='true']) .site-header__mobile-panel {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate3d(0, 0, 0);
+    visibility: visible;
   }
 
   .site-header__mobile-navigation {
@@ -968,21 +983,6 @@ function isCurrentPage(href: string): boolean {
     color: rgb(255 255 255 / 76%);
   }
 
-  @keyframes mobile-menu-domino {
-    0% {
-      opacity: 0;
-      transform: translate3d(-1.2rem, -1.25rem, 0) rotate(-4deg);
-    }
-    58% {
-      opacity: 1;
-      transform: translate3d(0.15rem, 0.08rem, 0) rotate(0.35deg);
-    }
-    100% {
-      opacity: 1;
-      transform: translate3d(0, 0, 0) rotate(0deg);
-    }
-  }
-
   @media (max-width: 960px) {
     .site-header {
       margin-top: 1.5rem;
@@ -1011,6 +1011,14 @@ function isCurrentPage(href: string): boolean {
 
     .site-header__mobile-menu {
       display: block;
+    }
+
+    .site-header__bar::before {
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+      background:
+        radial-gradient(circle at 0% 50%, rgb(224 35 78 / 15%), transparent 34%),
+        linear-gradient(100deg, rgb(27 4 10 / 96%) 0%, rgb(8 4 6 / 94%) 48%, rgb(15 3 7 / 96%) 100%);
     }
   }
 

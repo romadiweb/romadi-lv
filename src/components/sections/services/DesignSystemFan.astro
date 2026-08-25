@@ -20,7 +20,11 @@ const artifacts = [
               {artifact.type === 'identity' && (
                 <div class="design-fan__identity">
                   <strong>R</strong>
-                  <span><i></i><i></i><i></i></span>
+                  <span>
+                    <i />
+                    <i />
+                    <i />
+                  </span>
                 </div>
               )}
 
@@ -34,29 +38,33 @@ const artifacts = [
 
               {artifact.type === 'interface' && (
                 <div class="design-fan__interface">
-                  <span></span>
+                  <span />
                   <strong>Turpināt</strong>
-                  <i></i>
-                  <i></i>
+                  <i />
+                  <i />
                 </div>
               )}
 
               {artifact.type === 'responsive' && (
                 <div class="design-fan__phone">
-                  <i></i>
-                  <strong></strong>
-                  <span></span>
-                  <span></span>
-                  <b></b>
+                  <i />
+                  <strong />
+                  <span />
+                  <span />
+                  <b />
                 </div>
               )}
 
               {artifact.type === 'system' && (
                 <div class="design-fan__tokens">
-                  <span><i></i><i></i><i></i></span>
+                  <span>
+                    <i />
+                    <i />
+                    <i />
+                  </span>
                   <strong>8 · 16 · 24</strong>
-                  <b></b>
-                  <b></b>
+                  <b />
+                  <b />
                 </div>
               )}
             </div>
@@ -75,8 +83,8 @@ const artifacts = [
     <SectionEyebrow text="VIENA SISTĒMA" />
     <h2 id="design-fan-title">Zīmols, ko atpazīst.<br />Saskarne, ko saprot.</h2>
     <p>
-      No pirmā iespaida līdz pēdējam klikšķim — savienojam identitāti, saturu un
-      interfeisu vienā konsekventā pieredzē.
+      No pirmā iespaida līdz pēdējam klikšķim — savienojam identitāti, saturu un interfeisu vienā
+      konsekventā pieredzē.
     </p>
   </div>
 </section>
@@ -88,8 +96,7 @@ const artifacts = [
     margin-inline: auto;
     padding: clamp(1rem, 2vw, 2rem) 2rem clamp(6rem, 10vw, 10rem);
     background:
-      radial-gradient(circle at 50% 22%, rgb(160 45 22 / 16%), transparent 32rem),
-      #030303;
+      radial-gradient(circle at 50% 22%, rgb(160 45 22 / 16%), transparent 32rem), #030303;
   }
 
   .design-fan__stage {
@@ -122,22 +129,66 @@ const artifacts = [
     border-radius: 1rem;
     background: #090909;
     box-shadow: 0 1rem 2rem rgb(0 0 0 / 45%);
-    transform: translate(var(--card-x), var(--card-y)) rotate(var(--card-rotate)) scale(var(--card-scale));
+    transform: translate(var(--card-x), var(--card-y)) rotate(var(--card-rotate))
+      scale(var(--card-scale));
     transform-origin: 50% 115%;
-    transition: transform 650ms var(--ease-out-expo), border-color 250ms ease;
+    transition:
+      transform 650ms var(--ease-out-expo),
+      border-color 250ms ease;
   }
 
-  .design-fan__card:nth-child(1) { --card-x: -17rem; --card-y: 2.8rem; --card-rotate: -15deg; --card-scale: 0.91; z-index: 1; }
-  .design-fan__card:nth-child(2) { --card-x: -9rem; --card-y: 0.8rem; --card-rotate: -7deg; --card-scale: 0.96; z-index: 2; }
-  .design-fan__card:nth-child(3) { --card-y: -0.3rem; z-index: 5; }
-  .design-fan__card:nth-child(4) { --card-x: 9rem; --card-y: 0.8rem; --card-rotate: 7deg; --card-scale: 0.96; z-index: 4; }
-  .design-fan__card:nth-child(5) { --card-x: 17rem; --card-y: 2.8rem; --card-rotate: 15deg; --card-scale: 0.91; z-index: 3; }
+  .design-fan__card:nth-child(1) {
+    --card-x: -17rem;
+    --card-y: 2.8rem;
+    --card-rotate: -15deg;
+    --card-scale: 0.91;
+    z-index: 1;
+  }
+  .design-fan__card:nth-child(2) {
+    --card-x: -9rem;
+    --card-y: 0.8rem;
+    --card-rotate: -7deg;
+    --card-scale: 0.96;
+    z-index: 2;
+  }
+  .design-fan__card:nth-child(3) {
+    --card-y: -0.3rem;
+    z-index: 5;
+  }
+  .design-fan__card:nth-child(4) {
+    --card-x: 9rem;
+    --card-y: 0.8rem;
+    --card-rotate: 7deg;
+    --card-scale: 0.96;
+    z-index: 4;
+  }
+  .design-fan__card:nth-child(5) {
+    --card-x: 17rem;
+    --card-y: 2.8rem;
+    --card-rotate: 15deg;
+    --card-scale: 0.91;
+    z-index: 3;
+  }
 
-  .design-fan__deck:hover .design-fan__card:nth-child(1) { --card-x: -19rem; --card-rotate: -17deg; }
-  .design-fan__deck:hover .design-fan__card:nth-child(2) { --card-x: -10rem; --card-y: 0; }
-  .design-fan__deck:hover .design-fan__card:nth-child(3) { --card-y: -1.1rem; }
-  .design-fan__deck:hover .design-fan__card:nth-child(4) { --card-x: 10rem; --card-y: 0; }
-  .design-fan__deck:hover .design-fan__card:nth-child(5) { --card-x: 19rem; --card-rotate: 17deg; }
+  .design-fan__deck:hover .design-fan__card:nth-child(1) {
+    --card-x: -19rem;
+    --card-rotate: -17deg;
+  }
+  .design-fan__deck:hover .design-fan__card:nth-child(2) {
+    --card-x: -10rem;
+    --card-y: 0;
+  }
+  .design-fan__deck:hover .design-fan__card:nth-child(3) {
+    --card-y: -1.1rem;
+  }
+  .design-fan__deck:hover .design-fan__card:nth-child(4) {
+    --card-x: 10rem;
+    --card-y: 0;
+  }
+  .design-fan__deck:hover .design-fan__card:nth-child(5) {
+    --card-x: 19rem;
+    --card-rotate: 17deg;
+  }
 
   .design-fan__face {
     display: grid;
@@ -168,47 +219,173 @@ const artifacts = [
     padding: 1.5rem;
     background:
       linear-gradient(rgb(214 218 224 / 7%) 1px, transparent 1px),
-      linear-gradient(90deg, rgb(214 218 224 / 7%) 1px, transparent 1px),
-      #0a0707;
+      linear-gradient(90deg, rgb(214 218 224 / 7%) 1px, transparent 1px), #0a0707;
     background-size: 1.5rem 1.5rem;
   }
 
-  .design-fan__card footer strong { color: white; font-size: 1rem; font-weight: 600; }
-  .design-fan__card footer span { color: #8e8e93; font: 500 0.72rem/1.5 var(--font-mono); }
+  .design-fan__card footer strong {
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  .design-fan__card footer span {
+    color: #8e8e93;
+    font: 500 0.72rem/1.5 var(--font-mono);
+  }
 
-  .design-fan__identity { display: grid; gap: 1rem; place-items: center; }
-  .design-fan__identity > strong { color: white; font-size: 5rem; font-weight: 400; line-height: 1; }
-  .design-fan__identity > span { display: flex; gap: 0.45rem; }
-  .design-fan__identity i { width: 1.4rem; height: 1.4rem; border-radius: 50%; background: #e0234e; }
-  .design-fan__identity i:nth-child(2) { background: #e8662a; }
-  .design-fan__identity i:nth-child(3) { background: #d6dae0; }
+  .design-fan__identity {
+    display: grid;
+    gap: 1rem;
+    place-items: center;
+  }
+  .design-fan__identity > strong {
+    color: white;
+    font-size: 5rem;
+    font-weight: 400;
+    line-height: 1;
+  }
+  .design-fan__identity > span {
+    display: flex;
+    gap: 0.45rem;
+  }
+  .design-fan__identity i {
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    background: #e0234e;
+  }
+  .design-fan__identity i:nth-child(2) {
+    background: #e8662a;
+  }
+  .design-fan__identity i:nth-child(3) {
+    background: #d6dae0;
+  }
 
-  .design-fan__type { display: grid; justify-items: start; }
-  .design-fan__type strong { color: white; font-size: 4.75rem; font-weight: 500; letter-spacing: -0.04em; line-height: 0.95; }
-  .design-fan__type span { margin-top: 1rem; color: white; font-size: 1rem; font-weight: 600; }
-  .design-fan__type i { margin-top: 0.25rem; color: #a1a1a6; font: 500 0.7rem/1.4 var(--font-mono); font-style: normal; }
+  .design-fan__type {
+    display: grid;
+    justify-items: start;
+  }
+  .design-fan__type strong {
+    color: white;
+    font-size: 4.75rem;
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+  }
+  .design-fan__type span {
+    margin-top: 1rem;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  .design-fan__type i {
+    margin-top: 0.25rem;
+    color: #a1a1a6;
+    font: 500 0.7rem/1.4 var(--font-mono);
+    font-style: normal;
+  }
 
-  .design-fan__interface { display: grid; width: 70%; gap: 0.7rem; }
-  .design-fan__interface > span { width: 52%; height: 0.7rem; border-radius: 999px; background: rgb(255 255 255 / 82%); }
-  .design-fan__interface strong { display: grid; min-height: 2.5rem; place-items: center; border-radius: 999px; background: white; color: #101010; font-size: 0.8rem; }
-  .design-fan__interface i { height: 1.8rem; border: 1px solid rgb(255 255 255 / 18%); border-radius: 0.45rem; }
-  .design-fan__interface i:last-child { width: 68%; }
+  .design-fan__interface {
+    display: grid;
+    width: 70%;
+    gap: 0.7rem;
+  }
+  .design-fan__interface > span {
+    width: 52%;
+    height: 0.7rem;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 82%);
+  }
+  .design-fan__interface strong {
+    display: grid;
+    min-height: 2.5rem;
+    place-items: center;
+    border-radius: 999px;
+    background: white;
+    color: #101010;
+    font-size: 0.8rem;
+  }
+  .design-fan__interface i {
+    height: 1.8rem;
+    border: 1px solid rgb(255 255 255 / 18%);
+    border-radius: 0.45rem;
+  }
+  .design-fan__interface i:last-child {
+    width: 68%;
+  }
 
-  .design-fan__phone { display: grid; width: 6.2rem; height: 10.5rem; gap: 0.55rem; align-content: start; border: 1px solid rgb(255 255 255 / 28%); border-radius: 1.2rem; padding: 1rem 0.75rem; background: rgb(0 0 0 / 38%); }
-  .design-fan__phone i { width: 2.2rem; height: 0.28rem; margin-inline: auto; border-radius: 999px; background: rgb(255 255 255 / 25%); }
-  .design-fan__phone strong { height: 2.8rem; margin-top: 0.25rem; border-radius: 0.5rem; background: linear-gradient(135deg, #e8662a, #e0234e); }
-  .design-fan__phone span { height: 0.45rem; border-radius: 999px; background: rgb(255 255 255 / 25%); }
-  .design-fan__phone span:nth-of-type(2) { width: 65%; }
-  .design-fan__phone b { height: 1.55rem; margin-top: 0.15rem; border-radius: 999px; background: white; }
+  .design-fan__phone {
+    display: grid;
+    width: 6.2rem;
+    height: 10.5rem;
+    gap: 0.55rem;
+    align-content: start;
+    border: 1px solid rgb(255 255 255 / 28%);
+    border-radius: 1.2rem;
+    padding: 1rem 0.75rem;
+    background: rgb(0 0 0 / 38%);
+  }
+  .design-fan__phone i {
+    width: 2.2rem;
+    height: 0.28rem;
+    margin-inline: auto;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 25%);
+  }
+  .design-fan__phone strong {
+    height: 2.8rem;
+    margin-top: 0.25rem;
+    border-radius: 0.5rem;
+    background: linear-gradient(135deg, #e8662a, #e0234e);
+  }
+  .design-fan__phone span {
+    height: 0.45rem;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 25%);
+  }
+  .design-fan__phone span:nth-of-type(2) {
+    width: 65%;
+  }
+  .design-fan__phone b {
+    height: 1.55rem;
+    margin-top: 0.15rem;
+    border-radius: 999px;
+    background: white;
+  }
 
-  .design-fan__tokens { display: grid; width: 70%; gap: 0.8rem; }
-  .design-fan__tokens > span { display: flex; gap: 0.45rem; }
-  .design-fan__tokens i { width: 2.2rem; height: 2.2rem; border-radius: 0.45rem; background: #e0234e; }
-  .design-fan__tokens i:nth-child(2) { background: #e8662a; }
-  .design-fan__tokens i:nth-child(3) { background: #d6dae0; }
-  .design-fan__tokens strong { color: white; font: 500 0.72rem/1.4 var(--font-mono); }
-  .design-fan__tokens b { height: 0.55rem; border-radius: 999px; background: rgb(255 255 255 / 22%); }
-  .design-fan__tokens b:last-child { width: 68%; }
+  .design-fan__tokens {
+    display: grid;
+    width: 70%;
+    gap: 0.8rem;
+  }
+  .design-fan__tokens > span {
+    display: flex;
+    gap: 0.45rem;
+  }
+  .design-fan__tokens i {
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 0.45rem;
+    background: #e0234e;
+  }
+  .design-fan__tokens i:nth-child(2) {
+    background: #e8662a;
+  }
+  .design-fan__tokens i:nth-child(3) {
+    background: #d6dae0;
+  }
+  .design-fan__tokens strong {
+    color: white;
+    font: 500 0.72rem/1.4 var(--font-mono);
+  }
+  .design-fan__tokens b {
+    height: 0.55rem;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 22%);
+  }
+  .design-fan__tokens b:last-child {
+    width: 68%;
+  }
 
   .design-fan__copy {
     position: relative;
@@ -241,15 +418,35 @@ const artifacts = [
   }
 
   @media (max-width: 700px) {
-    .design-fan { padding: 1rem 1.25rem 6rem; }
-    .design-fan__stage { height: 17rem; margin-inline: -1.25rem; }
-    .design-fan__deck { top: 0; width: 46rem; height: 19.5rem; transform: translateX(-50%) scale(0.76); transform-origin: top center; }
-    .design-fan__copy { margin-top: -1rem; }
-    .design-fan__copy h2 { max-width: 11ch; font-size: clamp(2.65rem, 12vw, 4rem); }
-    .design-fan__copy h2 br { display: none; }
+    .design-fan {
+      padding: 3rem 1.5rem 6rem;
+    }
+    .design-fan__stage {
+      height: 17rem;
+      margin-inline: -1.25rem;
+    }
+    .design-fan__deck {
+      top: 0;
+      width: 46rem;
+      height: 19.5rem;
+      transform: translateX(-50%) scale(0.76);
+      transform-origin: top center;
+    }
+    .design-fan__copy {
+      margin-top: 3rem;
+    }
+    .design-fan__copy h2 {
+      max-width: 11ch;
+      font-size: clamp(2.65rem, 12vw, 4rem);
+    }
+    .design-fan__copy h2 br {
+      display: none;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .design-fan__card { transition: none; }
+    .design-fan__card {
+      transition: none;
+    }
   }
 </style>

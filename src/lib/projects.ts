@@ -15,6 +15,11 @@ export type PortfolioProject = Pick<
   | 'project_url'
   | 'alt_text'
   | 'build_platform'
+  | 'challenge'
+  | 'solution'
+  | 'features'
+  | 'technologies'
+  | 'integrations'
   | 'sort_order'
   | 'is_featured'
   | 'completed_at'
@@ -45,7 +50,7 @@ export async function getPublishedPortfolioProjects(): Promise<PortfolioProject[
   const { data, error } = await supabase
     .from('projects')
     .select(
-      'id, slug, name, type, summary, logo_url, portfolio_image_url, project_url, alt_text, build_platform, sort_order, is_featured, completed_at',
+      'id, slug, name, type, summary, logo_url, portfolio_image_url, project_url, alt_text, build_platform, challenge, solution, features, technologies, integrations, sort_order, is_featured, completed_at',
     )
     .eq('is_published', true)
     .order('is_featured', { ascending: false })
@@ -57,7 +62,5 @@ export async function getPublishedPortfolioProjects(): Promise<PortfolioProject[
     return [];
   }
 
-  return data.filter(
-    (project) => !['loadmaster-simulator', 'ship-stability-simulator'].includes(project.slug),
-  );
+  return data;
 }
