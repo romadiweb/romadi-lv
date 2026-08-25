@@ -210,6 +210,9 @@ const showcaseProjects = [...projects].sort(
     document.querySelectorAll<HTMLElement>('[data-portfolio-showcase]').forEach((showcase) => {
       const tabs = Array.from(showcase.querySelectorAll<HTMLButtonElement>('[data-showcase-tab]'));
       const visuals = Array.from(showcase.querySelectorAll<HTMLElement>('[data-showcase-visual]'));
+      const frame = showcase.querySelector<HTMLElement>('.portfolio-showcase__frame');
+      const mobileViewport = window.matchMedia('(max-width: 640px)');
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
       tabs.forEach((tab) => {
         tab.addEventListener('click', () => {
@@ -224,6 +227,15 @@ const showcaseProjects = [...projects].sort(
           visuals.forEach((visual) => {
             visual.classList.toggle('is-active', visual.dataset.showcaseVisual === selected);
           });
+
+          if (mobileViewport.matches && frame) {
+            requestAnimationFrame(() => {
+              frame.scrollIntoView({
+                behavior: reducedMotion.matches ? 'auto' : 'smooth',
+                block: 'start',
+              });
+            });
+          }
         });
       });
     });
@@ -820,16 +832,44 @@ const showcaseProjects = [...projects].sort(
       width: min(calc(100% - 2rem), 24rem);
       aspect-ratio: 9 / 16;
       padding: 0.5rem 0.5rem 0;
+      scroll-margin-top: 7rem;
     }
     .portfolio-showcase__visual { inset: 0.5rem 0.5rem 0; }
     .portfolio-showcase__tabs {
-      display: flex;
-      overflow-x: auto;
-      gap: 1.5rem;
-      padding: 1.5rem 1.25rem;
-      scroll-snap-type: x mandatory;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      overflow: visible;
+      gap: 0.5rem;
+      padding: 1rem 0.75rem 1.25rem;
     }
-    .portfolio-showcase__tab { flex: 0 0 76vw; scroll-snap-align: start; }
+
+    .portfolio-showcase__tab {
+      min-width: 0;
+      padding: 0.8rem 0.35rem 1rem;
+
+      text-align: center;
+    }
+
+    .portfolio-showcase__tab::after {
+      left: 16%;
+
+      width: 0;
+    }
+
+    .portfolio-showcase__tab.is-active::after {
+      width: 68%;
+    }
+
+    .portfolio-showcase__tab span,
+    .portfolio-showcase__tab small {
+      display: none;
+    }
+
+    .portfolio-showcase__tab strong {
+      font-size: 0.74rem;
+      line-height: 1.25;
+      text-wrap: balance;
+    }
     .portfolio-work { padding: 5rem 0 6rem; }
     .portfolio-liquid-line {
       top: 8.5rem;

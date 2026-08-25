@@ -3,7 +3,11 @@
     <div class="home-hero__base"></div>
 
     <picture class="home-hero__image">
-      <source media="(max-width: 700px)" srcset="/images/home/hero-landscape-900.webp" />
+      <source
+        media="(max-width: 700px)"
+        srcset="/images/home/hero-mobile-640.webp 640w, /images/home/hero-mobile-943.webp 941w"
+        sizes="calc(100vw - 1.5rem)"
+      />
       <img
         src="/images/home/hero-landscape-1600.webp"
         srcset="/images/home/hero-landscape-900.webp 900w, /images/home/hero-landscape-1600.webp 1600w"
