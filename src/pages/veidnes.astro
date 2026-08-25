@@ -1,0 +1,21 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Veidnes"
+  description="ROMADI pielāgojamo mājaslapu veidņu piedāvājums."
+  noindex
+  footerCta={false}
+>
+  <section class="templates-placeholder" aria-labelledby="templates-placeholder-title">
+    <h1 id="templates-placeholder-title" class="screen-reader-only">Mājaslapu veidnes</h1>
+  </section>
+</BaseLayout>
+
+<style>
+  .templates-placeholder {
+    min-height: max(34rem, calc(100svh - var(--header-height)));
+    background: #050505;
+  }
+</style>

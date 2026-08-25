@@ -1,12 +1,6 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[];
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
-export type Database = {
+export interface Database {
   __InternalSupabase: {
     PostgrestVersion: '14.15';
   };
@@ -66,6 +60,7 @@ export type Database = {
       projects: {
         Row: {
           alt_text: string | null;
+          build_platform: string;
           completed_at: string | null;
           created_at: string;
           id: number;
@@ -83,6 +78,7 @@ export type Database = {
         };
         Insert: {
           alt_text?: string | null;
+          build_platform?: string;
           completed_at?: string | null;
           created_at?: string;
           id?: never;
@@ -100,6 +96,7 @@ export type Database = {
         };
         Update: {
           alt_text?: string | null;
+          build_platform?: string;
           completed_at?: string | null;
           created_at?: string;
           id?: never;
@@ -123,7 +120,7 @@ export type Database = {
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };
-};
+}
 
 export type Project = Database['public']['Tables']['projects']['Row'];
 export type PricingPlan = Database['public']['Tables']['pricing_plans']['Row'];

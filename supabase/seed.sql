@@ -2,6 +2,7 @@ insert into public.projects (
   slug,
   name,
   type,
+  build_platform,
   logo_url,
   portfolio_image_url,
   sort_order,
@@ -9,16 +10,17 @@ insert into public.projects (
   is_published
 )
 values
-  ('diana-hunt', 'Diana Hunt', 'website', '/images/projects/diana-logo-metallic.webp', null, 10, true, true),
-  ('liepajas-teltis', 'Liepājas Teltis', 'website', '/images/projects/liepajasteltis-logo-metallic.webp', null, 20, true, true),
-  ('rtu-liepajas-jurniecibas-koledza', 'RTU Liepājas Jūrniecības koledža', 'website', '/images/projects/ljk-logo-metallic.webp', null, 30, true, true),
-  ('loadmaster-simulator', 'Loadmaster Simulator', 'website', '/images/projects/loadmaster-logo-metallic.webp', null, 40, true, true),
-  ('ship-stability-simulator', 'Ship Stability Simulator', 'website', '/images/projects/shipstability-logo-metallic.webp', null, 50, true, true),
-  ('pabeigts-projekts-6', 'Pabeigts projekts 6', 'website', null, null, 60, false, true),
-  ('pabeigts-projekts-7', 'Pabeigts projekts 7', 'website', null, null, 70, false, true)
+  ('diana-hunt', 'Diana Hunt', 'website', 'Custom izstrāde', '/images/projects/diana-logo-metallic.webp', null, 10, true, true),
+  ('liepajas-teltis', 'Liepājas Teltis', 'website', 'Custom izstrāde', '/images/projects/liepajasteltis-logo-metallic.webp', null, 20, true, true),
+  ('rtu-liepajas-jurniecibas-koledza', 'RTU Liepājas Jūrniecības koledža', 'website', 'Custom izstrāde', '/images/projects/ljk-logo-metallic.webp', null, 30, true, true),
+  ('loadmaster-simulator', 'Loadmaster Simulator', 'website', 'Custom izstrāde', '/images/projects/loadmaster-logo-metallic.webp', null, 40, true, true),
+  ('ship-stability-simulator', 'Ship Stability Simulator', 'website', 'Custom izstrāde', '/images/projects/shipstability-logo-metallic.webp', null, 50, true, true),
+  ('pabeigts-projekts-6', 'Pabeigts projekts 6', 'website', 'Custom izstrāde', null, null, 60, false, true),
+  ('pabeigts-projekts-7', 'Pabeigts projekts 7', 'website', 'Custom izstrāde', null, null, 70, false, true)
 on conflict (slug) do update set
   name = excluded.name,
   type = excluded.type,
+  build_platform = excluded.build_platform,
   logo_url = excluded.logo_url,
   portfolio_image_url = excluded.portfolio_image_url,
   sort_order = excluded.sort_order,

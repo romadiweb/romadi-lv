@@ -122,6 +122,26 @@ const socialItems = [
               data-error-for="contact-service"></span>
           </div>
 
+          <div class="contact-template-option" data-template-option hidden>
+            <label for="contact-template">
+              <input
+                id="contact-template"
+                name="templateWebsite"
+                type="checkbox"
+                value="Jā — interesē veidnes risinājums no 350 €"
+                disabled
+              />
+              <span>
+                <strong>Interesē veidnes risinājums no 350 €</strong>
+                <small> Gatavu dizaina pamatu pielāgosim ar jūsu logo, krāsām un saturu. </small>
+              </span>
+            </label>
+            <span
+              class="contact-field__error"
+              id="contact-template-error"
+              data-error-for="contact-template"></span>
+          </div>
+
           <div
             class="contact-field contact-field--wide contact-field--product-link"
             data-existing-product-field
@@ -319,6 +339,8 @@ const socialItems = [
     const submitLabel = form.querySelector<HTMLElement>('[data-submit-label]');
     const consent = form.querySelector<HTMLInputElement>('#contact-consent');
     const service = form.querySelector<HTMLSelectElement>('#contact-service');
+    const templateOption = form.querySelector<HTMLElement>('[data-template-option]');
+    const templateCheckbox = form.querySelector<HTMLInputElement>('#contact-template');
     const productLinkField = form.querySelector<HTMLElement>('[data-existing-product-field]');
     const productLink = form.querySelector<HTMLInputElement>('#contact-product-link');
     const cardShell = document.querySelector<HTMLElement>('[data-card-shell]');
@@ -341,6 +363,21 @@ const socialItems = [
         (option) => option.dataset.serviceSlug === requestedSlug,
       );
       if (matchingOption) service.value = matchingOption.value;
+    };
+
+    const updateTemplateOption = (): void => {
+      if (!service || !templateOption || !templateCheckbox) return;
+      const selectedOption = service.options[service.selectedIndex];
+      const shouldShow = selectedOption?.dataset.serviceSlug === 'majaslapu-izstrade';
+      templateOption.hidden = !shouldShow;
+      templateCheckbox.disabled = !shouldShow;
+      if (!shouldShow) templateCheckbox.checked = false;
+    };
+
+    const applyRequestedTemplate = (): void => {
+      if (!templateCheckbox || templateCheckbox.disabled) return;
+      const requestedTemplate = new URLSearchParams(window.location.search).get('veidne');
+      templateCheckbox.checked = requestedTemplate === '1';
     };
 
     const updateProductLink = (): void => {
@@ -412,12 +449,15 @@ const socialItems = [
     budget?.addEventListener('input', updateBudget);
     service?.addEventListener('change', () => {
       updateProductLink();
+      updateTemplateOption();
       window.requestAnimationFrame(updateCardTrack);
     });
     consent?.addEventListener('change', updateSubmitState);
     applyRequestedService();
     updateBudget();
     updateProductLink();
+    updateTemplateOption();
+    applyRequestedTemplate();
     updateSubmitState();
     updateCardTrack();
 
@@ -448,6 +488,7 @@ const socialItems = [
         `Tālrunis: ${data.get('phone') || 'Nav norādīts'}`,
         `Uzņēmums: ${data.get('company') || 'Nav norādīts'}`,
         `Pakalpojums: ${data.get('service')}`,
+        `Veidnes risinājums: ${data.get('templateWebsite') || 'Nē'}`,
         `Esošā produkta saite: ${data.get('productLink') || 'Nav norādīta'}`,
         `Termiņš: ${data.get('timeline')}`,
         `Budžets: ${formatBudget(Number(data.get('budget')))}`,
@@ -574,6 +615,65 @@ const socialItems = [
   }
   .contact-field[hidden] {
     display: none;
+  }
+
+  .contact-template-option {
+    grid-column: 1 / -1;
+    margin-top: -0.75rem;
+  }
+
+  .contact-template-option[hidden] {
+    display: none;
+  }
+
+  .contact-template-option label {
+    display: flex;
+    min-height: 4.5rem;
+    align-items: flex-start;
+    gap: 0.9rem;
+    border: 1px solid rgb(255 255 255 / 14%);
+    border-radius: 0.75rem;
+    padding: 1rem 1.1rem;
+    background: rgb(255 255 255 / 2.5%);
+    cursor: pointer;
+    transition:
+      border-color 180ms ease,
+      background-color 180ms ease;
+  }
+
+  .contact-template-option label:hover {
+    border-color: rgb(255 255 255 / 25%);
+    background: rgb(255 255 255 / 4%);
+  }
+
+  .contact-template-option input {
+    width: 1.1rem;
+    height: 1.1rem;
+    flex: 0 0 auto;
+    margin: 0.18rem 0 0;
+    accent-color: var(--accent);
+  }
+
+  .contact-template-option label > span {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .contact-template-option strong {
+    color: white;
+    font-size: 0.92rem;
+    font-weight: 650;
+    letter-spacing: -0.015em;
+    line-height: 1.35;
+  }
+
+  .contact-template-option small {
+    color: rgb(255 255 255 / 48%);
+    font: 500 0.72rem/1.55 var(--font-mono);
+  }
+
+  .contact-template-option .contact-field__error {
+    padding-left: 3.1rem;
   }
 
   .contact-field label,
@@ -1023,7 +1123,8 @@ const socialItems = [
       animation: none;
     }
     .contact-form__actions button,
-    .contact-card__socials a {
+    .contact-card__socials a,
+    .contact-template-option label {
       transition: none;
     }
   }
