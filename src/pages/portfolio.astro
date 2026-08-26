@@ -341,7 +341,10 @@ const showcaseProjects = [...projects].sort(
                         </section>
 
                         {hasCapabilities && (
-                          <section class="project-dialog__features" aria-labelledby={`${dialogId}-features`}>
+                          <section
+                            class="project-dialog__features"
+                            aria-labelledby={`${dialogId}-features`}
+                          >
                             <h3 id={`${dialogId}-features`}>Izveidotā funkcionalitāte</h3>
                             <ul>
                               {project.features.map((feature) => (
@@ -352,7 +355,10 @@ const showcaseProjects = [...projects].sort(
                         )}
 
                         {hasTechnologyDetails && (
-                          <section class="project-dialog__technology" aria-labelledby={`${dialogId}-technology`}>
+                          <section
+                            class="project-dialog__technology"
+                            aria-labelledby={`${dialogId}-technology`}
+                          >
                             <header>
                               <h3 id={`${dialogId}-technology`}>Tehnoloģijas un integrācijas</h3>
                               <p>Risinājuma pamats un galvenie savienojumi.</p>
@@ -427,7 +433,7 @@ const showcaseProjects = [...projects].sort(
 
       const activate = (nextIndex: number, scrollToFrame = false) => {
         const normalizedIndex = (nextIndex + tabs.length) % tabs.length;
-        const selectedTab = tabs[normalizedIndex];
+        const selectedTab = tabs[normalizedIndex]!;
         const selected = selectedTab.dataset.showcaseTab;
 
         if (normalizedIndex === activeIndex) {
