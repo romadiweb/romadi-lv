@@ -4,6 +4,8 @@ import '@/styles/global.css';
 
 import manropeLatin from '@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2?url';
 import manropeLatinExt from '@fontsource-variable/manrope/files/manrope-latin-ext-wght-normal.woff2?url';
+import GoogleTag from '@/components/global/GoogleTag.astro';
+import CookieConsent from '@/components/global/CookieConsent.astro';
 ---
 
 <!doctype html>
@@ -33,6 +35,7 @@ import manropeLatinExt from '@fontsource-variable/manrope/files/manrope-latin-ex
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="ROMADI" />
     <link rel="manifest" href="/site.webmanifest" />
+    <GoogleTag />
   </head>
 
   <body>
@@ -69,6 +72,8 @@ import manropeLatinExt from '@fontsource-variable/manrope/files/manrope-latin-ex
         ERROR / 404
       </p>
     </main>
+
+    <CookieConsent />
   </body>
 </html>
 

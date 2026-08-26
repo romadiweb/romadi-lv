@@ -152,6 +152,9 @@ const cta =
         <p>
           © {currentYear} ROMADI. VISAS TIESĪBAS AIZSARGĀTAS.
           <a class="site-footer__legal-link" href="/sikdatnu-politika">SĪKDATŅU POLITIKA</a>
+          <button class="site-footer__legal-link" type="button" data-consent-settings>
+            SĪKDATŅU IESTATĪJUMI
+          </button>
         </p>
         <p>DIGITĀLI RISINĀJUMI UZŅĒMUMA IZAUGSMEI.</p>
       </div>
@@ -530,8 +533,13 @@ const cta =
     font: 550 clamp(0.55rem, 0.7vw, 0.68rem)/1.5 var(--font-mono);
   }
   .site-footer__legal-link {
+    border: 0;
     margin-left: 0.9rem;
+    padding: 0;
+    background: transparent;
     color: inherit;
+    font: inherit;
+    cursor: pointer;
     text-decoration-line: underline;
     text-decoration-color: transparent;
     text-decoration-thickness: 1px;

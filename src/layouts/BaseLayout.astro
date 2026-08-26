@@ -7,6 +7,8 @@ import '@/styles/global.css';
 import SiteHeader from '@/components/global/SiteHeader.astro';
 import SiteFooter from '@/components/global/SiteFooter.astro';
 import ScrollToTop from '@/components/global/ScrollToTop.astro';
+import GoogleTag from '@/components/global/GoogleTag.astro';
+import CookieConsent from '@/components/global/CookieConsent.astro';
 
 import { SITE } from '@/config/site';
 
@@ -149,6 +151,8 @@ const homeStructuredData = {
 
     <link rel="manifest" href="/site.webmanifest" />
 
+    <GoogleTag />
+
     {isHomePage && (
       <script is:inline type="application/ld+json" set:html={JSON.stringify(homeStructuredData)} />
     )}
@@ -177,6 +181,8 @@ const homeStructuredData = {
     <SiteFooter ctaVariant={footerCta} />
 
     <ScrollToTop />
+
+    <CookieConsent />
 
     <script>
       import { initRevealAnimations } from '@/lib/animations/reveal';

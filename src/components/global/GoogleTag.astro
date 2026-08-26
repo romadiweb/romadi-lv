@@ -1,0 +1,99 @@
+<!-- Google Consent Mode and Google tag (gtag.js) -->
+<script is:inline>
+  (() => {
+    if (window.romadiConsent) return;
+
+    const measurementId = 'G-EY7EJ3QDZC';
+    const storageKey = 'romadi_cookie_consent_v1';
+    const consentLifetime = 180 * 24 * 60 * 60 * 1000;
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag =
+      window.gtag ||
+      function () {
+        window.dataLayer.push(arguments);
+      };
+
+    const consentState = (analyticsStorage) => ({
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      analytics_storage: analyticsStorage,
+    });
+
+    window.gtag('consent', 'default', consentState('denied'));
+
+    const readChoice = () => {
+      try {
+        const value = JSON.parse(window.localStorage.getItem(storageKey) || 'null');
+        if (!value || !['granted', 'denied'].includes(value.choice)) return null;
+        if (!Number.isFinite(value.updatedAt) || Date.now() - value.updatedAt > consentLifetime) {
+          window.localStorage.removeItem(storageKey);
+          return null;
+        }
+        return value.choice;
+      } catch {
+        return null;
+      }
+    };
+
+    const saveChoice = (choice) => {
+      try {
+        window.localStorage.setItem(storageKey, JSON.stringify({ choice, updatedAt: Date.now() }));
+      } catch {
+        // The banner remains usable even when browser storage is unavailable.
+      }
+    };
+
+    const clearAnalyticsCookies = () => {
+      document.cookie.split(';').forEach((cookie) => {
+        const name = cookie.split('=')[0]?.trim();
+        if (!name || !name.startsWith('_ga')) return;
+
+        document.cookie = `${name}=; Max-Age=0; path=/`;
+        document.cookie = `${name}=; Max-Age=0; path=/; domain=${window.location.hostname}`;
+        document.cookie = `${name}=; Max-Age=0; path=/; domain=.${window.location.hostname}`;
+      });
+    };
+
+    const loadGoogleTag = () => {
+      if (document.querySelector('[data-romadi-google-tag]')) return;
+
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
+      script.dataset.romadiGoogleTag = 'true';
+      document.head.append(script);
+
+      window.gtag('js', new Date());
+      window.gtag('config', measurementId);
+    };
+
+    const applyChoice = (choice) => {
+      const granted = choice === 'granted';
+      window.gtag('consent', 'update', consentState(granted ? 'granted' : 'denied'));
+      if (granted) loadGoogleTag();
+      else clearAnalyticsCookies();
+    };
+
+    window.romadiConsent = {
+      getChoice: readChoice,
+      setAnalytics(granted) {
+        const previousChoice = readChoice();
+        const choice = granted ? 'granted' : 'denied';
+        saveChoice(choice);
+        applyChoice(choice);
+        window.dispatchEvent(
+          new CustomEvent('romadi:consent-change', { detail: { choice } }),
+        );
+
+        if (!granted && previousChoice === 'granted') {
+          window.setTimeout(() => window.location.reload(), 120);
+        }
+      },
+    };
+
+    const savedChoice = readChoice();
+    if (savedChoice) applyChoice(savedChoice);
+  })();
+</script>

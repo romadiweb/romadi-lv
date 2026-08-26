@@ -2,7 +2,7 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { SITE } from '@/config/site';
 
-const lastUpdated = '2026. gada 25. augustā';
+const lastUpdated = '2026. gada 26. augustā';
 ---
 
 <BaseLayout
@@ -37,15 +37,41 @@ const lastUpdated = '2026. gada 25. augustā';
         <section aria-labelledby="cookie-policy-current-use">
           <h2 id="cookie-policy-current-use">Sīkdatņu izmantošana šajā vietnē</h2>
           <p>
-            Pašlaik ROMADI tīmekļvietne neiestata analītikas, mārketinga vai personalizācijas
-            sīkdatnes. Vietnē nav arī trešo pušu reklāmas izsekotāju vai iegulta satura, kas
-            automātiski iestatītu šādas sīkdatnes.
+            ROMADI izmanto Google Analytics 4, lai ar jūsu piekrišanu iegūtu apkopotu informāciju
+            par vietnes lietošanu — piemēram, apmeklētajām lapām, sesijām, ierīces un
+            pārlūkprogrammas veidu un aptuvenu atrašanās vietu. Šī informācija palīdz uzlabot
+            vietnes saturu un darbību.
           </p>
           <p>
-            Ja vietnes darbībai nākotnē būs nepieciešamas tehniskās sīkdatnes, tās tiks izmantotas
-            tikai attiecīgās funkcijas nodrošināšanai. Neobligātas sīkdatnes netiks aktivizētas bez
-            iepriekšējas piekrišanas, un šī politika tiks atjaunināta.
+            Google Analytics kods un analītikas sīkdatnes netiek aktivizētas, kamēr neesat izvēlējies
+            “Atļaut analītiku”. Google Consent Mode pēc noklusējuma iestata analītikas un reklāmas
+            glabāšanu kā liegtu. Reklāmas personalizācijas un reklāmas datu piekrišana šajā vietnē
+            netiek pieprasīta un paliek liegta.
           </p>
+        </section>
+
+        <section aria-labelledby="cookie-policy-list">
+          <h2 id="cookie-policy-list">Izmantotās tehnoloģijas</h2>
+          <div class="cookie-policy__items">
+            <article>
+              <h3>ROMADI izvēles atmiņa</h3>
+              <dl>
+                <div><dt>Nosaukums</dt><dd><code>romadi_cookie_consent_v1</code></dd></div>
+                <div><dt>Veids</dt><dd>Pārlūkprogrammas lokālā krātuve</dd></div>
+                <div><dt>Nolūks</dt><dd>Saglabā jūsu sīkdatņu izvēli</dd></div>
+                <div><dt>Termiņš</dt><dd>6 mēneši</dd></div>
+              </dl>
+            </article>
+            <article>
+              <h3>Google Analytics 4</h3>
+              <dl>
+                <div><dt>Nosaukumi</dt><dd><code>_ga</code>, <code>_ga_*</code></dd></div>
+                <div><dt>Pakalpojuma sniedzējs</dt><dd>Google</dd></div>
+                <div><dt>Nolūks</dt><dd>Atšķir lietotājus un saglabā sesijas stāvokli</dd></div>
+                <div><dt>Termiņš</dt><dd>Līdz 2 gadiem</dd></div>
+              </dl>
+            </article>
+          </div>
         </section>
 
         <section aria-labelledby="cookie-policy-external-links">
@@ -60,9 +86,17 @@ const lastUpdated = '2026. gada 25. augustā';
         <section aria-labelledby="cookie-policy-management">
           <h2 id="cookie-policy-management">Kā pārvaldīt sīkdatnes?</h2>
           <p>
-            Sīkdatnes var apskatīt, bloķēt vai dzēst savas pārlūkprogrammas privātuma iestatījumos.
-            Precīzas darbības atšķiras atkarībā no pārlūkprogrammas un ierīces. Ņemiet vērā, ka
-            tehniski nepieciešamu sīkdatņu bloķēšana citās vietnēs var ietekmēt to darbību.
+            Piekrišanu varat jebkurā laikā atsaukt vai sniegt atkārtoti, izmantojot pogu zemāk vai
+            saiti “Sīkdatņu iestatījumi” vietnes kājenē. Atsaucot piekrišanu, Google Consent Mode
+            tiek atjaunināts uz “liegts” un vietnes izveidotās Google Analytics sīkdatnes tiek
+            dzēstas.
+          </p>
+          <button class="cookie-policy__settings" type="button" data-consent-settings>
+            Mainīt sīkdatņu izvēli
+          </button>
+          <p>
+            Sīkdatnes varat arī apskatīt, bloķēt vai dzēst pārlūkprogrammas privātuma iestatījumos.
+            Precīzas darbības atšķiras atkarībā no pārlūkprogrammas un ierīces.
           </p>
         </section>
 
@@ -185,6 +219,13 @@ const lastUpdated = '2026. gada 25. augustā';
     text-wrap: balance;
   }
 
+  .cookie-policy h3 {
+    color: white;
+    font-size: 1rem;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+  }
+
   .cookie-policy__content p {
     color: var(--text-secondary);
     font-size: 1rem;
@@ -215,6 +256,76 @@ const lastUpdated = '2026. gada 25. augustā';
     line-height: 1.65 !important;
   }
 
+  .cookie-policy__items {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .cookie-policy__items article {
+    display: grid;
+    gap: 1.25rem;
+    border: 1px solid rgb(255 255 255 / 12%);
+    border-radius: 16px;
+    padding: 1.4rem;
+    background: rgb(255 255 255 / 2%);
+  }
+
+  .cookie-policy__items dl {
+    display: grid;
+    gap: 0.8rem;
+    margin: 0;
+  }
+
+  .cookie-policy__items dl div {
+    display: grid;
+    grid-template-columns: minmax(8rem, 0.38fr) minmax(0, 1fr);
+    gap: 1rem;
+  }
+
+  .cookie-policy__items dt,
+  .cookie-policy__items dd {
+    margin: 0;
+  }
+
+  .cookie-policy__items dt {
+    color: var(--text-muted);
+    font: 550 0.68rem/1.5 var(--font-mono);
+  }
+
+  .cookie-policy__items dd {
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .cookie-policy__items code {
+    color: white;
+    font: 550 0.76rem/1.4 var(--font-mono);
+  }
+
+  .cookie-policy__settings {
+    width: fit-content;
+    min-height: 3.25rem;
+    border: 1px solid rgb(255 255 255 / 28%);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    color: white;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+      border-color 180ms ease,
+      background-color 180ms ease,
+      transform 220ms var(--ease-out-expo);
+  }
+
+  .cookie-policy__settings:hover {
+    border-color: rgb(255 255 255 / 52%);
+    background: rgb(255 255 255 / 5%);
+    transform: translateY(-2px);
+  }
+
   @media (max-width: 700px) {
     .cookie-policy__atmosphere {
       top: -10rem;
@@ -231,6 +342,17 @@ const lastUpdated = '2026. gada 25. augustā';
 
     .cookie-policy h1 {
       font-size: clamp(3rem, 15vw, 4.4rem);
+    }
+
+    .cookie-policy__items dl div {
+      grid-template-columns: 1fr;
+      gap: 0.25rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cookie-policy__settings {
+      transition: none;
     }
   }
 </style>

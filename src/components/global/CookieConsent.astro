@@ -1,0 +1,235 @@
+<aside
+  class="cookie-consent"
+  data-cookie-consent
+  aria-labelledby="cookie-consent-title"
+  aria-describedby="cookie-consent-description"
+  hidden
+>
+  <div class="cookie-consent__copy">
+    <h2 id="cookie-consent-title">Jūsu privātums ir svarīgs.</h2>
+    <p id="cookie-consent-description">
+      Vai atļausiet anonīmu vietnes apmeklējuma statistiku? Tā palīdz mums uzlabot ROMADI pieredzi.
+      <a href="/sikdatnu-politika"> Sīkdatņu politika</a>
+    </p>
+  </div>
+
+  <div class="cookie-consent__actions">
+    <button
+      type="button"
+      class="cookie-consent__button cookie-consent__button--secondary"
+      data-consent-deny
+    >
+      Nepiekrist
+    </button>
+    <button
+      type="button"
+      class="cookie-consent__button cookie-consent__button--primary"
+      data-consent-accept
+    >
+      Piekrist
+    </button>
+  </div>
+</aside>
+
+<script>
+  type ConsentChoice = 'granted' | 'denied' | null;
+  type ConsentApi = {
+    getChoice: () => ConsentChoice;
+    setAnalytics: (granted: boolean) => void;
+  };
+
+  const getConsentApi = (): ConsentApi | undefined =>
+    (window as typeof window & { romadiConsent?: ConsentApi }).romadiConsent;
+
+  const initCookieConsent = (): void => {
+    const banner = document.querySelector<HTMLElement>('[data-cookie-consent]');
+    if (!banner || banner.dataset.initialized === 'true') return;
+    banner.dataset.initialized = 'true';
+
+    const acceptButton = banner.querySelector<HTMLButtonElement>('[data-consent-accept]');
+    const denyButton = banner.querySelector<HTMLButtonElement>('[data-consent-deny]');
+    let hideTimer = 0;
+
+    const showBanner = (moveFocus = false): void => {
+      window.clearTimeout(hideTimer);
+      banner.hidden = false;
+      window.requestAnimationFrame(() => {
+        banner.dataset.visible = 'true';
+        if (moveFocus) denyButton?.focus();
+      });
+    };
+
+    const hideBanner = (): void => {
+      banner.dataset.visible = 'false';
+      hideTimer = window.setTimeout(() => {
+        banner.hidden = true;
+      }, 280);
+    };
+
+    acceptButton?.addEventListener('click', () => {
+      getConsentApi()?.setAnalytics(true);
+      hideBanner();
+    });
+
+    denyButton?.addEventListener('click', () => {
+      getConsentApi()?.setAnalytics(false);
+      hideBanner();
+    });
+
+    document.querySelectorAll<HTMLButtonElement>('[data-consent-settings]').forEach((button) => {
+      if (button.dataset.consentInitialized === 'true') return;
+      button.dataset.consentInitialized = 'true';
+      button.addEventListener('click', () => showBanner(true));
+    });
+
+    if (!getConsentApi()?.getChoice()) showBanner();
+  };
+
+  initCookieConsent();
+  document.addEventListener('astro:page-load', initCookieConsent);
+</script>
+
+<style>
+  .cookie-consent {
+    position: fixed;
+    z-index: 90;
+    right: 50%;
+    bottom: clamp(0.75rem, 2vw, 1.5rem);
+    left: auto;
+    display: grid;
+    width: min(calc(100% - 1.5rem), 32rem);
+    gap: 1.4rem;
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 18%);
+    border-radius: 16px;
+    padding: clamp(1.25rem, 3vw, 1.75rem);
+    background:
+      radial-gradient(circle at 4% 0%, rgb(224 35 78 / 18%), transparent 44%),
+      linear-gradient(135deg, rgb(35 7 15 / 82%), rgb(7 7 8 / 88%) 62%);
+    -webkit-backdrop-filter: blur(24px) saturate(125%);
+    backdrop-filter: blur(24px) saturate(125%);
+    opacity: 0;
+    transform: translate3d(50%, 1rem, 0) scale(0.985);
+    transition:
+      opacity 240ms ease,
+      transform 320ms var(--ease-out-expo);
+  }
+
+  .cookie-consent[hidden] {
+    display: none;
+  }
+
+  .cookie-consent[data-visible='true'] {
+    opacity: 1;
+    transform: translate3d(50%, 0, 0) scale(1);
+  }
+
+  .cookie-consent__copy {
+    max-width: 29rem;
+  }
+
+  .cookie-consent h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    color: white;
+    font-size: clamp(1.15rem, 2vw, 1.4rem);
+    font-weight: 620;
+    letter-spacing: -0.035em;
+    line-height: 1.15;
+  }
+
+  .cookie-consent h2::before {
+    width: 0.45rem;
+    height: 0.45rem;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 4px rgb(224 35 78 / 10%);
+    content: '';
+  }
+
+  .cookie-consent__copy > p:last-child {
+    max-width: 55ch;
+    margin-top: 0.75rem;
+    color: rgb(255 255 255 / 68%);
+    font-size: clamp(0.8rem, 1.4vw, 0.88rem);
+    font-weight: 500;
+    line-height: 1.6;
+  }
+
+  .cookie-consent__copy a {
+    color: white;
+    text-decoration-line: underline;
+    text-decoration-color: rgb(255 255 255 / 34%);
+    text-underline-offset: 0.2em;
+  }
+
+  .cookie-consent__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.7rem;
+  }
+
+  .cookie-consent__button {
+    min-height: 3.15rem;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color 180ms ease,
+      border-color 180ms ease,
+      color 180ms ease,
+      transform 220ms var(--ease-out-expo);
+  }
+
+  .cookie-consent__button:hover {
+    transform: translateY(-2px);
+  }
+
+  .cookie-consent__button--secondary {
+    border: 1px solid rgb(255 255 255 / 24%);
+    background: transparent;
+    color: white;
+  }
+
+  .cookie-consent__button--secondary:hover {
+    border-color: rgb(255 255 255 / 48%);
+    background: rgb(255 255 255 / 6%);
+  }
+
+  .cookie-consent__button--primary {
+    border: 1px solid white;
+    background: white;
+    color: #080808;
+  }
+
+  .cookie-consent__button--primary:hover {
+    background: #e9e9e9;
+  }
+
+  @media (max-width: 760px) {
+    .cookie-consent {
+      gap: 1.2rem;
+      padding: 1.25rem;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .cookie-consent {
+      width: min(calc(100% - 1rem), 32rem);
+      bottom: 0.5rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cookie-consent,
+    .cookie-consent__button {
+      transition: none;
+    }
+  }
+</style>
