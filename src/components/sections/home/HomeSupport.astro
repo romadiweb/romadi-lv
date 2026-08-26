@@ -50,7 +50,9 @@ const capabilities = [
         palīdzam pieņemt lēmumus, kas strādā ilgtermiņā.”
       </p>
       <div class="home-support__signature">
-        <span aria-hidden="true">R</span>
+        <span class="home-support__signature-mark" aria-hidden="true">
+          <img src="/images/brand/romadi-logo-white.svg" alt="" width="1056" height="796" />
+        </span>
         <div>
           <strong>ROMADI komanda</strong>
           <small>Digitālā izstrāde un izaugsme · Liepāja</small>
@@ -144,7 +146,7 @@ const capabilities = [
     gap: 0.8rem;
   }
 
-  .home-support__signature > span {
+  .home-support__signature-mark {
     display: grid;
     width: 2.7rem;
     height: 2.7rem;
@@ -152,9 +154,12 @@ const capabilities = [
     border-radius: 0.75rem;
     background: linear-gradient(145deg, var(--accent), #870b2c);
     box-shadow: 0 0 22px rgb(224 35 78 / 22%);
-    color: white;
-    font-size: 0.78rem;
-    font-weight: 800;
+  }
+
+  .home-support__signature-mark img {
+    display: block;
+    width: 1.65rem;
+    height: auto;
   }
 
   .home-support__signature div { display: grid; gap: 0.2rem; }

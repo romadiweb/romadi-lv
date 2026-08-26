@@ -21,7 +21,7 @@ export const SITE = {
 
   locale: 'lv_LV',
 
-  defaultOgImage: '/og/romadi-default.jpg',
+  defaultOgImage: '/images/home/hero-landscape-1600.webp',
 
   /**
    * Brand positioning
@@ -144,7 +144,7 @@ export const SITE = {
     name: 'ROMADI',
     legalName: '',
     registrationNumber: '',
-    logo: '/brand/romadi-logo.svg',
+    logo: '/web-app-manifest-512x512.png',
   },
 
   /**
@@ -158,7 +158,7 @@ export const SITE = {
 
     openGraph: {
       type: 'website',
-      image: '/og/romadi-default.jpg',
+      image: '/images/home/hero-landscape-1600.webp',
       imageAlt: 'ROMADI — mājaslapu izstrāde un digitālie risinājumi',
     },
 

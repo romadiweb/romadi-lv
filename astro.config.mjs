@@ -22,7 +22,13 @@ export default defineConfig({
     '/socialo-tiklu-reklamas': '/pakalpojumi/digitala-izaugsme',
   },
 
-  integrations: [mdx(), sitemap(), icon()],
+  integrations: [
+    mdx(),
+    sitemap({
+      filter: (page) => new URL(page).pathname !== '/veidnes',
+    }),
+    icon(),
+  ],
 
   // Prefetch only links that explicitly use data-astro-prefetch.
   prefetch: {

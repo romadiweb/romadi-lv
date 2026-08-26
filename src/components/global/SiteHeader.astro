@@ -22,9 +22,14 @@ function isCurrentPage(href: string): boolean {
 <header class="site-header">
   <div class="site-header__bar">
     <a href="/" class="site-header__logo" aria-label="ROMADI sākumlapa" data-astro-prefetch>
-      <span class="site-header__logo-mark" aria-hidden="true"> R </span>
-
-      <span class="site-header__wordmark"> ROMADI </span>
+      <img
+        class="site-header__logo-image"
+        src="/images/brand/romadi-logo-white.svg"
+        alt=""
+        width="1056"
+        height="796"
+        decoding="async"
+      />
     </a>
 
     <nav class="site-header__navigation" aria-label="Galvenā navigācija">
@@ -130,6 +135,22 @@ function isCurrentPage(href: string): boolean {
           aria-label="Aizvērt navigācijas izvēlni"></button>
 
         <div class="site-header__mobile-panel">
+          <a
+            class="site-header__mobile-brand"
+            href="/"
+            aria-label="ROMADI sākumlapa"
+            data-mobile-item
+            data-astro-prefetch
+          >
+            <img
+              src="/images/brand/romadi-logo-white.svg"
+              alt=""
+              width="1056"
+              height="796"
+              decoding="async"
+            />
+          </a>
+
           <nav aria-label="Mobilā navigācija" class="site-header__mobile-navigation">
             <div class="site-header__mobile-services">
               <a
@@ -371,37 +392,10 @@ function isCurrentPage(href: string): boolean {
     gap: 0.75rem;
   }
 
-  .site-header__logo-mark {
-    display: grid;
-
-    width: 2.65rem;
-    height: 2.65rem;
-
-    place-items: center;
-
-    border-radius: 50%;
-
-    background: radial-gradient(
-      circle at 35% 28%,
-      var(--color-signal-400),
-      var(--color-signal-600) 68%,
-      var(--color-signal-800)
-    );
-
-    box-shadow: 0 0 22px rgb(224 35 78 / 26%);
-
-    color: white;
-
-    font-size: 0.95rem;
-    font-weight: 800;
-  }
-
-  .site-header__wordmark {
-    color: white;
-
-    font-size: 0.95rem;
-    font-weight: 750;
-    letter-spacing: -0.035em;
+  .site-header__logo-image {
+    display: block;
+    width: 2.95rem;
+    height: auto;
   }
 
   .site-header__navigation {
@@ -873,6 +867,20 @@ function isCurrentPage(href: string): boolean {
     visibility: visible;
   }
 
+  .site-header__mobile-brand {
+    position: absolute;
+    top: 2rem;
+    left: clamp(1.5rem, 7vw, 2.5rem);
+    display: block;
+    width: 3.15rem;
+  }
+
+  .site-header__mobile-brand img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
   .site-header__mobile-navigation {
     display: flex;
     align-self: center;
@@ -1042,15 +1050,8 @@ function isCurrentPage(href: string): boolean {
       border-radius: 1.15rem;
     }
 
-    .site-header__wordmark {
-      display: none;
-    }
-
-    .site-header__logo-mark {
-      width: 2.45rem;
-      height: 2.45rem;
-
-      font-size: 0.9rem;
+    .site-header__logo-image {
+      width: 2.6rem;
     }
 
     .site-header__mobile-menu summary {
