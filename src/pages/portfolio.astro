@@ -410,35 +410,83 @@ const showcaseProjects = [...projects].sort(
 <script>
   const initPortfolioShowcase = () => {
     document.querySelectorAll<HTMLElement>('[data-portfolio-showcase]').forEach((showcase) => {
+      if (showcase.dataset.showcaseReady === 'true') return;
+
       const tabs = Array.from(showcase.querySelectorAll<HTMLButtonElement>('[data-showcase-tab]'));
       const visuals = Array.from(showcase.querySelectorAll<HTMLElement>('[data-showcase-visual]'));
       const frame = showcase.querySelector<HTMLElement>('.portfolio-showcase__frame');
       const mobileViewport = window.matchMedia('(max-width: 640px)');
       const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      let activeIndex = Math.max(
+        0,
+        tabs.findIndex((tab) => tab.classList.contains('is-active')),
+      );
 
-      tabs.forEach((tab) => {
-        tab.addEventListener('click', () => {
-          const selected = tab.dataset.showcaseTab;
+      if (tabs.length < 2) return;
+      showcase.dataset.showcaseReady = 'true';
 
-          tabs.forEach((item) => {
-            const active = item === tab;
-            item.classList.toggle('is-active', active);
-            item.setAttribute('aria-selected', String(active));
-          });
+      const activate = (nextIndex: number, scrollToFrame = false) => {
+        const normalizedIndex = (nextIndex + tabs.length) % tabs.length;
+        const selectedTab = tabs[normalizedIndex];
+        const selected = selectedTab.dataset.showcaseTab;
 
-          visuals.forEach((visual) => {
-            visual.classList.toggle('is-active', visual.dataset.showcaseVisual === selected);
-          });
+        if (normalizedIndex === activeIndex) {
+          selectedTab.classList.remove('is-active');
+          void selectedTab.offsetWidth;
+        }
 
-          if (mobileViewport.matches && frame) {
-            requestAnimationFrame(() => {
-              frame.scrollIntoView({
-                behavior: reducedMotion.matches ? 'auto' : 'smooth',
-                block: 'start',
-              });
-            });
-          }
+        tabs.forEach((item, index) => {
+          const active = index === normalizedIndex;
+          item.classList.toggle('is-active', active);
+          item.setAttribute('aria-selected', String(active));
         });
+
+        visuals.forEach((visual) => {
+          visual.classList.toggle('is-active', visual.dataset.showcaseVisual === selected);
+        });
+
+        activeIndex = normalizedIndex;
+
+        if (scrollToFrame && mobileViewport.matches && frame) {
+          requestAnimationFrame(() => {
+            frame.scrollIntoView({
+              behavior: reducedMotion.matches ? 'auto' : 'smooth',
+              block: 'start',
+            });
+          });
+        }
+      };
+
+      tabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => {
+          activate(index, true);
+        });
+
+        tab.addEventListener('animationend', (event) => {
+          if (
+            reducedMotion.matches ||
+            event.animationName !== 'portfolio-showcase-progress' ||
+            event.pseudoElement !== '::after' ||
+            !tab.classList.contains('is-active')
+          ) {
+            return;
+          }
+
+          activate(index + 1);
+        });
+      });
+
+      showcase.addEventListener('focusin', (event) => {
+        const target = event.target as HTMLElement | null;
+        if (target?.matches(':focus-visible')) {
+          showcase.dataset.autoplayPaused = 'true';
+        }
+      });
+
+      showcase.addEventListener('focusout', (event) => {
+        if (!showcase.contains(event.relatedTarget as Node | null)) {
+          delete showcase.dataset.autoplayPaused;
+        }
       });
     });
   };
@@ -810,6 +858,7 @@ const showcaseProjects = [...projects].sort(
     border-radius: 0.65rem 0.65rem 0 0;
     background: #111;
     pointer-events: none;
+    transition: opacity 360ms cubic-bezier(0.25, 1, 0.5, 1);
 
     contain: layout paint;
   }
@@ -878,16 +927,28 @@ const showcaseProjects = [...projects].sort(
     position: absolute;
     left: 0;
     bottom: -1px;
-    width: 0;
+    width: 100%;
     height: 1px;
     background: #d8d8da;
+    transform: scaleX(0);
+    transform-origin: left center;
   }
 
   .portfolio-showcase__tab.is-active {
     color: #f4f4f5;
   }
   .portfolio-showcase__tab.is-active::after {
-    width: 52%;
+    animation: portfolio-showcase-progress 5s linear forwards;
+  }
+
+  .portfolio-showcase[data-autoplay-paused='true'] .portfolio-showcase__tab.is-active::after {
+    animation-play-state: paused;
+  }
+
+  @keyframes portfolio-showcase-progress {
+    to {
+      transform: scaleX(1);
+    }
   }
 
   .portfolio-showcase__tab span {
@@ -1479,6 +1540,9 @@ const showcaseProjects = [...projects].sort(
     .project-card:hover .project-card__media > img:not(.project-card__logo) {
       transform: scale(1.045);
     }
+    .portfolio-showcase:hover .portfolio-showcase__tab.is-active::after {
+      animation-play-state: paused;
+    }
     .portfolio-hero__jump:hover {
       color: #fff;
     }
@@ -1548,11 +1612,6 @@ const showcaseProjects = [...projects].sort(
 
     .portfolio-showcase__tab::after {
       left: 16%;
-
-      width: 0;
-    }
-
-    .portfolio-showcase__tab.is-active::after {
       width: 68%;
     }
 
@@ -1571,8 +1630,9 @@ const showcaseProjects = [...projects].sort(
     }
     .portfolio-liquid-line {
       top: 8.5rem;
-      left: -36%;
-      width: 172%;
+      left: 0;
+      width: 100%;
+      max-width: none;
       height: 14rem;
       opacity: 0.78;
     }
@@ -1692,6 +1752,13 @@ const showcaseProjects = [...projects].sort(
     }
     .portfolio-showcase::after {
       animation: none;
+    }
+    .portfolio-showcase__visual {
+      transition: none;
+    }
+    .portfolio-showcase__tab.is-active::after {
+      animation: none;
+      transform: scaleX(1);
     }
   }
 </style>

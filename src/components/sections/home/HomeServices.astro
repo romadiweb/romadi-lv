@@ -1,11 +1,21 @@
 ---
 import { SERVICES } from '@/data/services';
 
+const serviceIcons: Partial<Record<string, string>> = {
+  '01': '/images/services/website-development-metallic.webp',
+  '02': '/images/services/shopping-bag-metallic.webp',
+  '03': '/images/services/digital-products-metallic.webp',
+  '05': '/images/services/ai-automation-metallic.webp',
+  '06': '/images/services/digital-growth-metallic.webp',
+  '07': '/images/services/rebuild-support-metallic.webp',
+};
+
 const services = SERVICES.map((service) => ({
   number: service.number,
   title: service.label,
   description: service.description,
   href: service.href,
+  iconSrc: serviceIcons[service.number],
 }));
 ---
 
@@ -56,10 +66,10 @@ const services = SERVICES.map((service) => ({
               <span class="home-services__number">{service.number}</span>
 
               {
-                service.number === '02' ? (
+                service.iconSrc ? (
                   <img
                     class="home-services__service-icon"
-                    src="/images/services/shopping-bag-metallic.webp"
+                    src={service.iconSrc}
                     alt=""
                     width="256"
                     height="256"
@@ -564,7 +574,7 @@ const services = SERVICES.map((service) => ({
       inset 0 -1px 0 rgb(255 255 255 / 3%),
       0 1.75rem 4.6rem rgb(0 0 0 / 44%);
     color: white;
-    cursor: default;
+    cursor: pointer;
     outline: none;
     transform: translate3d(var(--card-x, 0), var(--card-y, 0), 0) rotate(var(--card-rotation, 0deg));
     transform-origin: center;
