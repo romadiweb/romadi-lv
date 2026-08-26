@@ -1373,8 +1373,8 @@ const showcaseProjects = [...projects].sort(
     min-height: 3.5rem;
     border-top: 1px solid rgb(255 255 255 / 10%);
     padding: 1rem 1rem 1rem 1.75rem;
-    color: #c4c4c9;
-    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-size: 1rem;
     line-height: 1.55;
   }
 
@@ -1400,8 +1400,8 @@ const showcaseProjects = [...projects].sort(
   .project-dialog__technology > header p {
     max-width: 28rem;
     margin: 0.85rem 0 0;
-    color: #85858b;
-    font: 550 0.72rem/1.6 var(--font-mono);
+    color: var(--text-muted);
+    font: 550 clamp(0.72rem, 0.85vw, 0.9rem) / 1.6 var(--font-mono);
   }
 
   .project-dialog__technology > div {
@@ -1411,8 +1411,8 @@ const showcaseProjects = [...projects].sort(
 
   .project-dialog__technology h4 {
     margin: 0 0 0.85rem;
-    color: #85858b;
-    font: 600 0.68rem/1.4 var(--font-mono);
+    color: var(--text-muted);
+    font: 600 clamp(0.72rem, 0.85vw, 0.9rem) / 1.4 var(--font-mono);
   }
 
   .project-dialog__technology ul {
@@ -1427,9 +1427,9 @@ const showcaseProjects = [...projects].sort(
   .project-dialog__technology li {
     border-radius: 999px;
     padding: 0.65rem 0.85rem;
-    background: #19191b;
-    color: #d2d2d6;
-    font: 600 0.72rem/1 var(--font-mono);
+    background: var(--surface-elevated);
+    color: var(--text-secondary);
+    font: 600 clamp(0.72rem, 0.85vw, 0.9rem) / 1 var(--font-mono);
   }
 
   .project-dialog__footer {

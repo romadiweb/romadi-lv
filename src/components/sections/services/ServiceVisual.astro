@@ -95,28 +95,14 @@ const websiteProjects = [
           <div class="visual-product-preview">
             <div class="visual-product-preview__desktop">
               <BrowserPreviewFrame
-                title="Nova CMS · Dashboard"
-                src="/images/projects/nova-cms-desktop.png?v=2"
-                width={1448}
-                height={980}
+                title="ROMADI CMS · Pārskats"
+                src="/images/projects/digital-products-dashboard.webp"
+                width={1600}
+                height={900}
                 fit="cover"
-                imageBackground="#f5f7fb"
-                objectPosition="left top"
-                imageScale={1.11}
+                imageBackground="#ffffff"
+                objectPosition="top center"
               />
-            </div>
-            <div class="visual-product-preview__mobile">
-              <div class="visual-mobile-device visual-mobile-device--product">
-                <span aria-hidden="true"></span>
-                <img
-                  src="/images/projects/nova-cms-mobile.png"
-                  alt=""
-                  width="940"
-                  height="1675"
-                  loading="eager"
-                  decoding="async"
-                />
-              </div>
             </div>
           </div>
         )
@@ -127,12 +113,11 @@ const websiteProjects = [
           <div class="visual-design">
             <BrowserPreviewFrame
               title="UI / UX dizaina sistēma"
-              src="/images/projects/uiuxhero-pc-v2.png"
-              mobileSrc="/images/projects/uiuxhero-mobile-v2.png"
-              width={1448}
-              height={1086}
+              src="/images/projects/uiux-service-visual.webp"
+              width={1600}
+              height={900}
               fit="cover"
-              imageBackground="#030303"
+              imageBackground="#101010"
               objectPosition="center"
             />
           </div>
@@ -362,6 +347,14 @@ const websiteProjects = [
     justify-content: center;
   }
 
+  .visual-product-preview__desktop :global(.browser-preview),
+  .visual-design :global(.browser-preview) {
+    width: min(100%, 62rem);
+    height: auto;
+    max-height: 100%;
+    aspect-ratio: 1.68;
+  }
+
   .visual-product-preview__mobile { display: none; }
 
   .visual-commerce__desktop {
@@ -579,7 +572,7 @@ const websiteProjects = [
       inset: 0.8rem;
     }
     .service-visual[data-kind='product'] {
-      min-height: 44rem;
+      min-height: 17rem;
     }
     .service-visual[data-kind='commerce'] {
       min-height: 44rem;
@@ -588,7 +581,7 @@ const websiteProjects = [
       min-height: 44rem;
     }
     .service-visual[data-kind='design'] {
-      min-height: 42rem;
+      min-height: 17rem;
     }
     .service-visual[data-kind='website'] .service-visual__chrome,
     .service-visual[data-kind='commerce'] .service-visual__chrome,
@@ -609,13 +602,16 @@ const websiteProjects = [
         #0a0a0b;
     }
     .service-visual[data-kind='product'] .service-visual__canvas {
-      min-height: 43rem;
+      min-height: 16rem;
       background:
         radial-gradient(circle at 50% 32%, rgb(104 125 246 / 12%), transparent 42%),
         #0a0a0b;
     }
+    .visual-product-preview__desktop :global(.browser-preview) {
+      --preview-position: top center !important;
+    }
     .service-visual[data-kind='design'] .service-visual__canvas {
-      min-height: 41rem;
+      min-height: 16rem;
       background: #030303;
     }
     .service-visual[data-kind='website'] .visual-website,
@@ -625,11 +621,9 @@ const websiteProjects = [
       inset: 0.75rem;
     }
     .visual-website__desktop,
-    .visual-commerce__desktop,
-    .visual-product-preview__desktop { display: none; }
+    .visual-commerce__desktop { display: none; }
     .visual-website__mobile,
-    .visual-commerce__mobile,
-    .visual-product-preview__mobile {
+    .visual-commerce__mobile {
       display: grid;
       width: 100%;
       height: 100%;
@@ -645,7 +639,6 @@ const websiteProjects = [
       background: white;
       box-shadow: 0 1.5rem 3rem rgb(0 0 0 / 52%);
     }
-    .visual-mobile-device--product { aspect-ratio: 940 / 1675; }
     .visual-mobile-device--commerce { aspect-ratio: 390 / 874; }
     .visual-mobile-device--website { aspect-ratio: 392 / 855; }
     .visual-mobile-device--commerce,

@@ -48,7 +48,7 @@ const cta =
 
   {
     ctaVariant && (
-      <section class="site-footer__cta" aria-labelledby="footer-cta-title" data-reveal>
+      <section class="site-footer__cta" aria-labelledby="footer-cta-title" data-footer-cta>
         <div class="site-footer__cta-copy">
           <h2 id="footer-cta-title">
             {cta.title.split('\n').map((line, index) => (
@@ -159,6 +159,39 @@ const cta =
   </div>
 </footer>
 
+<script>
+  const initFooterCtaReveal = (): void => {
+    document.querySelectorAll<HTMLElement>('[data-footer-cta]').forEach((cta) => {
+      if (cta.dataset.footerCtaInitialized === 'true') return;
+      cta.dataset.footerCtaInitialized = 'true';
+
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        cta.dataset.footerCtaRevealed = 'true';
+        return;
+      }
+
+      cta.dataset.footerCtaReady = 'true';
+
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry?.isIntersecting) return;
+          cta.dataset.footerCtaRevealed = 'true';
+          observer.unobserve(cta);
+        },
+        {
+          threshold: 0.12,
+          rootMargin: '0px 0px -8% 0px',
+        },
+      );
+
+      observer.observe(cta);
+    });
+  };
+
+  initFooterCtaReveal();
+  document.addEventListener('astro:page-load', initFooterCtaReveal);
+</script>
+
 <style>
   .site-footer {
     position: relative;
@@ -242,6 +275,42 @@ const cta =
       radial-gradient(ellipse at 2% 12%, rgb(190 14 59 / 64%), transparent 42%),
       radial-gradient(ellipse at 98% 13%, rgb(157 7 47 / 57%), transparent 42%),
       linear-gradient(115deg, #620b22, #100507 44%, #190509 68%, #58091e);
+    transform-origin: 50% 100%;
+    transition:
+      opacity 700ms var(--ease-out-expo),
+      filter 700ms var(--ease-out-expo),
+      transform 800ms var(--ease-out-expo);
+  }
+
+  .site-footer__cta[data-footer-cta-ready='true']:not([data-footer-cta-revealed='true']) {
+    opacity: 0.46;
+    filter: saturate(0.68) brightness(0.72);
+    transform: translate3d(0, 1.75rem, 0) scale(0.988);
+  }
+
+  .site-footer__cta-copy h2,
+  .site-footer__cta-action {
+    transition:
+      opacity 620ms var(--ease-out-expo),
+      filter 620ms var(--ease-out-expo),
+      transform 720ms var(--ease-out-expo);
+  }
+
+  .site-footer__cta[data-footer-cta-ready='true']:not([data-footer-cta-revealed='true'])
+    .site-footer__cta-copy h2,
+  .site-footer__cta[data-footer-cta-ready='true']:not([data-footer-cta-revealed='true'])
+    .site-footer__cta-action {
+    opacity: 0.58;
+    filter: blur(1px);
+    transform: translate3d(0, 1rem, 0);
+  }
+
+  .site-footer__cta[data-footer-cta-revealed='true'] .site-footer__cta-copy h2 {
+    transition-delay: 80ms;
+  }
+
+  .site-footer__cta[data-footer-cta-revealed='true'] .site-footer__cta-action {
+    transition-delay: 150ms;
   }
 
   .site-footer__cta::before {
@@ -576,6 +645,15 @@ const cta =
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .site-footer__cta,
+    .site-footer__cta-copy h2,
+    .site-footer__cta-action {
+      opacity: 1 !important;
+      filter: none !important;
+      transform: none !important;
+      transition: none !important;
+    }
+
     .site-footer__waves path,
     .site-footer__glow {
       animation: none;
