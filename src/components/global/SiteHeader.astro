@@ -268,32 +268,76 @@ function isCurrentPage(href: string): boolean {
 
       const summary = menu.querySelector<HTMLElement>('summary');
       const backdrop = menu.querySelector<HTMLButtonElement>('.site-header__mobile-backdrop');
+      const panel = menu.querySelector<HTMLElement>('.site-header__mobile-panel');
       const links = Array.from(
         menu.querySelectorAll<HTMLAnchorElement>('.site-header__mobile-panel a'),
       );
-      let closeTimer = 0;
 
-      if (!summary || !backdrop) return;
+      if (!summary || !backdrop || !panel) return;
+
+      // Keep the details content mounted after enhancement. Toggling `open` and
+      // the animated state in one frame made some mobile browsers skip the panel
+      // transition entirely.
+      menu.open = true;
+      panel.inert = true;
+      panel.setAttribute('aria-hidden', 'true');
+
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let panelAnimation: Animation | null = null;
+
+      const readPanelState = (): { opacity: number; transform: string } => {
+        const currentStyle = getComputedStyle(panel);
+        return {
+          opacity: Number(currentStyle.opacity),
+          transform:
+            currentStyle.transform === 'none' ? 'translate3d(0, 0, 0)' : currentStyle.transform,
+        };
+      };
+
+      const animatePanel = (
+        opening: boolean,
+        startState: { opacity: number; transform: string },
+      ): void => {
+        panelAnimation?.cancel();
+
+        if (reducedMotion) return;
+
+        panelAnimation = panel.animate(
+          [
+            { opacity: startState.opacity, transform: startState.transform },
+            {
+              opacity: opening ? 1 : 0,
+              transform: opening ? 'translate3d(0, 0, 0)' : 'translate3d(100%, 0, 0)',
+            },
+          ],
+          {
+            duration: opening ? 300 : 240,
+            easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+          },
+        );
+      };
 
       const openMenu = (): void => {
-        window.clearTimeout(closeTimer);
-        menu.open = true;
+        const wasOpen = menu.dataset.mobileOpen === 'true';
+        const startState = readPanelState();
+        panel.inert = false;
+        panel.setAttribute('aria-hidden', 'false');
         document.body.dataset.mobileMenuOpen = 'true';
         menu.dataset.mobileOpen = 'true';
         summary.setAttribute('aria-expanded', 'true');
+        if (!wasOpen) animatePanel(true, startState);
       };
 
       const closeMenu = (): void => {
-        window.clearTimeout(closeTimer);
+        const wasOpen = menu.dataset.mobileOpen === 'true';
+        const startState = readPanelState();
         menu.dataset.mobileOpen = 'false';
         summary.setAttribute('aria-expanded', 'false');
+        panel.inert = true;
+        panel.setAttribute('aria-hidden', 'true');
         delete document.body.dataset.mobileMenuOpen;
-        closeTimer = window.setTimeout(() => {
-          menu.open = false;
-        }, 280);
+        if (wasOpen) animatePanel(false, startState);
       };
-
-      if (menu.open) openMenu();
 
       summary.addEventListener('click', (event) => {
         event.preventDefault();
@@ -844,6 +888,7 @@ function isCurrentPage(href: string): boolean {
       opacity 180ms ease,
       visibility 0s linear 280ms;
     contain: layout paint;
+    will-change: transform;
   }
 
   .site-header__mobile-menu[data-mobile-open='true'] .site-header__mobile-panel {

@@ -66,23 +66,23 @@ const services = SERVICES.map((service) => ({
 
               <span class="home-services__number">{service.number}</span>
 
-              {
-                service.iconSrc ? (
-                  <img
-                    class="home-services__service-icon"
-                    src={service.iconSrc}
-                    alt=""
-                    width="256"
-                    height="256"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                ) : (
-                  <span class="home-services__icon-placeholder" aria-hidden="true">
-                    <span />
-                  </span>
-                )
-              }
+              {service.iconSrc ? (
+                <img
+                  class="home-services__service-icon"
+                  src={service.iconSrc}
+                  alt=""
+                  width="256"
+                  height="256"
+                  loading="eager"
+                  fetchpriority="low"
+                  decoding="async"
+                  draggable="false"
+                />
+              ) : (
+                <span class="home-services__icon-placeholder" aria-hidden="true">
+                  <span />
+                </span>
+              )}
 
               <div class="home-services__copy">
                 <h3>{service.title}</h3>
@@ -213,6 +213,12 @@ const services = SERVICES.map((service) => ({
       let scrollFrame = 0;
       let resizeFrame = 0;
 
+      // These small assets are part of the carousel interaction, not deferred
+      // content. Decode them before the user reaches the next horizontal card.
+      section
+        .querySelectorAll<HTMLImageElement>('.home-services__service-icon')
+        .forEach((image) => void image.decode().catch(() => undefined));
+
       const getMobileActiveIndex = (): number => {
         const carouselBounds = carousel.getBoundingClientRect();
         const carouselCenter = carouselBounds.left + carouselBounds.width / 2;
@@ -285,10 +291,10 @@ const services = SERVICES.map((service) => ({
           const activeLayers = selectedLayers[activeIndex ?? -1];
 
           const xRatio = xRatios[index] ?? 0;
-          let yRatio = activeY?.[index] ?? restingY[index] ?? 0;
-          let rotation = activeRotations?.[index] ?? restingRotations[index] ?? 0;
+          const yRatio = activeY?.[index] ?? restingY[index] ?? 0;
+          const rotation = activeRotations?.[index] ?? restingRotations[index] ?? 0;
           let side = 'rest';
-          let layer = activeLayers?.[index] ?? restingLayers[index] ?? index + 1;
+          const layer = activeLayers?.[index] ?? restingLayers[index] ?? index + 1;
           const isActive = index === activeIndex;
           const x = maxX * xRatio + centerOffset;
 
