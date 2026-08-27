@@ -1004,6 +1004,21 @@ const services = SERVICES.map((service) => ({
       transform: none;
       transition-delay: 0ms;
       scroll-snap-align: center;
+      will-change: auto;
+    }
+
+    .home-services__sun {
+      will-change: auto;
+    }
+
+    .home-services__card[data-active='true'] .home-services__sun,
+    .home-services__card[data-active='true'] .home-services__sun::before,
+    .home-services__card[data-active='true'] .home-services__sun-rays {
+      animation: none;
+    }
+
+    .home-services__card[data-active='true'] .home-services__sun {
+      will-change: auto;
     }
 
     .home-services__card p {
@@ -1015,7 +1030,7 @@ const services = SERVICES.map((service) => ({
 
     .home-services__card[data-active='true'] .home-services__sun {
       opacity: 1;
-      animation: home-services-sun-travel 6.8s ease-in-out infinite alternate;
+      animation: none;
     }
 
     .home-services__controls {

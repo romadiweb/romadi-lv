@@ -954,6 +954,24 @@
   }
 
   @media (max-width: 700px) {
+    .home-hero {
+      contain: none;
+    }
+
+    .home-hero__image img {
+      animation: none;
+      transform: scale(1.025);
+      will-change: auto;
+    }
+
+    .home-hero__image::before,
+    .home-hero__image::after,
+    .home-hero__flashlight,
+    .home-hero__color-crunch,
+    .home-hero__noise {
+      display: none;
+    }
+
     .home-hero__goo--satellite-left,
     .home-hero__goo--satellite-right {
       display: none;

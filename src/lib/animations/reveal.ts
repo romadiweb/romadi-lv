@@ -5,17 +5,14 @@ const revealObserverOptions: IntersectionObserverInit = {
   threshold: 0.12,
 };
 
-function revealElement(element: HTMLElement, compactViewport: boolean): void {
+function revealElement(element: HTMLElement): void {
   element.dataset.revealState = 'revealed';
 
-  // Web Animations keeps this path dependency-free and compositor-only. The
-  // resting HTML is always visible, so delayed JS or a fast scroll can never
-  // leave a section blank.
-  element.animate(
+  const animation = element.animate(
     [
       {
-        opacity: compactViewport ? 0.58 : 0.42,
-        transform: `translate3d(0, ${compactViewport ? 16 : 22}px, 0)`,
+        opacity: 0.42,
+        transform: 'translate3d(0, 22px, 0)',
       },
       {
         opacity: 1,
@@ -23,11 +20,15 @@ function revealElement(element: HTMLElement, compactViewport: boolean): void {
       },
     ],
     {
-      duration: compactViewport ? 520 : 680,
+      duration: 680,
       easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
       fill: 'none',
     },
   );
+
+  // Finished WAAPI effects can retain compositor resources in WebKit. Explicitly
+  // cancel after completion so long pages release each temporary layer.
+  void animation.finished.then(() => animation.cancel()).catch(() => undefined);
 }
 
 export function initRevealAnimations(): void {
@@ -35,7 +36,10 @@ export function initRevealAnimations(): void {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const compactViewport = window.matchMedia('(max-width: 700px)').matches;
 
-  if (reducedMotion || !('IntersectionObserver' in window)) {
+  // Mobile Safari is particularly sensitive to large transformed descendants,
+  // filters and blend modes being promoted together. Keep mobile content fully
+  // painted and reserve motion for each component's lightweight interactions.
+  if (reducedMotion || compactViewport || !('IntersectionObserver' in window)) {
     elements.forEach((element) => {
       element.dataset.revealInitialized = 'true';
       element.dataset.revealState = 'revealed';
@@ -49,7 +53,7 @@ export function initRevealAnimations(): void {
 
       const element = entry.target as HTMLElement;
       observer.unobserve(element);
-      revealElement(element, compactViewport);
+      revealElement(element);
     });
   }, revealObserverOptions);
 
