@@ -48,27 +48,11 @@ function setupPointerHero(hero: HTMLElement): void {
     current.y += (target.y - current.y) * 0.11;
     current.opacity += (target.opacity - current.opacity) * 0.16;
 
-    const offsetFromCenterX = current.x - bounds.width * 0.5;
-    const offsetFromCenterY = current.y - bounds.height * 0.5;
-
     hero.style.setProperty('--pointer-x', `${current.x}px`);
     hero.style.setProperty('--pointer-y', `${current.y}px`);
     hero.style.setProperty(
       '--pointer-opacity',
       current.opacity.toFixed(3),
-    );
-
-    /*
-     * Small secondary movement for the ambient background.
-     */
-    hero.style.setProperty(
-      '--pointer-parallax-x',
-      `${offsetFromCenterX * 0.018}px`,
-    );
-
-    hero.style.setProperty(
-      '--pointer-parallax-y',
-      `${offsetFromCenterY * 0.014}px`,
     );
 
     const positionDifference =

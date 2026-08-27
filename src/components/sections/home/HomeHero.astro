@@ -1,7 +1,5 @@
 <section class="home-hero" data-pointer-hero>
   <div class="home-hero__background" aria-hidden="true">
-    <div class="home-hero__base"></div>
-
     <picture class="home-hero__image">
       <source
         media="(max-width: 700px)"
@@ -19,19 +17,6 @@
         decoding="async"
       />
     </picture>
-
-    <!--
-      LEGACY ROMADI GOO — intentionally retained for quick rollback.
-      Remove this comment wrapper and remove the home-hero__image picture above to restore it.
-    <div class="home-hero__ambient">
-      <div class="home-hero__goo home-hero__goo--left"></div>
-      <div class="home-hero__goo home-hero__goo--bottom"></div>
-      <div class="home-hero__goo home-hero__goo--right"></div>
-
-      <div class="home-hero__goo home-hero__goo--satellite-left"></div>
-      <div class="home-hero__goo home-hero__goo--satellite-right"></div>
-    </div>
-    -->
 
     <div class="home-hero__flashlight"></div>
 
@@ -143,8 +128,6 @@
     --pointer-x: 50%;
     --pointer-y: 45%;
     --pointer-opacity: 0;
-    --pointer-parallax-x: 0px;
-    --pointer-parallax-y: 0px;
 
     position: relative;
     isolation: isolate;
@@ -179,17 +162,6 @@
     background: #070103;
 
     pointer-events: none;
-  }
-
-  .home-hero__base {
-    position: absolute;
-    inset: 0;
-
-    background:
-      radial-gradient(ellipse at 48% 102%, rgb(228 22 72 / 78%), transparent 38%),
-      radial-gradient(ellipse at 2% 12%, rgb(190 14 59 / 64%), transparent 42%),
-      radial-gradient(ellipse at 98% 13%, rgb(157 7 47 / 57%), transparent 42%),
-      linear-gradient(115deg, #620b22, #100507 44%, #190509 68%, #58091e);
   }
 
   .home-hero__image {
@@ -289,167 +261,6 @@
     0% { opacity: 0.1; transform: translate3d(7%, 5%, 0) scale(1.08) rotate(4deg); }
     52% { opacity: 0.2; transform: translate3d(-12%, -4%, 0) scale(0.96) rotate(-2deg); }
     100% { opacity: 0.14; transform: translate3d(-24%, 6%, 0) scale(1.12) rotate(-5deg); }
-  }
-
-  /* =========================================================
-     LEGACY LIQUID GOO FIELD — retained for rollback
-     ========================================================= */
-
-  .home-hero__ambient {
-    position: absolute;
-    inset: -18%;
-
-    /*
-     * Blur creates soft overlap.
-     * Contrast pulls those overlaps together into liquid forms.
-     */
-    filter: blur(30px) contrast(1.35) saturate(96%);
-
-    mix-blend-mode: normal;
-
-    transform: translate3d(var(--pointer-parallax-x), var(--pointer-parallax-y), 0);
-
-    will-change: transform;
-  }
-
-  .home-hero__goo {
-    position: absolute;
-
-    background: radial-gradient(
-      circle at 36% 30%,
-      rgb(228 22 72 / 92%) 0%,
-      rgb(190 14 59 / 90%) 22%,
-      rgb(157 7 47 / 88%) 44%,
-      rgb(98 11 34 / 82%) 67%,
-      rgb(51 5 18 / 66%) 84%,
-      transparent 100%
-    );
-
-    opacity: 0.76;
-
-    transform: translate3d(0, 0, 0);
-
-    will-change: transform, border-radius;
-  }
-
-  /*
-   * Moving internal illumination gives each mass
-   * additional volume instead of looking flat.
-   */
-
-  .home-hero__goo::before,
-  .home-hero__goo::after {
-    position: absolute;
-
-    border-radius: inherit;
-
-    content: '';
-    pointer-events: none;
-  }
-
-  .home-hero__goo::before {
-    inset: 8% 18% 30% 8%;
-
-    background: radial-gradient(
-      circle at 36% 32%,
-      rgb(228 22 72 / 30%),
-      rgb(190 14 59 / 21%) 38%,
-      transparent 68%
-    );
-
-    mix-blend-mode: soft-light;
-
-    animation: romadi-goo-inner 4.8s ease-in-out infinite alternate;
-  }
-
-  .home-hero__goo::after {
-    inset: 34% 8% 8% 30%;
-
-    background: radial-gradient(circle, rgb(157 7 47 / 32%), transparent 70%);
-
-    mix-blend-mode: soft-light;
-
-    animation: romadi-goo-inner-reverse 6.2s ease-in-out infinite alternate;
-  }
-
-  /* Upper-left main liquid mass */
-
-  .home-hero__goo--left {
-    top: -27%;
-    left: -23%;
-
-    width: 78%;
-    height: 88%;
-
-    border-radius: 42% 58% 64% 36% / 46% 38% 62% 54%;
-
-    animation: romadi-goo-left 8.5s ease-in-out infinite alternate;
-  }
-
-  /* Large bottom-centre liquid mass */
-
-  .home-hero__goo--bottom {
-    right: 9%;
-    bottom: -51%;
-
-    width: 72%;
-    height: 92%;
-
-    border-radius: 61% 39% 45% 55% / 40% 59% 41% 60%;
-
-    opacity: 0.8;
-
-    animation: romadi-goo-bottom 10.5s ease-in-out infinite alternate;
-  }
-
-  /* Upper-right liquid mass */
-
-  .home-hero__goo--right {
-    top: -28%;
-    right: -22%;
-
-    width: 64%;
-    height: 77%;
-
-    border-radius: 38% 62% 55% 45% / 60% 42% 58% 40%;
-
-    opacity: 0.7;
-
-    animation: romadi-goo-right 9.5s ease-in-out infinite alternate;
-  }
-
-  /*
-   * Smaller blobs travel between the large masses.
-   * The ambient contrast filter makes them visibly merge
-   * and separate from the larger liquid forms.
-   */
-
-  .home-hero__goo--satellite-left {
-    top: 25%;
-    left: 11%;
-
-    width: clamp(11rem, 17vw, 18rem);
-    height: clamp(11rem, 17vw, 18rem);
-
-    border-radius: 58% 42% 36% 64% / 44% 62% 38% 56%;
-
-    opacity: 0.62;
-
-    animation: romadi-satellite-left 6.4s ease-in-out infinite alternate;
-  }
-
-  .home-hero__goo--satellite-right {
-    right: 14%;
-    bottom: 12%;
-
-    width: clamp(9rem, 14vw, 15rem);
-    height: clamp(9rem, 14vw, 15rem);
-
-    border-radius: 39% 61% 57% 43% / 63% 38% 62% 37%;
-
-    opacity: 0.57;
-
-    animation: romadi-satellite-right 7.2s ease-in-out infinite alternate;
   }
 
   /* =========================================================
@@ -759,156 +570,6 @@
   }
 
   /* =========================================================
-     GOO ANIMATIONS
-     ========================================================= */
-
-  @keyframes romadi-goo-left {
-    0% {
-      border-radius: 42% 58% 64% 36% / 46% 38% 62% 54%;
-
-      transform: translate3d(-5%, -5%, 0) rotate(-8deg) scale(0.96);
-    }
-
-    25% {
-      border-radius: 63% 37% 41% 59% / 37% 65% 35% 63%;
-
-      transform: translate3d(8%, 7%, 0) rotate(5deg) scale(1.12, 0.93);
-    }
-
-    50% {
-      border-radius: 35% 65% 57% 43% / 64% 39% 61% 36%;
-
-      transform: translate3d(15%, 2%, 0) rotate(-4deg) scale(0.92, 1.14);
-    }
-
-    75% {
-      border-radius: 57% 43% 34% 66% / 42% 58% 68% 32%;
-
-      transform: translate3d(4%, 15%, 0) rotate(8deg) scale(1.09, 0.95);
-    }
-
-    100% {
-      border-radius: 46% 54% 68% 32% / 58% 34% 66% 42%;
-
-      transform: translate3d(13%, -2%, 0) rotate(2deg) scale(1.03, 1.1);
-    }
-  }
-
-  @keyframes romadi-goo-bottom {
-    0% {
-      border-radius: 61% 39% 45% 55% / 40% 59% 41% 60%;
-
-      transform: translate3d(0, 10%, 0) rotate(0deg) scale(1);
-    }
-
-    25% {
-      border-radius: 42% 58% 66% 34% / 62% 37% 63% 38%;
-
-      transform: translate3d(-12%, -3%, 0) rotate(-7deg) scale(1.15, 0.9);
-    }
-
-    50% {
-      border-radius: 68% 32% 39% 61% / 35% 66% 34% 65%;
-
-      transform: translate3d(7%, -12%, 0) rotate(6deg) scale(0.9, 1.16);
-    }
-
-    75% {
-      border-radius: 36% 64% 58% 42% / 55% 43% 57% 45%;
-
-      transform: translate3d(13%, -6%, 0) rotate(-4deg) scale(1.11, 0.94);
-    }
-
-    100% {
-      border-radius: 57% 43% 34% 66% / 46% 65% 35% 54%;
-
-      transform: translate3d(-3%, -15%, 0) rotate(7deg) scale(0.97, 1.12);
-    }
-  }
-
-  @keyframes romadi-goo-right {
-    0% {
-      border-radius: 38% 62% 55% 45% / 60% 42% 58% 40%;
-
-      transform: translate3d(7%, -4%, 0) rotate(5deg) scale(0.97);
-    }
-
-    30% {
-      border-radius: 64% 36% 42% 58% / 37% 61% 39% 63%;
-
-      transform: translate3d(-13%, 8%, 0) rotate(-9deg) scale(1.13, 0.91);
-    }
-
-    60% {
-      border-radius: 41% 59% 69% 31% / 66% 35% 65% 34%;
-
-      transform: translate3d(-5%, 16%, 0) rotate(7deg) scale(0.91, 1.14);
-    }
-
-    100% {
-      border-radius: 67% 33% 38% 62% / 44% 68% 32% 56%;
-
-      transform: translate3d(-16%, 3%, 0) rotate(-3deg) scale(1.08, 0.96);
-    }
-  }
-
-  @keyframes romadi-satellite-left {
-    0% {
-      transform: translate3d(-3rem, 3rem, 0) rotate(-10deg) scale(0.7);
-    }
-
-    32% {
-      transform: translate3d(7rem, -3rem, 0) rotate(8deg) scale(1.22, 0.82);
-    }
-
-    68% {
-      transform: translate3d(15rem, 5rem, 0) rotate(-5deg) scale(0.78, 1.27);
-    }
-
-    100% {
-      transform: translate3d(5rem, 11rem, 0) rotate(12deg) scale(1.12);
-    }
-  }
-
-  @keyframes romadi-satellite-right {
-    0% {
-      transform: translate3d(4rem, 4rem, 0) rotate(8deg) scale(0.65);
-    }
-
-    32% {
-      transform: translate3d(-7rem, -7rem, 0) rotate(-9deg) scale(1.27, 0.8);
-    }
-
-    68% {
-      transform: translate3d(-14rem, 1rem, 0) rotate(6deg) scale(0.8, 1.25);
-    }
-
-    100% {
-      transform: translate3d(-4rem, -11rem, 0) rotate(-12deg) scale(1.1);
-    }
-  }
-
-  @keyframes romadi-goo-inner {
-    from {
-      transform: translate3d(-8%, -6%, 0) scale(0.88);
-    }
-
-    to {
-      transform: translate3d(14%, 16%, 0) scale(1.22);
-    }
-  }
-
-  @keyframes romadi-goo-inner-reverse {
-    from {
-      transform: translate3d(16%, -13%, 0) scale(1.16);
-    }
-
-    to {
-      transform: translate3d(-12%, 19%, 0) scale(0.8);
-    }
-  }
-
-  /* =========================================================
      RESPONSIVE
      ========================================================= */
 
@@ -948,9 +609,6 @@
       column-gap: 1.15rem;
     }
 
-    .home-hero__ambient {
-      inset: -24%;
-    }
   }
 
   @media (max-width: 700px) {
@@ -972,14 +630,6 @@
       display: none;
     }
 
-    .home-hero__goo--satellite-left,
-    .home-hero__goo--satellite-right {
-      display: none;
-    }
-
-    .home-hero__ambient {
-      filter: blur(36px) contrast(7) saturate(130%);
-    }
   }
 
   @media (max-width: 600px) {
@@ -1096,19 +746,12 @@
   @media (prefers-reduced-motion: reduce) {
     .home-hero__image img,
     .home-hero__image::before,
-    .home-hero__image::after,
-    .home-hero__goo,
-    .home-hero__goo::before,
-    .home-hero__goo::after {
+    .home-hero__image::after {
       animation: none;
     }
 
     .home-hero__image img {
       transform: scale(1.045);
-    }
-
-    .home-hero__ambient {
-      transform: none;
     }
   }
 </style>

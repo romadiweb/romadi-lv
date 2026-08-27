@@ -190,6 +190,18 @@ test.describe('ROMADI homepage', () => {
     });
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(1_000);
 
+    const footerWaves = page.locator('.site-footer__waves');
+    await footerWaves.scrollIntoViewIfNeeded();
+    await expect(footerWaves).toHaveAttribute('data-footer-wave-active', 'true');
+    await expect.poll(() => footerWaves.locator('svg').evaluate((svg) => svg.getAnimations().length)).toBe(1);
+    await expect
+      .poll(() =>
+        footerWaves
+          .locator('path')
+          .evaluateAll((paths) => paths.reduce((total, path) => total + path.getAnimations().length, 0)),
+      )
+      .toBe(0);
+
     await hero.scrollIntoViewIfNeeded();
     await expect(hero).toBeInViewport();
     await expect(heroImage).toBeVisible();
