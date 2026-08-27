@@ -5,10 +5,18 @@ import HomeServices from '@/components/sections/home/HomeServices.astro';
 import HomeShowcase from '@/components/sections/home/HomeShowcase.astro';
 import HomeSupport from '@/components/sections/home/HomeSupport.astro';
 import HomeTemplateOffer from '@/components/sections/home/HomeTemplateOffer.astro';
+import { SITE } from '@/config/site';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 ---
 
-<BaseLayout>
+<BaseLayout
+  image={SITE.searchPreviewImage}
+  imageAlt="ROMADI melnsarkanais logotips"
+  imageWidth={1200}
+  imageHeight={1200}
+  imageType="image/png"
+  twitterCard="summary"
+>
   <HomeHero />
   <HomePartners />
   <HomeServices />

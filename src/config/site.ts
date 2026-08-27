@@ -23,6 +23,8 @@ export const SITE = {
 
   defaultOgImage: '/images/home/hero-landscape-1600.webp',
 
+  searchPreviewImage: '/images/brand/romadi-search-thumbnail.png',
+
   /**
    * Brand positioning
    */
@@ -144,7 +146,7 @@ export const SITE = {
     name: 'ROMADI',
     legalName: '',
     registrationNumber: '',
-    logo: '/web-app-manifest-512x512.png',
+    logo: '/images/brand/romadi-search-thumbnail.png',
   },
 
   /**

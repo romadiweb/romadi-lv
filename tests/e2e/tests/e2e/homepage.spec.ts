@@ -46,6 +46,46 @@ test.describe('ROMADI homepage', () => {
       'ROMADI',
     );
 
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
+      'content',
+      'https://romadi.lv/images/brand/romadi-search-thumbnail.png',
+    );
+    await expect(page.locator('meta[property="og:image:type"]')).toHaveAttribute(
+      'content',
+      'image/png',
+    );
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
+      'content',
+      'summary',
+    );
+
+    const structuredData = await page
+      .locator('script[type="application/ld+json"]')
+      .evaluate((script) => JSON.parse(script.textContent ?? '{}'));
+    expect(structuredData['@graph']).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          '@type': 'WebPage',
+          primaryImageOfPage: expect.objectContaining({
+            contentUrl: 'https://romadi.lv/images/brand/romadi-search-thumbnail.png',
+            width: 1200,
+            height: 1200,
+          }),
+        }),
+        expect.objectContaining({
+          '@type': 'Organization',
+          logo: expect.objectContaining({
+            url: 'https://romadi.lv/images/brand/romadi-search-thumbnail.png',
+          }),
+        }),
+      ]),
+    );
+
+    await expect(page.locator('.home-hero__image img')).toHaveAttribute(
+      'src',
+      '/images/home/hero-landscape-1600.webp',
+    );
+
     await expect(page.locator('html')).toHaveAttribute('lang', 'lv');
   });
 
