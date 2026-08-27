@@ -49,8 +49,8 @@ export const SITE = {
       },
       {
         label: 'Tālrunis',
-        display: '+371 29 625 996',
-        href: 'tel:+37129625996',
+        display: '+371 26 084 851',
+        href: 'tel:+37126084851',
       },
     ],
 
