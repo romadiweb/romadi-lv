@@ -144,8 +144,8 @@ export const SITE = {
    */
   organization: {
     name: 'ROMADI',
-    legalName: '',
-    registrationNumber: '',
+    legalName: 'SIA "ROMADI"',
+    registrationNumber: '40203775218',
     logo: '/images/brand/romadi-search-thumbnail.png',
   },
 
