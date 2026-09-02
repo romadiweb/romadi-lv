@@ -349,6 +349,7 @@ const socialItems = [
     const service = form.querySelector<HTMLSelectElement>('#contact-service');
     const templateOption = form.querySelector<HTMLElement>('[data-template-option]');
     const templateCheckbox = form.querySelector<HTMLInputElement>('#contact-template');
+    const message = form.querySelector<HTMLTextAreaElement>('#contact-message');
     const productLinkField = form.querySelector<HTMLElement>('[data-existing-product-field]');
     const productLink = form.querySelector<HTMLInputElement>('#contact-product-link');
     const cardShell = document.querySelector<HTMLElement>('[data-card-shell]');
@@ -385,7 +386,11 @@ const socialItems = [
     const applyRequestedTemplate = (): void => {
       if (!templateCheckbox || templateCheckbox.disabled) return;
       const requestedTemplate = new URLSearchParams(window.location.search).get('veidne');
-      templateCheckbox.checked = requestedTemplate === '1';
+      templateCheckbox.checked = Boolean(requestedTemplate);
+
+      if (requestedTemplate && requestedTemplate !== '1' && message && !message.value) {
+        message.value = `Mani interesē mājaslapas veidne “${requestedTemplate}”.`;
+      }
     };
 
     const updateProductLink = (): void => {
@@ -518,7 +523,7 @@ const socialItems = [
 
         if (!response.ok) {
           const result = (await response.json().catch(() => null)) as {
-            errors?: Array<{ message?: string }>;
+            errors?: { message?: string }[];
           } | null;
           const responseMessage = result?.errors
             ?.map((error) => error.message)

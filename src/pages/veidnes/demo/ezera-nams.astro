@@ -1,0 +1,1111 @@
+---
+import '@fontsource-variable/manrope';
+
+const rooms = [
+  {
+    name: 'Krasta istaba',
+    detail: '2 viesiem · privāta terase · skats uz ezeru',
+    price: 'no €145',
+  },
+  {
+    name: 'Meža studija',
+    detail: '2 viesiem · kamīns · klusā meža puse',
+    price: 'no €125',
+  },
+  {
+    name: 'Lielais nams',
+    detail: 'līdz 6 viesiem · virtuve · sauna',
+    price: 'no €290',
+  },
+];
+
+const faqs = [
+  [
+    'Vai brokastis ir iekļautas?',
+    'Jā. Katru rītu pasniedzam sezonālas brokastis ar vietējo maizi, ogām, sieru un kafiju.',
+  ],
+  [
+    'Vai varam ierasties ar suni?',
+    'Divās Meža studijās gaidām arī labi audzinātus suņus. Lūdzam to norādīt rezervācijas pieprasījumā.',
+  ],
+  [
+    'Kā nokļūt līdz Ezera namam?',
+    'No Rīgas ceļš aizņem aptuveni divas stundas. Pēc rezervācijas nosūtīsim precīzu maršrutu un ierašanās norādes.',
+  ],
+];
+---
+
+<!doctype html>
+<html lang="lv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#071d2d" />
+    <title>Ezera nams — atpūta pie ezera Ziemeļlatvijā</title>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#sakums" aria-label="Ezera nama sākumlapa">
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <path
+            d="M5 17c8-6 14-6 22 0s12 6 16 2M5 27c8-6 14-6 22 0s12 6 16 2M5 37c8-6 14-6 22 0s12 6 16 2"
+          ></path>
+        </svg>
+        <span>Ezera<br />nams</span>
+      </a>
+
+      <nav class="desktop-nav" aria-label="Galvenā navigācija">
+        <a href="#naktsmajas">Naktsmājas</a>
+        <a href="#pieredze">Pieredze</a>
+        <a href="#apkartne">Apkārtne</a>
+        <a href="#kontakti">Kontakti</a>
+      </nav>
+
+      <a class="header-cta" href="#rezervet">Pārbaudīt datumus <span aria-hidden="true">↗</span></a>
+
+      <details class="mobile-nav">
+        <summary aria-label="Atvērt navigāciju"><span></span><span></span></summary>
+        <nav aria-label="Mobilā navigācija">
+          <a href="#naktsmajas">Naktsmājas</a>
+          <a href="#pieredze">Pieredze</a>
+          <a href="#apkartne">Apkārtne</a>
+          <a href="#rezervet">Rezervēt</a>
+        </nav>
+      </details>
+    </header>
+
+    <main id="sakums">
+      <section class="hero" aria-labelledby="hero-title">
+        <img
+          src="/images/templates/ezera-nams/ezera-hero.webp"
+          alt="Tumša koka viesu nams pie mierīga ezera zilajā stundā"
+          width="1936"
+          height="1027"
+          fetchpriority="high"
+        />
+        <div class="hero__shade" aria-hidden="true"></div>
+        <div class="hero__topline">
+          <span>Ziemeļlatvija · 57°34′ N</span>
+          <span>7 istabas · 1 ezers · 0 steigas</span>
+        </div>
+        <div class="hero__content">
+          <h1 id="hero-title">Pamosties tur,<br />kur sākas ezers.</h1>
+          <p>
+            Neliels viesu nams ziemeļu krastā. Klusas istabas, vietējas brokastis un daba tepat aiz
+            durvīm.
+          </p>
+        </div>
+        <a class="hero__scroll" href="#rezervet"
+          ><span aria-hidden="true">↓</span> Plānot palikšanu</a
+        >
+      </section>
+
+      <section id="rezervet" class="availability" aria-labelledby="availability-title">
+        <div>
+          <p>Jūsu ceļojums</p>
+          <h2 id="availability-title">Atrodiet laiku klusumam.</h2>
+        </div>
+        <form action="mailto:paliec@ezeranams.lv" method="post" enctype="text/plain">
+          <label>Ierašanās<input type="date" name="arrival" required /></label>
+          <label>Izbraukšana<input type="date" name="departure" required /></label>
+          <label>
+            Viesi
+            <select name="guests" required>
+              <option value="2">2 viesi</option>
+              <option value="3">3 viesi</option>
+              <option value="4">4 viesi</option>
+              <option value="5+">5–6 viesi</option>
+            </select>
+          </label>
+          <button type="submit">Pārbaudīt <span aria-hidden="true">→</span></button>
+        </form>
+      </section>
+
+      <section class="manifesto" aria-labelledby="manifesto-title">
+        <p id="manifesto-title">Divas stundas no Rīgas.<br />Daudz tālāk no ikdienas.</p>
+        <div>
+          <p>
+            Te rīts sākas ar miglu virs ūdens, nevis modinātāju. Mēs izveidojām Ezera namu tiem,
+            kuri grib uz brīdi samazināt pasaules skaļumu.
+          </p>
+          <a href="#pieredze">Iepazīt šo vietu <span aria-hidden="true">↘</span></a>
+        </div>
+      </section>
+
+      <section id="naktsmajas" class="rooms" aria-labelledby="rooms-title">
+        <header>
+          <p>Palikšanai</p>
+          <h2 id="rooms-title">Izvēlieties savu skatu.</h2>
+        </header>
+        <div class="rooms__list">
+          {
+            rooms.map((room, index) => (
+              <a href="#rezervet">
+                <span>0{index + 1}</span>
+                <div>
+                  <>
+                    <h3>{room.name}</h3>
+                    <p>{room.detail}</p>
+                  </>
+                </div>
+                <strong>{room.price}</strong>
+                <i aria-hidden="true">↗</i>
+              </a>
+            ))
+          }
+        </div>
+      </section>
+
+      <section id="pieredze" class="morning" aria-labelledby="morning-title">
+        <img
+          src="/images/templates/ezera-nams/ezera-breakfast.webp"
+          alt="Brokastu galds pie loga ar skatu uz miglainu ezeru rītausmā"
+          width="1536"
+          height="1024"
+          loading="lazy"
+        />
+        <div class="morning__shade" aria-hidden="true"></div>
+        <div class="morning__copy">
+          <p>Rīts pie mums</p>
+          <h2 id="morning-title">Brokastis, kas nesteidzas.</h2>
+          <span>Vietējā maiznīca · sezonas ogas · kafija no mazās grauzdētavas</span>
+        </div>
+      </section>
+
+      <section class="day" aria-labelledby="day-title">
+        <header>
+          <h2 id="day-title">Viena diena pie ezera.</h2>
+          <p>Plāns nav obligāts. Bet, ja vēlaties, mums ir dažas labas idejas.</p>
+        </header>
+        <ol>
+          <li>
+            <time>07.12</time><div>
+              <h3>Pirmais ūdens</h3><p>Peldes kāpnes un dvielis gaida pie laipas.</p>
+            </div>
+          </li>
+          <li>
+            <time>10.30</time><div>
+              <h3>Meža taka</h3><p>
+                Deviņi kilometri gar ezeru, priežu silu un veco dzirnavu vietu.
+              </p>
+            </div>
+          </li>
+          <li>
+            <time>15.00</time><div>
+              <h3>Lēns pēcpusdienas airējums</h3><p>
+                Koka laiva viesiem ir pieejama bez papildu maksas.
+              </p>
+            </div>
+          </li>
+          <li>
+            <time>20.40</time><div>
+              <h3>Sauna un vakara gaisma</h3><p>Malkas sauna krastā ar tiešu izeju līdz ūdenim.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section id="apkartne" class="surroundings" aria-labelledby="surroundings-title">
+        <div class="surroundings__map" aria-hidden="true">
+          <span class="shore shore--one"></span><span class="shore shore--two"></span>
+          <span class="pin">Ezera nams<i></i></span>
+        </div>
+        <div class="surroundings__copy">
+          <p>Apkārtne</p>
+          <h2 id="surroundings-title">Pietiekami nomaļus. Pietiekami tuvu.</h2>
+          <ul>
+            <li><span>Vecais dzirnavu ceļš</span><strong>4 km</strong></li>
+            <li><span>Amatnieku maiznīca</span><strong>12 km</strong></li>
+            <li><span>Dabas taka un skatu tornis</span><strong>18 km</strong></li>
+            <li><span>Tuvākā pilsēta</span><strong>24 km</strong></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="quote" aria-label="Viesa atsauksme">
+        <blockquote>“Bijām iecerējuši divas naktis. Palikām vēl vienu.”</blockquote>
+        <p>— Laura un Mārtiņš, Rīga</p>
+      </section>
+
+      <section class="faq" aria-labelledby="faq-title">
+        <header>
+          <p>Noderīgi pirms ceļa</p>
+          <h2 id="faq-title">Jautājumi, kuri parasti rodas.</h2>
+        </header>
+        <div>
+          {
+            faqs.map(([question, answer]) => (
+              <details>
+                <summary>
+                  {question}
+                  <span aria-hidden="true">+</span>
+                </summary>
+                <p>{answer}</p>
+              </details>
+            ))
+          }
+        </div>
+      </section>
+
+      <section id="kontakti" class="closing" aria-labelledby="closing-title">
+        <p>Ezers nekur nesteidzas.</p>
+        <h2 id="closing-title">Varbūt arī jums nevajag.</h2>
+        <div>
+          <a href="#rezervet">Izvēlēties datumus <span aria-hidden="true">↗</span></a>
+          <a href="mailto:paliec@ezeranams.lv">paliec@ezeranams.lv</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand brand--footer" href="#sakums" aria-label="Ezera nama sākumlapa">
+        <svg viewBox="0 0 48 48" aria-hidden="true"
+          ><path
+            d="M5 17c8-6 14-6 22 0s12 6 16 2M5 27c8-6 14-6 22 0s12 6 16 2M5 37c8-6 14-6 22 0s12 6 16 2"
+          ></path></svg
+        >
+        <span>Ezera<br />nams</span>
+      </a>
+      <div>
+        <p>Ziemeļlatvija, Latvija</p>
+        <a href="tel:+37120000000">+371 20 000 000</a>
+        <a href="mailto:paliec@ezeranams.lv">paliec@ezeranams.lv</a>
+      </div>
+      <nav aria-label="Kājenes navigācija">
+        <a href="#naktsmajas">Naktsmājas</a>
+        <a href="#pieredze">Pieredze</a>
+        <a href="#apkartne">Apkārtne</a>
+      </nav>
+      <p class="site-footer__bottom">© 2026 Ezera nams · Veidnes demonstrācija</p>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    color-scheme: dark;
+    --night: #071d2d;
+    --deep: #04131e;
+    --lake: #17465f;
+    --mist: #dce8e9;
+    --orange: #e96d35;
+    --orange-dark: #9e3c1e;
+    --line: rgb(220 232 233 / 20%);
+    --label: clamp(0.72rem, 0.85vw, 0.9rem);
+    --title: clamp(1rem, 1.25vw, 1.25rem);
+    --gutter: clamp(1.25rem, 5vw, 5rem);
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    font-family: 'Manrope Variable', Manrope, ui-sans-serif, system-ui, sans-serif;
+    font-synthesis: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    min-width: 320px;
+    scroll-behavior: smooth;
+    background: var(--night);
+    color: var(--mist);
+  }
+
+  body {
+    min-width: 320px;
+    margin: 0;
+    overflow-x: hidden;
+  }
+  h1,
+  h2,
+  h3,
+  p,
+  blockquote,
+  figure {
+    margin: 0;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p,
+  blockquote {
+    text-wrap: pretty;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  img {
+    display: block;
+    width: 100%;
+  }
+  button,
+  input,
+  select {
+    font: inherit;
+  }
+
+  .site-header {
+    position: absolute;
+    z-index: 5;
+    top: 0;
+    right: 0;
+    left: 0;
+    display: grid;
+    min-height: 6rem;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    border-bottom: 1px solid rgb(255 255 255 / 22%);
+    padding-inline: var(--gutter);
+    color: white;
+  }
+
+  .brand {
+    display: flex;
+    width: max-content;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .brand svg {
+    width: 2.5rem;
+    height: 2.5rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+  }
+  .brand span {
+    font-size: var(--title);
+    font-weight: 760;
+    letter-spacing: -0.04em;
+    line-height: 0.78;
+    text-transform: uppercase;
+  }
+  .desktop-nav {
+    display: flex;
+    gap: clamp(1.4rem, 3vw, 3rem);
+  }
+  .desktop-nav a,
+  .header-cta {
+    font-size: var(--label);
+    font-weight: 680;
+  }
+  .desktop-nav a {
+    color: rgb(255 255 255 / 76%);
+  }
+  .desktop-nav a:hover,
+  .desktop-nav a:focus-visible {
+    color: white;
+  }
+  .header-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-self: end;
+    gap: 1rem;
+  }
+  .mobile-nav {
+    display: none;
+  }
+
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    overflow: hidden;
+    background: var(--deep);
+  }
+  .hero > img {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    object-fit: cover;
+    animation: hero-arrive 1600ms var(--ease) both;
+  }
+  .hero__shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgb(2 14 24 / 45%), transparent 36%, rgb(2 12 20 / 72%));
+  }
+  .hero__topline {
+    position: absolute;
+    top: 8.5rem;
+    right: var(--gutter);
+    left: var(--gutter);
+    display: flex;
+    justify-content: space-between;
+    color: rgb(255 255 255 / 72%);
+    font-size: var(--label);
+    font-weight: 650;
+  }
+  .hero__content {
+    position: absolute;
+    right: var(--gutter);
+    bottom: clamp(7rem, 14vh, 10rem);
+    left: var(--gutter);
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 4rem;
+  }
+  .hero h1 {
+    max-width: 12ch;
+    font-size: clamp(3.2rem, 7.5vw, 6rem);
+    font-weight: 420;
+    letter-spacing: -0.04em;
+    line-height: 0.93;
+  }
+  .hero__content p {
+    max-width: 32rem;
+    padding-bottom: 0.5rem;
+    color: rgb(255 255 255 / 80%);
+    font-size: 1rem;
+    font-weight: 530;
+    line-height: 1.65;
+  }
+  .hero__scroll {
+    position: absolute;
+    bottom: 2rem;
+    left: var(--gutter);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: var(--label);
+    font-weight: 700;
+  }
+  .hero__scroll span {
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
+    border: 1px solid rgb(255 255 255 / 48%);
+    border-radius: 50%;
+  }
+
+  .availability {
+    display: grid;
+    grid-template-columns: minmax(18rem, 0.72fr) minmax(0, 1.28fr);
+    gap: 5rem;
+    align-items: end;
+    padding: clamp(4rem, 7vw, 6rem) var(--gutter);
+    background: var(--orange);
+    color: var(--deep);
+  }
+  .availability > div > p,
+  .rooms header > p,
+  .morning__copy > p,
+  .surroundings__copy > p,
+  .faq header > p {
+    margin-bottom: 1.2rem;
+    font-size: var(--label);
+    font-weight: 750;
+    text-transform: uppercase;
+  }
+  .availability h2 {
+    max-width: 13ch;
+    font-size: clamp(2rem, 3.4vw, 3.5rem);
+    font-weight: 570;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+  .availability form {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    gap: 1px;
+    background: rgb(4 19 30 / 38%);
+  }
+  .availability label {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.9rem 1rem;
+    background: var(--orange);
+    font-size: var(--label);
+    font-weight: 700;
+  }
+  .availability input,
+  .availability select {
+    width: 100%;
+    border: 0;
+    outline: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--deep);
+    font-size: 1rem;
+    font-weight: 620;
+  }
+  .availability button {
+    min-width: 9rem;
+    border: 0;
+    padding-inline: 1.25rem;
+    background: var(--deep);
+    color: white;
+    cursor: pointer;
+    font-size: var(--label);
+    font-weight: 750;
+  }
+
+  .manifesto {
+    display: grid;
+    min-height: 40rem;
+    grid-template-columns: minmax(0, 1.15fr) minmax(20rem, 0.85fr);
+    gap: 5rem;
+    align-items: end;
+    padding: clamp(7rem, 13vw, 12rem) var(--gutter);
+    background: var(--night);
+  }
+  .manifesto > p {
+    max-width: 16ch;
+    font-size: clamp(2.8rem, 6vw, 5.7rem);
+    font-weight: 410;
+    letter-spacing: -0.04em;
+    line-height: 0.96;
+  }
+  .manifesto > div {
+    display: grid;
+    gap: 2rem;
+  }
+  .manifesto > div p {
+    max-width: 35rem;
+    color: rgb(220 232 233 / 70%);
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+  .manifesto a {
+    display: inline-flex;
+    width: max-content;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--orange);
+    color: var(--orange);
+    font-size: var(--label);
+    font-weight: 720;
+  }
+
+  .rooms {
+    padding: clamp(6rem, 11vw, 10rem) var(--gutter);
+    background: #d9e2e1;
+    color: var(--deep);
+  }
+  .rooms header {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 3rem;
+    margin-bottom: clamp(4rem, 7vw, 6rem);
+  }
+  .rooms header > p {
+    order: 2;
+    margin: 0;
+  }
+  .rooms h2,
+  .day h2,
+  .surroundings h2,
+  .faq h2 {
+    max-width: 13ch;
+    font-size: clamp(2.6rem, 5.2vw, 5.2rem);
+    font-weight: 420;
+    letter-spacing: -0.04em;
+    line-height: 0.98;
+  }
+  .rooms__list {
+    border-top: 1px solid rgb(4 19 30 / 22%);
+  }
+  .rooms__list a {
+    display: grid;
+    min-height: 9rem;
+    grid-template-columns: 4rem minmax(0, 1fr) 7rem 2rem;
+    gap: 2rem;
+    align-items: center;
+    border-bottom: 1px solid rgb(4 19 30 / 22%);
+    transition:
+      background 250ms var(--ease),
+      padding 250ms var(--ease);
+  }
+  .rooms__list a:hover,
+  .rooms__list a:focus-visible {
+    padding-inline: 1rem;
+    background: rgb(255 255 255 / 38%);
+  }
+  .rooms__list > a > span,
+  .rooms__list strong {
+    font-size: var(--label);
+    font-weight: 750;
+  }
+  .rooms__list h3 {
+    font-size: clamp(1.5rem, 2.7vw, 2.8rem);
+    font-weight: 520;
+    letter-spacing: -0.035em;
+  }
+  .rooms__list p {
+    margin-top: 0.4rem;
+    color: rgb(4 19 30 / 65%);
+    font-size: 1rem;
+  }
+  .rooms__list i {
+    color: var(--orange-dark);
+    font-size: var(--title);
+    font-style: normal;
+  }
+
+  .morning {
+    position: relative;
+    min-height: 90svh;
+    overflow: hidden;
+  }
+  .morning > img {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    object-fit: cover;
+  }
+  .morning__shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgb(3 16 25 / 78%), rgb(3 16 25 / 5%) 70%);
+  }
+  .morning__copy {
+    position: absolute;
+    bottom: clamp(3rem, 8vw, 7rem);
+    left: var(--gutter);
+    max-width: 43rem;
+  }
+  .morning__copy > p {
+    color: var(--orange);
+  }
+  .morning h2 {
+    max-width: 11ch;
+    font-size: clamp(3rem, 6.7vw, 6rem);
+    font-weight: 410;
+    letter-spacing: -0.04em;
+    line-height: 0.94;
+  }
+  .morning__copy span {
+    display: block;
+    max-width: 36rem;
+    margin-top: 2rem;
+    color: rgb(255 255 255 / 78%);
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .day {
+    display: grid;
+    grid-template-columns: minmax(18rem, 0.8fr) minmax(0, 1.2fr);
+    gap: clamp(4rem, 9vw, 9rem);
+    padding: clamp(7rem, 12vw, 11rem) var(--gutter);
+    background: var(--orange);
+    color: var(--deep);
+  }
+  .day header p {
+    max-width: 30rem;
+    margin-top: 2rem;
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+  .day ol {
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid rgb(4 19 30 / 28%);
+    list-style: none;
+  }
+  .day li {
+    display: grid;
+    grid-template-columns: 5rem 1fr;
+    gap: 2rem;
+    border-bottom: 1px solid rgb(4 19 30 / 28%);
+    padding: 1.75rem 0;
+  }
+  .day time {
+    font-size: var(--label);
+    font-weight: 760;
+  }
+  .day h3 {
+    font-size: var(--title);
+    font-weight: 700;
+  }
+  .day li p {
+    max-width: 35rem;
+    margin-top: 0.4rem;
+    color: rgb(4 19 30 / 68%);
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  .surroundings {
+    display: grid;
+    min-height: 48rem;
+    grid-template-columns: minmax(0, 1fr) minmax(23rem, 0.78fr);
+    background: var(--deep);
+  }
+  .surroundings__map {
+    position: relative;
+    min-height: 38rem;
+    overflow: hidden;
+    background: var(--lake);
+  }
+  .shore {
+    position: absolute;
+    border: 1px solid rgb(220 232 233 / 34%);
+    border-radius: 50%;
+  }
+  .shore--one {
+    width: 90%;
+    height: 70%;
+    top: -20%;
+    left: -16%;
+    transform: rotate(14deg);
+  }
+  .shore--two {
+    width: 92%;
+    height: 82%;
+    right: -24%;
+    bottom: -30%;
+    transform: rotate(-18deg);
+  }
+  .pin {
+    position: absolute;
+    top: 48%;
+    left: 52%;
+    display: grid;
+    justify-items: center;
+    gap: 0.7rem;
+    color: white;
+    font-size: var(--label);
+    font-weight: 720;
+  }
+  .pin i {
+    width: 0.8rem;
+    height: 0.8rem;
+    border: 3px solid var(--orange);
+    border-radius: 50%;
+    background: var(--deep);
+    box-shadow: 0 0 0 8px rgb(233 109 53 / 24%);
+  }
+  .surroundings__copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(4rem, 8vw, 8rem) var(--gutter);
+  }
+  .surroundings__copy > p {
+    color: var(--orange);
+  }
+  .surroundings ul {
+    padding: 0;
+    margin: 3.5rem 0 0;
+    border-top: 1px solid var(--line);
+    list-style: none;
+  }
+  .surroundings li {
+    display: flex;
+    min-height: 4.5rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    border-bottom: 1px solid var(--line);
+    color: rgb(220 232 233 / 72%);
+    font-size: var(--label);
+  }
+  .surroundings li strong {
+    color: var(--orange);
+    font-weight: 720;
+  }
+
+  .quote {
+    display: grid;
+    place-items: center;
+    gap: 2rem;
+    padding: clamp(7rem, 14vw, 13rem) var(--gutter);
+    background: #d9e2e1;
+    color: var(--deep);
+    text-align: center;
+  }
+  .quote blockquote {
+    max-width: 24ch;
+    font-size: clamp(2.4rem, 5.2vw, 5.2rem);
+    font-weight: 420;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+  .quote p {
+    color: rgb(4 19 30 / 60%);
+    font-size: var(--label);
+    font-weight: 680;
+  }
+
+  .faq {
+    display: grid;
+    grid-template-columns: minmax(18rem, 0.75fr) minmax(0, 1.25fr);
+    gap: clamp(4rem, 9vw, 9rem);
+    padding: clamp(7rem, 12vw, 11rem) var(--gutter);
+    background: var(--night);
+  }
+  .faq header > p {
+    color: var(--orange);
+  }
+  .faq > div {
+    border-top: 1px solid var(--line);
+  }
+  .faq details {
+    border-bottom: 1px solid var(--line);
+  }
+  .faq summary {
+    display: flex;
+    min-height: 6rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    cursor: pointer;
+    font-size: var(--title);
+    font-weight: 650;
+    list-style: none;
+  }
+  .faq summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq summary span {
+    color: var(--orange);
+    font-size: var(--title);
+    transition: transform 250ms var(--ease);
+  }
+  .faq details[open] summary span {
+    transform: rotate(45deg);
+  }
+  .faq details p {
+    max-width: 42rem;
+    padding: 0 3rem 2rem 0;
+    color: rgb(220 232 233 / 68%);
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  .closing {
+    padding: clamp(7rem, 13vw, 12rem) var(--gutter);
+    background: var(--orange);
+    color: var(--deep);
+  }
+  .closing > p {
+    font-size: var(--label);
+    font-weight: 760;
+    text-transform: uppercase;
+  }
+  .closing h2 {
+    max-width: 12ch;
+    margin-top: 1.5rem;
+    font-size: clamp(3rem, 7vw, 6rem);
+    font-weight: 420;
+    letter-spacing: -0.04em;
+    line-height: 0.94;
+  }
+  .closing > div {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 3rem;
+    margin-top: 4rem;
+  }
+  .closing a {
+    display: inline-flex;
+    gap: 1rem;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 0.5rem;
+    font-size: var(--title);
+    font-weight: 720;
+  }
+
+  .site-footer {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 5rem;
+    align-items: start;
+    padding: clamp(4rem, 8vw, 7rem) var(--gutter) 2rem;
+    background: var(--deep);
+  }
+  .brand--footer {
+    color: var(--orange);
+  }
+  .site-footer > div,
+  .site-footer nav {
+    display: grid;
+    gap: 0.6rem;
+  }
+  .site-footer > div p,
+  .site-footer > div a,
+  .site-footer nav a {
+    color: rgb(220 232 233 / 68%);
+    font-size: var(--label);
+  }
+  .site-footer__bottom {
+    grid-column: 1 / -1;
+    border-top: 1px solid var(--line);
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    color: rgb(220 232 233 / 38%);
+    font-size: var(--label);
+  }
+
+  @keyframes hero-arrive {
+    from {
+      transform: scale(1.08);
+      filter: saturate(0.65);
+    }
+    to {
+      transform: scale(1);
+      filter: saturate(1);
+    }
+  }
+
+  @media (max-width: 58rem) {
+    .site-header {
+      grid-template-columns: 1fr auto;
+    }
+    .desktop-nav,
+    .header-cta {
+      display: none;
+    }
+    .mobile-nav {
+      position: relative;
+      display: block;
+      justify-self: end;
+    }
+    .mobile-nav summary {
+      display: grid;
+      width: 3rem;
+      height: 3rem;
+      place-content: center;
+      gap: 0.45rem;
+      cursor: pointer;
+      list-style: none;
+    }
+    .mobile-nav summary::-webkit-details-marker {
+      display: none;
+    }
+    .mobile-nav summary span {
+      width: 1.5rem;
+      height: 1px;
+      background: currentColor;
+    }
+    .mobile-nav[open] summary span:first-child {
+      transform: translateY(0.23rem) rotate(45deg);
+    }
+    .mobile-nav[open] summary span:last-child {
+      transform: translateY(-0.23rem) rotate(-45deg);
+    }
+    .mobile-nav nav {
+      position: fixed;
+      z-index: 10;
+      top: 5.5rem;
+      right: 1rem;
+      left: 1rem;
+      display: grid;
+      background: var(--orange);
+      color: var(--deep);
+    }
+    .mobile-nav nav a {
+      padding: 1.1rem 1.25rem;
+      border-bottom: 1px solid rgb(4 19 30 / 18%);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .hero__content {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 2rem;
+    }
+    .hero__content p {
+      max-width: 28rem;
+    }
+    .availability,
+    .manifesto,
+    .day,
+    .surroundings,
+    .faq {
+      grid-template-columns: 1fr;
+    }
+    .availability form {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .availability button {
+      min-height: 4rem;
+    }
+    .manifesto {
+      gap: 3rem;
+    }
+    .surroundings__map {
+      min-height: 30rem;
+    }
+  }
+
+  @media (max-width: 42rem) {
+    .hero__topline span:last-child {
+      display: none;
+    }
+    .hero h1 {
+      font-size: clamp(3rem, 15vw, 5rem);
+    }
+    .availability {
+      gap: 3rem;
+    }
+    .availability form {
+      grid-template-columns: 1fr;
+    }
+    .rooms header {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+    .rooms header > p {
+      order: 0;
+    }
+    .rooms__list a {
+      min-height: auto;
+      grid-template-columns: 2rem minmax(0, 1fr) auto;
+      gap: 0.8rem 1rem;
+      padding-block: 1.5rem;
+    }
+    .rooms__list a > span {
+      grid-column: 1;
+      grid-row: 1;
+    }
+    .rooms__list a > div {
+      grid-column: 2 / -1;
+      grid-row: 1;
+    }
+    .rooms__list strong {
+      grid-column: 2;
+    }
+    .rooms__list i {
+      grid-column: 3;
+    }
+    .morning__shade {
+      background: linear-gradient(180deg, transparent 30%, rgb(3 16 25 / 84%));
+    }
+    .day li {
+      grid-template-columns: 4rem 1fr;
+      gap: 1rem;
+    }
+    .closing > div {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+    .site-footer {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>

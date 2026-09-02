@@ -154,7 +154,7 @@ const cta =
             SĪKDATŅU IESTATĪJUMI
           </button>
         </p>
-        <p>DIGITĀLI RISINĀJUMI UZŅĒMUMA IZAUGSMEI.</p>
+        <p>DIGITĀLI RISINĀJUMI UZŅĒMUMA IZAUGSMEI / BUILT BY ROMADI</p>
       </div>
     </div>
   </div>
@@ -214,9 +214,7 @@ const cta =
         frame = 0;
         const rect = waves.getBoundingClientRect();
         const margin = window.innerHeight * 0.12;
-        setWaveActive(
-          rect.bottom >= -margin && rect.top <= window.innerHeight + margin,
-        );
+        setWaveActive(rect.bottom >= -margin && rect.top <= window.innerHeight + margin);
       };
 
       const requestUpdate = (): void => {
@@ -364,7 +362,8 @@ const cta =
   }
 
   .site-footer__cta[data-footer-cta-ready='true']:not([data-footer-cta-revealed='true'])
-    .site-footer__cta-copy h2,
+    .site-footer__cta-copy
+    h2,
   .site-footer__cta[data-footer-cta-ready='true']:not([data-footer-cta-revealed='true'])
     .site-footer__cta-action {
     opacity: 0.58;
@@ -719,7 +718,6 @@ const cta =
     .site-footer__glow {
       display: none;
     }
-
   }
 
   @media (prefers-reduced-motion: reduce) {

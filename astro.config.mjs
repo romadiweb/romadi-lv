@@ -25,7 +25,7 @@ export default defineConfig({
   integrations: [
     mdx(),
     sitemap({
-      filter: (page) => new URL(page).pathname !== '/veidnes',
+      filter: (page) => !new URL(page).pathname.startsWith('/veidnes'),
     }),
     icon(),
   ],

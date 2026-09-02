@@ -109,6 +109,10 @@ export const SITE = {
         href: '/portfolio',
       },
       {
+        label: 'Veidnes',
+        href: '/veidnes',
+      },
+      {
         label: 'Kontakti',
         href: '/kontakti',
       },

@@ -1,21 +1,395 @@
 ---
+import { Icon } from 'astro-icon/components';
+
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import { WEBSITE_TEMPLATES } from '@/data/templates';
 ---
 
 <BaseLayout
-  title="Veidnes"
-  description="ROMADI pielāgojamo mājaslapu veidņu piedāvājums."
+  title="Mājaslapu veidnes"
+  description="Izvēlieties ROMADI izstrādātu mājaslapas veidni un pielāgojiet to savam uzņēmumam."
   noindex
-  footerCta={false}
+  footerCta="about"
 >
-  <section class="templates-placeholder" aria-labelledby="templates-placeholder-title">
-    <h1 id="templates-placeholder-title" class="screen-reader-only">Mājaslapu veidnes</h1>
+  <section class="templates" aria-labelledby="templates-title">
+    <header class="templates__intro">
+      <div class="templates__heading">
+        <p class="templates__label">{`{ GATAVI DIZAINA PAMATI }`}</p>
+        <h1 id="templates-title">Labs sākums.<br />Jūsu zīmola turpinājums.</h1>
+      </div>
+
+      <div class="templates__lead">
+        <p>
+          Izvēlieties pārdomātu mājaslapas pamatu. Mēs pielāgosim saturu, krāsas un vizuālo
+          identitāti jūsu uzņēmumam — ātrāk nekā sākot no tukšas lapas.
+        </p>
+        <span>Veidnes cena no 350 € · vienreizējs maksājums</span>
+      </div>
+    </header>
+
+    <div class="templates__list" aria-label="Pieejamās mājaslapu veidnes">
+      {
+        WEBSITE_TEMPLATES.map((template, index) => (
+          <article class="template-card" data-reveal>
+            <a
+              class="template-card__link"
+              href={`/veidnes/${template.slug}`}
+              aria-label={`Apskatīt veidni ${template.name}`}
+              data-astro-reload
+            >
+              <figure class="template-card__media">
+                <img
+                  src={template.previewImage}
+                  alt={template.previewAlt}
+                  width="960"
+                  height="600"
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                  decoding="async"
+                />
+                <figcaption>
+                  <span class="template-card__live">
+                    <i aria-hidden="true" /> Dzīvs demo
+                  </span>
+                  <span class="template-card__number" aria-hidden="true">
+                    0{index + 1}
+                  </span>
+                </figcaption>
+              </figure>
+
+              <div class="template-card__body">
+                <div class="template-card__meta">
+                  <span>{template.categoryLabel}</span>
+                  <span>{template.category}</span>
+                </div>
+
+                <div class="template-card__copy">
+                  <h2>{template.name}</h2>
+                  <p>{template.summary}</p>
+                </div>
+
+                <div class="template-card__footer">
+                  <p>
+                    <>
+                      <strong>{template.price} €</strong>
+                      <span>vienreizējs</span>
+                    </>
+                  </p>
+                  <span class="template-card__action" aria-hidden="true">
+                    Izpētīt
+                    <Icon name="lucide:arrow-up-right" />
+                  </span>
+                </div>
+              </div>
+            </a>
+          </article>
+        ))
+      }
+    </div>
   </section>
 </BaseLayout>
 
 <style>
-  .templates-placeholder {
-    min-height: max(34rem, calc(100svh - var(--header-height)));
-    background: #050505;
+  .templates {
+    position: relative;
+    isolation: isolate;
+    width: min(calc(100% - 1.5rem), 88rem);
+    margin: 0 auto;
+    padding: clamp(7.5rem, 12vw, 11.5rem) 0 clamp(6rem, 10vw, 10rem);
+  }
+
+  .templates::before {
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 50%;
+    width: min(90vw, 68rem);
+    height: 34rem;
+    background:
+      radial-gradient(circle at 38% 12%, rgb(224 35 78 / 20%), transparent 38%),
+      radial-gradient(circle at 67% 22%, rgb(98 11 34 / 46%), transparent 48%);
+    content: '';
+    filter: blur(48px);
+    opacity: 0.78;
+    pointer-events: none;
+    transform: translateX(-50%);
+  }
+
+  .templates__intro {
+    display: grid;
+    gap: 2.5rem;
+    padding: 0 0 clamp(3.5rem, 7vw, 6.5rem);
+  }
+
+  .templates__heading {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .templates__label {
+    color: rgb(255 255 255 / 62%);
+    font: 600 0.72rem/1.5 var(--font-mono);
+    letter-spacing: 0.04em;
+  }
+
+  .templates h1 {
+    max-width: 13ch;
+    font-size: clamp(2.8rem, 8.7vw, 6.25rem);
+    font-weight: 440;
+    letter-spacing: -0.04em;
+    line-height: 0.98;
+  }
+
+  .templates__lead {
+    display: grid;
+    max-width: 40rem;
+    align-content: end;
+    gap: 1.5rem;
+  }
+
+  .templates__lead > p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1.72;
+  }
+
+  .templates__lead > span {
+    color: rgb(255 255 255 / 48%);
+    font: 550 0.72rem/1.5 var(--font-mono);
+  }
+
+  .templates__list {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .template-card {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--border-default);
+    border-radius: 1rem;
+    background: var(--surface-secondary);
+  }
+
+  .template-card__link {
+    display: grid;
+    height: 100%;
+    grid-template-rows: auto 1fr;
+  }
+
+  .template-card__media {
+    position: relative;
+    aspect-ratio: 1.6;
+    overflow: hidden;
+    background: #141414;
+  }
+
+  .template-card__media::after {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgb(0 0 0 / 4%), transparent 52%, rgb(0 0 0 / 28%));
+    content: '';
+    pointer-events: none;
+  }
+
+  .template-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition:
+      filter 400ms var(--ease-out-quart),
+      transform 600ms var(--ease-out-expo);
+  }
+
+  .template-card__media figcaption {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 0.75rem;
+    pointer-events: none;
+  }
+
+  .template-card__live {
+    display: inline-flex;
+    min-height: 2rem;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 999px;
+    padding: 0.4rem 0.75rem;
+    background: rgb(5 5 5 / 84%);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 15%);
+    color: white;
+    font-size: clamp(0.72rem, 0.85vw, 0.9rem);
+    font-weight: 680;
+    backdrop-filter: blur(12px);
+  }
+
+  .template-card__live i {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: #6ed692;
+    box-shadow: 0 0 0 0.22rem rgb(110 214 146 / 15%);
+  }
+
+  .template-card__number {
+    color: rgb(255 255 255 / 70%);
+    font: 550 0.75rem/1 var(--font-mono);
+    text-shadow: 0 1px 0.5rem rgb(0 0 0 / 70%);
+  }
+
+  .template-card__body {
+    display: flex;
+    min-height: 18.5rem;
+    flex-direction: column;
+    padding: 1.5rem;
+  }
+
+  .template-card__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    color: rgb(255 255 255 / 50%);
+    font: 550 0.68rem/1.4 var(--font-mono);
+  }
+
+  .template-card__meta span:first-child {
+    color: rgb(255 255 255 / 72%);
+  }
+
+  .template-card__copy {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .template-card h2 {
+    color: white;
+    font-size: clamp(1.55rem, 2.4vw, 2.1rem);
+    font-weight: 580;
+    letter-spacing: -0.035em;
+    line-height: 1.08;
+  }
+
+  .template-card__copy p {
+    max-width: 35rem;
+    color: rgb(255 255 255 / 62%);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.62;
+  }
+
+  .template-card__footer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: auto;
+    padding-top: 2rem;
+  }
+
+  .template-card__footer > p {
+    display: flex;
+    align-items: baseline;
+    gap: 0.55rem;
+  }
+
+  .template-card__footer strong {
+    font-size: clamp(1rem, 1.25vw, 1.25rem);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.025em;
+  }
+
+  .template-card__footer p span {
+    color: rgb(255 255 255 / 42%);
+    font: 500 0.66rem/1.4 var(--font-mono);
+  }
+
+  .template-card__action {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    gap: 0.55rem;
+    color: white;
+    font-size: 1rem;
+    font-weight: 680;
+  }
+
+  .template-card__action :global(svg) {
+    width: 1rem;
+    height: 1rem;
+    color: var(--accent-hover);
+    transition: transform 240ms var(--ease-out-quart);
+  }
+
+  .template-card__link:focus-visible {
+    outline-offset: -4px;
+  }
+
+  @media (hover: hover) {
+    .template-card__link:hover .template-card__media img {
+      filter: saturate(1.06) contrast(1.02);
+      transform: scale(1.025);
+    }
+
+    .template-card__link:hover .template-card__action :global(svg) {
+      transform: translate(0.18rem, -0.18rem);
+    }
+  }
+
+  @media (min-width: 48rem) {
+    .templates {
+      width: min(calc(100% - 4rem), 88rem);
+    }
+
+    .templates__intro {
+      grid-template-columns: minmax(0, 1.25fr) minmax(20rem, 0.75fr);
+      align-items: end;
+      gap: clamp(3rem, 8vw, 8rem);
+    }
+
+    .templates__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .template-card:first-child {
+      grid-column: 1 / -1;
+    }
+
+    .template-card:first-child .template-card__link {
+      grid-template-columns: minmax(0, 1.25fr) minmax(19rem, 0.75fr);
+      grid-template-rows: 1fr;
+    }
+
+    .template-card:first-child .template-card__media {
+      min-height: 31rem;
+      aspect-ratio: auto;
+    }
+
+    .template-card:first-child .template-card__body {
+      min-height: 31rem;
+    }
+  }
+
+  @media (min-width: 70rem) {
+    .templates__list {
+      gap: 2rem;
+    }
+
+    .template-card__body {
+      padding: 2rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .template-card__media img,
+    .template-card__action :global(svg) {
+      transition: none;
+    }
   }
 </style>

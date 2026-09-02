@@ -1,0 +1,994 @@
+---
+import '@fontsource-variable/manrope';
+
+const treatments = [
+  ['Sejas atjaunošanas rituāls', '75 min', '€85'],
+  ['Dziļā miera masāža', '90 min', '€95'],
+  ['Ķermeņa minerālu terapija', '110 min', '€125'],
+  ['Sejas kopšanas konsultācija', '30 min', '€35'],
+];
+
+const faqs = [
+  [
+    'Kā sagatavoties pirmajam apmeklējumam?',
+    'Ierodieties desmit minūtes agrāk. Pirms procedūras pārrunāsim jūsu ādas stāvokli, pašsajūtu un vēlamo rezultātu.',
+  ],
+  [
+    'Vai procedūru var uzdāvināt?',
+    'Jā, piedāvājam digitālas un drukātas dāvanu kartes jebkurai procedūrai vai brīvi izvēlētai summai.',
+  ],
+  [
+    'Kā atcelt rezervāciju?',
+    'Rezervāciju iespējams bez maksas pārcelt vai atcelt līdz 24 stundām pirms vizītes.',
+  ],
+];
+---
+
+<!doctype html>
+<html lang="lv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#2d1832" />
+    <title>Miera SPA — rituāli ķermenim un prātam</title>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#sakums" aria-label="Miera SPA sākumlapa">
+        <strong>Miera</strong><span>SPA · Rīga</span>
+      </a>
+
+      <nav class="desktop-nav" aria-label="Galvenā navigācija">
+        <a href="#proceduras">Procedūras</a>
+        <a href="#pieeja">Mūsu pieeja</a>
+        <a href="#jautajumi">Jautājumi</a>
+      </nav>
+
+      <a class="book-link" href="#rezervacija">Rezervēt laiku <span aria-hidden="true">↘</span></a>
+
+      <details class="mobile-nav">
+        <summary aria-label="Atvērt navigāciju"><span></span><span></span></summary>
+        <nav aria-label="Mobilā navigācija">
+          <a href="#proceduras">Procedūras</a>
+          <a href="#pieeja">Mūsu pieeja</a>
+          <a href="#jautajumi">Jautājumi</a>
+          <a href="#rezervacija">Rezervēt</a>
+        </nav>
+      </details>
+    </header>
+
+    <main id="sakums">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero__copy">
+          <p>Telpa, kurā nekas nav jāsteidz.</p>
+          <h1 id="hero-title">Atgriezties<br /><em>savā ritmā.</em></h1>
+          <div>
+            <span>Sejas un ķermeņa rituāli ar rūpīgi izvēlētu dabīgo kosmētiku.</span>
+            <a href="#proceduras">Izvēlēties procedūru</a>
+          </div>
+        </div>
+
+        <figure class="hero__image">
+          <img
+            src="/images/templates/miera-spa/miera-hero.webp"
+            alt="Mierīga procedūru telpa ar ceriņkrāsas linu un skulpturālām apmetuma sienām"
+            width="1536"
+            height="1024"
+            fetchpriority="high"
+          />
+          <figcaption>Katru dienu · 09.00–20.00</figcaption>
+        </figure>
+      </section>
+
+      <section id="proceduras" class="treatments" aria-labelledby="treatments-title">
+        <header>
+          <h2 id="treatments-title">Rituāls jūsu šodienai.</h2>
+          <p>Mēs pielāgojam katru procedūru pašsajūtai, nevis tikai protokolam.</p>
+        </header>
+
+        <div class="treatments__list">
+          {
+            treatments.map(([name, duration, price], index) => (
+              <a href="#rezervacija">
+                <span>0{index + 1}</span>
+                <h3>{name}</h3>
+                <p>{duration}</p>
+                <strong>{price}</strong>
+                <i aria-hidden="true">↗</i>
+              </a>
+            ))
+          }
+        </div>
+      </section>
+
+      <section id="pieeja" class="care" aria-labelledby="care-title">
+        <figure>
+          <img
+            src="/images/templates/miera-spa/miera-treatment.webp"
+            alt="Meistare rūpīgi uzklāj botānisku serumu sejas procedūras laikā"
+            width="1536"
+            height="1024"
+            loading="lazy"
+          />
+        </figure>
+        <div class="care__copy">
+          <p class="script">Pieskāriens ar nodomu</p>
+          <h2 id="care-title">Āda mainās. Tāpēc mainās arī mūsu pieeja.</h2>
+          <p>
+            Pirms katras procedūras ieklausāmies un novērtējam ādas vajadzības. Apvienojam roku
+            tehnikas, botāniskas formulas un mierīgu tempu, lai rezultāts būtu jūtams arī pēc
+            vizītes.
+          </p>
+          <dl>
+            <div><dt>Formulas</dt><dd>Dabīgas, profesionālas, bez lieka aromāta</dd></div>
+            <div><dt>Ritms</dt><dd>Viena meistare, viena telpa, nedalīta uzmanība</dd></div>
+            <div><dt>Rezultāts</dt><dd>Veselīgs mirdzums un dziļāka atpūta</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="voices" aria-label="Miera SPA klientu pieredze">
+        <blockquote>
+          “Šī ir viena no retajām vietām, kur rūpes nav tikai vārds. Pēc procedūras jutos vieglāk ne
+          vien sejā, bet visā ķermenī.”
+        </blockquote>
+        <p>Elīna · regulāra kliente kopš 2023. gada</p>
+      </section>
+
+      <section class="team" aria-labelledby="team-title">
+        <header>
+          <p>Divas meistares. Viena rūpības kultūra.</p>
+          <h2 id="team-title">Jūsu laiks ir mūsu pilna uzmanība.</h2>
+        </header>
+        <div>
+          <article>
+            <span>Sejas terapeite</span>
+            <h3>Marta Liepa</h3>
+            <p>Ādas veselība, manuālās tehnikas un jutīgas ādas aprūpe.</p>
+          </article>
+          <article>
+            <span>Ķermeņa terapeite</span>
+            <h3>Anna Roze</h3>
+            <p>Dziļā relaksācija, limfas tehnikas un atjaunojošs pieskāriens.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="jautajumi" class="faq" aria-labelledby="faq-title">
+        <header>
+          <h2 id="faq-title">Pirms vizītes</h2>
+          <p>Ja atbildi neatrodat, uzrakstiet mums — atbildēsim personīgi.</p>
+        </header>
+        <div>
+          {
+            faqs.map(([question, answer]) => (
+              <details>
+                <summary>
+                  {question}
+                  <span aria-hidden="true">+</span>
+                </summary>
+                <p>{answer}</p>
+              </details>
+            ))
+          }
+        </div>
+      </section>
+
+      <section id="rezervacija" class="booking" aria-labelledby="booking-title">
+        <div class="booking__intro">
+          <p>Nākamais brīvais laiks · ceturtdien 14.30</p>
+          <h2 id="booking-title">Atvēliet laiku sev.</h2>
+          <span>Pēc pieteikuma sazināsimies, lai apstiprinātu piemērotāko procedūru un laiku.</span>
+        </div>
+        <form action="mailto:sveiki@mieraspa.lv" method="post" enctype="text/plain">
+          <label>Vārds<input type="text" name="name" autocomplete="name" required /></label>
+          <label>E-pasts<input type="email" name="email" autocomplete="email" required /></label>
+          <label>
+            Procedūra
+            <select name="treatment" required>
+              <option value="">Izvēlieties</option>
+              {treatments.map(([name]) => <option value={name}>{name}</option>)}
+            </select>
+          </label>
+          <label>Vēlamais datums<input type="date" name="date" required /></label>
+          <label class="booking__note">Piezīme<textarea name="note" rows="3"></textarea></label>
+          <button type="submit">Nosūtīt pieteikumu <span aria-hidden="true">↗</span></button>
+        </form>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand brand--footer" href="#sakums"><strong>Miera</strong><span>SPA · Rīga</span></a
+      >
+      <div class="site-footer__contact">
+        <p>Tērbatas iela 00, Rīga</p>
+        <a href="tel:+37120000000">+371 20 000 000</a>
+        <a href="mailto:sveiki@mieraspa.lv">sveiki@mieraspa.lv</a>
+      </div>
+      <nav aria-label="Kājenes navigācija">
+        <a href="#proceduras">Procedūras</a>
+        <a href="#pieeja">Pieeja</a>
+        <a href="#rezervacija">Rezervēt</a>
+      </nav>
+      <p class="site-footer__legal">© 2026 Miera SPA · Veidnes demonstrācija</p>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  /* impeccable-disable design-system-font -- this standalone customer template intentionally adds a system Baskerville voice distinct from ROMADI */
+  :root {
+    color-scheme: light;
+    --cloud: #f0edf3;
+    --lilac: #c8b5d4;
+    --plum: #2d1832;
+    --plum-soft: #513657;
+    --leaf: #66715b;
+    --ink: #251b28;
+    --line: rgb(45 24 50 / 18%);
+    --label: clamp(0.72rem, 0.85vw, 0.9rem);
+    --title: clamp(1rem, 1.25vw, 1.25rem);
+    --gutter: clamp(1.25rem, 5vw, 5rem);
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    font-family: 'Manrope Variable', Manrope, ui-sans-serif, system-ui, sans-serif;
+    font-synthesis: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    min-width: 320px;
+    scroll-behavior: smooth;
+    background: var(--cloud);
+    color: var(--ink);
+  }
+
+  body {
+    min-width: 320px;
+    margin: 0;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  p,
+  blockquote,
+  figure,
+  dl,
+  dd {
+    margin: 0;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p,
+  blockquote {
+    text-wrap: pretty;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  .site-header {
+    display: grid;
+    min-height: 5.5rem;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+    padding-inline: var(--gutter);
+    background: var(--cloud);
+  }
+
+  .brand {
+    display: flex;
+    width: max-content;
+    align-items: baseline;
+    gap: 0.7rem;
+  }
+
+  .brand strong {
+    font-family: Baskerville, 'Iowan Old Style', Georgia, serif;
+    font-size: clamp(1.5rem, 2vw, 2rem);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.03em;
+  }
+
+  .brand span,
+  .hero__copy > p,
+  .script,
+  .team header > p,
+  .booking__intro > p {
+    font-size: var(--label);
+    font-weight: 680;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .desktop-nav {
+    display: flex;
+    gap: clamp(1.25rem, 3vw, 2.75rem);
+  }
+
+  .desktop-nav a,
+  .book-link {
+    font-size: var(--label);
+    font-weight: 650;
+  }
+
+  .desktop-nav a {
+    color: var(--plum-soft);
+  }
+
+  .desktop-nav a:hover,
+  .desktop-nav a:focus-visible {
+    color: var(--ink);
+  }
+
+  .book-link {
+    display: inline-flex;
+    min-height: 3rem;
+    align-items: center;
+    justify-self: end;
+    gap: 1rem;
+    border-bottom: 1px solid currentColor;
+  }
+
+  .mobile-nav {
+    display: none;
+  }
+
+  .hero {
+    display: grid;
+    min-height: calc(100svh - 5.5rem);
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    background: var(--lilac);
+  }
+
+  .hero__copy {
+    display: flex;
+    min-height: 44rem;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: clamp(3rem, 7vw, 7rem) var(--gutter) clamp(2.5rem, 5vw, 4.5rem);
+  }
+
+  .hero__copy > p {
+    max-width: 25ch;
+    color: var(--plum-soft);
+  }
+
+  .hero h1 {
+    max-width: 8.5ch;
+    font-size: clamp(3.2rem, 7vw, 6rem);
+    font-weight: 360;
+    letter-spacing: -0.04em;
+    line-height: 0.88;
+  }
+
+  .hero h1 em {
+    font-family: Baskerville, 'Iowan Old Style', Georgia, serif;
+    font-weight: 400;
+  }
+
+  .hero__copy > div {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  .hero__copy > div span {
+    max-width: 27rem;
+    color: var(--plum-soft);
+    font-size: 1rem;
+    font-weight: 520;
+    line-height: 1.55;
+  }
+
+  .hero__copy > div a {
+    flex: 0 0 auto;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid currentColor;
+    font-size: var(--label);
+    font-weight: 720;
+  }
+
+  .hero__image {
+    position: relative;
+    min-height: 44rem;
+    overflow: hidden;
+  }
+
+  .hero__image::after {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 65%, rgb(30 14 34 / 56%));
+    content: '';
+    pointer-events: none;
+  }
+
+  .hero__image img {
+    height: 100%;
+    object-fit: cover;
+    animation: image-arrive 1400ms var(--ease) both;
+  }
+
+  .hero__image figcaption {
+    position: absolute;
+    z-index: 1;
+    right: 2rem;
+    bottom: 2rem;
+    color: white;
+    font-size: var(--label);
+    font-weight: 650;
+  }
+
+  .treatments {
+    padding: clamp(6rem, 12vw, 11rem) var(--gutter);
+    background: var(--cloud);
+  }
+
+  .treatments > header {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(16rem, 0.8fr);
+    gap: 3rem;
+    align-items: end;
+    margin-bottom: clamp(4rem, 8vw, 7rem);
+  }
+
+  .treatments h2,
+  .team h2,
+  .faq h2 {
+    font-size: clamp(2.4rem, 5vw, 5rem);
+    font-weight: 400;
+    letter-spacing: -0.04em;
+    line-height: 0.98;
+  }
+
+  .treatments header p,
+  .faq header p {
+    max-width: 34rem;
+    color: var(--plum-soft);
+    font-size: 1rem;
+    font-weight: 520;
+    line-height: 1.65;
+  }
+
+  .treatments__list {
+    border-top: 1px solid var(--line);
+  }
+
+  .treatments__list a {
+    display: grid;
+    min-height: 7rem;
+    grid-template-columns: 3rem minmax(0, 1fr) 6rem 5rem 2rem;
+    gap: 1.5rem;
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+    transition:
+      color 250ms var(--ease),
+      padding 250ms var(--ease);
+  }
+
+  .treatments__list a:hover,
+  .treatments__list a:focus-visible {
+    padding-inline: 1rem;
+    color: var(--plum-soft);
+  }
+
+  .treatments__list span,
+  .treatments__list p,
+  .treatments__list strong {
+    font-size: var(--label);
+    font-weight: 650;
+  }
+
+  .treatments__list h3 {
+    font-family: Baskerville, 'Iowan Old Style', Georgia, serif;
+    font-size: clamp(1.35rem, 2.4vw, 2.3rem);
+    font-weight: 400;
+  }
+
+  .treatments__list i {
+    font-style: normal;
+    font-size: var(--title);
+  }
+
+  .care {
+    display: grid;
+    min-height: 50rem;
+    grid-template-columns: minmax(0, 1.1fr) minmax(24rem, 0.9fr);
+    background: var(--plum);
+    color: var(--cloud);
+  }
+
+  .care figure {
+    min-height: 42rem;
+    overflow: hidden;
+  }
+
+  .care img {
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .care__copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(4rem, 8vw, 8rem) var(--gutter);
+  }
+
+  .script {
+    margin-bottom: 3rem;
+    color: var(--lilac);
+  }
+
+  .care h2 {
+    max-width: 12ch;
+    font-family: Baskerville, 'Iowan Old Style', Georgia, serif;
+    font-size: clamp(2.5rem, 4.8vw, 4.8rem);
+    font-weight: 400;
+    line-height: 1;
+  }
+
+  .care__copy > p:not(.script) {
+    max-width: 38rem;
+    margin-top: 2rem;
+    color: rgb(240 237 243 / 72%);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.7;
+  }
+
+  .care dl {
+    display: grid;
+    gap: 0;
+    margin-top: 4rem;
+  }
+
+  .care dl div {
+    display: grid;
+    grid-template-columns: 7rem 1fr;
+    gap: 1.5rem;
+    border-top: 1px solid rgb(240 237 243 / 18%);
+    padding-block: 1.1rem;
+  }
+
+  .care dt,
+  .care dd {
+    font-size: var(--label);
+    line-height: 1.55;
+  }
+
+  .care dt {
+    color: var(--lilac);
+    font-weight: 680;
+  }
+
+  .care dd {
+    color: rgb(240 237 243 / 72%);
+    font-weight: 520;
+  }
+
+  .voices {
+    display: grid;
+    place-items: center;
+    gap: 2.5rem;
+    padding: clamp(7rem, 14vw, 13rem) var(--gutter);
+    background: var(--lilac);
+    text-align: center;
+  }
+
+  .voices blockquote {
+    max-width: 26ch;
+    font-family: Baskerville, 'Iowan Old Style', Georgia, serif;
+    font-size: clamp(2rem, 4.3vw, 4.2rem);
+    font-weight: 400;
+    line-height: 1.08;
+  }
+
+  .voices p {
+    color: var(--plum-soft);
+    font-size: var(--label);
+    font-weight: 650;
+  }
+
+  .team {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(4rem, 10vw, 10rem);
+    padding: clamp(7rem, 12vw, 12rem) var(--gutter);
+  }
+
+  .team header > p {
+    margin-bottom: 2rem;
+    color: var(--plum-soft);
+  }
+
+  .team > div {
+    border-top: 1px solid var(--line);
+  }
+
+  .team article {
+    padding: 2rem 0 3rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .team article span {
+    color: var(--plum-soft);
+    font-size: var(--label);
+    font-weight: 650;
+  }
+
+  .team article h3 {
+    margin-top: 1.25rem;
+    font-family: Baskerville, 'Iowan Old Style', Georgia, serif;
+    font-size: clamp(1.75rem, 3vw, 3rem);
+    font-weight: 400;
+  }
+
+  .team article p {
+    max-width: 34rem;
+    margin-top: 0.8rem;
+    color: var(--plum-soft);
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .faq {
+    display: grid;
+    grid-template-columns: minmax(18rem, 0.72fr) minmax(0, 1.28fr);
+    gap: clamp(4rem, 9vw, 9rem);
+    padding: clamp(7rem, 12vw, 11rem) var(--gutter);
+    background: #e2d9e8;
+  }
+
+  .faq header p {
+    margin-top: 2rem;
+  }
+
+  .faq > div {
+    border-top: 1px solid var(--line);
+  }
+
+  .faq details {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .faq summary {
+    display: flex;
+    min-height: 6rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    cursor: pointer;
+    font-size: var(--title);
+    font-weight: 620;
+    list-style: none;
+  }
+
+  .faq summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq summary span {
+    font-size: var(--title);
+    transition: transform 250ms var(--ease);
+  }
+
+  .faq details[open] summary span {
+    transform: rotate(45deg);
+  }
+
+  .faq details p {
+    max-width: 42rem;
+    padding: 0 3rem 2rem 0;
+    color: var(--plum-soft);
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  .booking {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(28rem, 1.2fr);
+    gap: clamp(4rem, 10vw, 10rem);
+    padding: clamp(7rem, 12vw, 12rem) var(--gutter);
+    background: var(--plum);
+    color: var(--cloud);
+  }
+
+  .booking__intro > p {
+    color: var(--lilac);
+  }
+
+  .booking h2 {
+    max-width: 8ch;
+    margin-top: 2rem;
+    font-family: Baskerville, 'Iowan Old Style', Georgia, serif;
+    font-size: clamp(3rem, 6vw, 6rem);
+    font-weight: 400;
+    line-height: 0.95;
+  }
+
+  .booking__intro > span {
+    display: block;
+    max-width: 35rem;
+    margin-top: 2rem;
+    color: rgb(240 237 243 / 68%);
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  .booking form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+
+  .booking label {
+    display: grid;
+    gap: 0.65rem;
+    color: var(--lilac);
+    font-size: var(--label);
+    font-weight: 650;
+  }
+
+  .booking input,
+  .booking select,
+  .booking textarea {
+    width: 100%;
+    border: 1px solid rgb(240 237 243 / 24%);
+    border-radius: 0;
+    outline: 0;
+    padding: 0.9rem 0;
+    background: transparent;
+    color: white;
+  }
+
+  .booking input:focus,
+  .booking select:focus,
+  .booking textarea:focus {
+    border-color: var(--lilac);
+    box-shadow: 0 3px 0 rgb(200 181 212 / 28%);
+  }
+
+  .booking select option {
+    color: var(--ink);
+  }
+
+  .booking__note {
+    grid-column: 1 / -1;
+  }
+
+  .booking button {
+    display: inline-flex;
+    min-height: 3.5rem;
+    align-items: center;
+    justify-content: space-between;
+    grid-column: 1 / -1;
+    border: 0;
+    margin-top: 1rem;
+    padding-inline: 1.25rem;
+    background: var(--lilac);
+    color: var(--plum);
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 720;
+  }
+
+  .site-footer {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 5rem;
+    align-items: start;
+    padding: clamp(4rem, 8vw, 7rem) var(--gutter) 2rem;
+    background: #1e1022;
+    color: var(--cloud);
+  }
+
+  .brand--footer {
+    color: var(--lilac);
+  }
+
+  .site-footer__contact,
+  .site-footer nav {
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .site-footer__contact p,
+  .site-footer__contact a,
+  .site-footer nav a {
+    color: rgb(240 237 243 / 70%);
+    font-size: var(--label);
+    font-weight: 540;
+  }
+
+  .site-footer__legal {
+    grid-column: 1 / -1;
+    border-top: 1px solid rgb(240 237 243 / 14%);
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    color: rgb(240 237 243 / 42%);
+    font-size: var(--label);
+  }
+
+  @keyframes image-arrive {
+    from {
+      transform: scale(1.08);
+      filter: saturate(0.6);
+    }
+    to {
+      transform: scale(1);
+      filter: saturate(1);
+    }
+  }
+
+  @media (max-width: 58rem) {
+    .site-header {
+      grid-template-columns: 1fr auto;
+    }
+
+    .desktop-nav,
+    .book-link {
+      display: none;
+    }
+
+    .mobile-nav {
+      position: relative;
+      display: block;
+      justify-self: end;
+    }
+
+    .mobile-nav summary {
+      display: grid;
+      width: 3rem;
+      height: 3rem;
+      place-content: center;
+      gap: 0.45rem;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .mobile-nav summary::-webkit-details-marker {
+      display: none;
+    }
+    .mobile-nav summary span {
+      width: 1.5rem;
+      height: 1px;
+      background: currentColor;
+    }
+    .mobile-nav[open] summary span:first-child {
+      transform: translateY(0.23rem) rotate(45deg);
+    }
+    .mobile-nav[open] summary span:last-child {
+      transform: translateY(-0.23rem) rotate(-45deg);
+    }
+
+    .mobile-nav nav {
+      position: fixed;
+      z-index: 10;
+      top: 5.5rem;
+      right: 1rem;
+      left: 1rem;
+      display: grid;
+      background: var(--plum);
+      color: var(--cloud);
+    }
+
+    .mobile-nav nav a {
+      padding: 1.1rem 1.25rem;
+      border-bottom: 1px solid rgb(240 237 243 / 14%);
+      font-size: 1rem;
+      font-weight: 650;
+    }
+
+    .hero,
+    .care,
+    .team,
+    .faq,
+    .booking {
+      grid-template-columns: 1fr;
+    }
+
+    .hero__copy {
+      min-height: 35rem;
+    }
+    .hero__image {
+      min-height: 40rem;
+    }
+    .hero__copy > div {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+    .care figure {
+      min-height: 34rem;
+    }
+    .booking {
+      gap: 4rem;
+    }
+  }
+
+  @media (max-width: 42rem) {
+    .hero h1 {
+      font-size: clamp(3rem, 16vw, 5rem);
+    }
+    .treatments > header {
+      grid-template-columns: 1fr;
+    }
+    .treatments__list a {
+      min-height: auto;
+      grid-template-columns: 2rem minmax(0, 1fr) auto;
+      gap: 0.7rem 1rem;
+      padding-block: 1.5rem;
+    }
+    .treatments__list h3 {
+      grid-column: 2 / -1;
+      grid-row: 1;
+    }
+    .treatments__list a > span {
+      grid-column: 1;
+      grid-row: 1;
+    }
+    .treatments__list p {
+      grid-column: 2;
+    }
+    .treatments__list strong {
+      grid-column: 3;
+    }
+    .treatments__list i {
+      display: none;
+    }
+    .booking form {
+      grid-template-columns: 1fr;
+    }
+    .booking__note,
+    .booking button {
+      grid-column: auto;
+    }
+    .site-footer {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>

@@ -1,0 +1,592 @@
+---
+import { Icon } from 'astro-icon/components';
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { WEBSITE_TEMPLATES, type WebsiteTemplate } from '@/data/templates';
+
+export function getStaticPaths() {
+  return WEBSITE_TEMPLATES.map((template) => ({
+    params: { slug: template.slug },
+    props: { template },
+  }));
+}
+
+interface Props {
+  template: WebsiteTemplate;
+}
+
+const { template } = Astro.props;
+const demoUrl = `/veidnes/demo/${template.slug}`;
+const enquiryUrl = `/kontakti?pakalpojums=majaslapu-izstrade&veidne=${encodeURIComponent(template.name)}`;
+---
+
+<BaseLayout
+  title={`${template.name} veidne`}
+  description={template.description}
+  image={template.previewImage}
+  imageAlt={template.previewAlt}
+  imageWidth={960}
+  imageHeight={600}
+  noindex
+  footerCta="about"
+>
+  <article class="template-page">
+    <header class="template-page__header">
+      <a class="template-page__back" href="/veidnes" data-astro-prefetch>
+        <Icon name="lucide:arrow-left" aria-hidden="true" />
+        Visas veidnes
+      </a>
+
+      <div class="template-page__title-row">
+        <div>
+          <p>{template.categoryLabel}</p>
+          <h1>{template.name}</h1>
+        </div>
+        <p class="template-page__instruction">
+          <Icon name="lucide:mouse" aria-hidden="true" />
+          Ritiniet kursoru logā, lai izpētītu demo. Ārpus loga ritinās ROMADI lapa.
+        </p>
+      </div>
+    </header>
+
+    <section class="browser" aria-label={`${template.name} interaktīvs priekšskatījums`}>
+      <div class="browser__bar">
+        <div class="browser__controls" aria-hidden="true">
+          <i class="browser__control browser__control--close"></i>
+          <i class="browser__control browser__control--minimise"></i>
+          <i class="browser__control browser__control--fullscreen"></i>
+        </div>
+
+        <div class="browser__address" aria-hidden="true">
+          <Icon name="lucide:lock-keyhole" />
+          <span>romadi.lv{demoUrl}</span>
+        </div>
+
+        <a href={demoUrl} target="_blank" rel="noreferrer" aria-label="Atvērt demo jaunā cilnē">
+          <span>Atvērt</span>
+          <Icon name="lucide:arrow-up-right" aria-hidden="true" />
+        </a>
+      </div>
+
+      <div class="browser__viewport">
+        <iframe
+          src={demoUrl}
+          title={`${template.name} mājaslapas demonstrācija`}
+          loading="eager"
+          sandbox="allow-same-origin"></iframe>
+      </div>
+    </section>
+
+    <section class="template-info" aria-labelledby="template-info-title">
+      <div class="template-info__main">
+        <p class="template-info__category">{template.category}</p>
+        <h2 id="template-info-title">{template.name}</h2>
+        <p class="template-info__lead">{template.description}</p>
+
+        <div class="template-info__included">
+          <h3>Kas iekļauts</h3>
+          <ul>
+            {
+              template.features.map((feature) => (
+                <li>
+                  <Icon name="lucide:check" aria-hidden="true" />
+                  <span>{feature}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <div class="template-info__technologies">
+          <p>Tehnoloģijas</p>
+          <ul>
+            {template.technologies.map((technology) => <li>{technology}</li>)}
+          </ul>
+        </div>
+      </div>
+
+      <aside class="purchase" aria-label="Veidnes cena un pieteikšanās">
+        <div>
+          <p class="purchase__price">{template.price} €</p>
+          <p class="purchase__meta">Vienreizējs maksājums</p>
+        </div>
+
+        <a href={enquiryUrl} data-astro-prefetch>
+          Pieteikt šo veidni
+          <Icon name="lucide:arrow-up-right" aria-hidden="true" />
+        </a>
+
+        <p class="purchase__note">
+          Vispirms īsi izrunāsim jūsu saturu un pielāgojumus. Rēķinu sagatavosim pēc apjoma
+          apstiprināšanas.
+        </p>
+
+        <ul>
+          <li><Icon name="lucide:check" aria-hidden="true" /> Pilns pirmkods</li>
+          <li><Icon name="lucide:check" aria-hidden="true" /> Jūsu zīmola pielāgošana</li>
+          <li><Icon name="lucide:check" aria-hidden="true" /> Palīdzība ar publicēšanu</li>
+        </ul>
+      </aside>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .template-page {
+    --page-gutter: 0.75rem;
+    width: min(calc(100% - (var(--page-gutter) * 2)), 100rem);
+    margin: 0 auto;
+    padding: clamp(7rem, 10vw, 9rem) 0 clamp(6rem, 9vw, 9rem);
+  }
+
+  .template-page__header {
+    display: grid;
+    gap: 2rem;
+    padding: 0 0 1.5rem;
+  }
+
+  .template-page__back {
+    display: inline-flex;
+    width: max-content;
+    min-height: 2.75rem;
+    align-items: center;
+    gap: 0.65rem;
+    color: rgb(255 255 255 / 62%);
+    font: 550 0.75rem/1 var(--font-mono);
+    transition:
+      color 180ms ease,
+      transform 240ms var(--ease-out-quart);
+  }
+
+  .template-page__back :global(svg) {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .template-page__title-row {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .template-page__title-row > div {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .template-page__title-row > div > p {
+    color: var(--accent-hover);
+    font: 580 0.72rem/1.4 var(--font-mono);
+  }
+
+  .template-page h1 {
+    font-size: clamp(2.4rem, 6vw, 4.6rem);
+    font-weight: 470;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  .template-page__instruction {
+    display: flex;
+    max-width: 33rem;
+    align-items: center;
+    gap: 0.75rem;
+    color: rgb(255 255 255 / 54%);
+    font: 520 0.7rem/1.55 var(--font-mono);
+  }
+
+  .template-page__instruction :global(svg) {
+    width: 1.1rem;
+    min-width: 1.1rem;
+    height: 1.1rem;
+    color: rgb(255 255 255 / 72%);
+  }
+
+  .browser {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 18%);
+    border-radius: 1rem;
+    background:
+      radial-gradient(circle at 4% -12%, rgb(224 35 78 / 48%), transparent 32%),
+      linear-gradient(115deg, rgb(98 11 34 / 86%), rgb(9 9 9 / 94%) 54%, rgb(40 5 16 / 90%));
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 8%),
+      0 1.5rem 5rem rgb(0 0 0 / 42%);
+    backdrop-filter: blur(24px) saturate(1.2);
+  }
+
+  .browser::before {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    background: radial-gradient(circle at 72% 0%, rgb(255 255 255 / 9%), transparent 28%);
+    content: '';
+    pointer-events: none;
+  }
+
+  .browser__bar {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    min-height: 3.5rem;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem 0.75rem;
+  }
+
+  .browser__controls {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding-inline: 0.15rem;
+  }
+
+  .browser__control {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    box-shadow: inset 0 -1px 0 rgb(0 0 0 / 18%);
+  }
+
+  .browser__control--close {
+    background: #ff5f57;
+  }
+
+  .browser__control--minimise {
+    background: #febc2e;
+  }
+
+  .browser__control--fullscreen {
+    background: #28c840;
+  }
+
+  .browser__address {
+    display: flex;
+    min-width: 0;
+    min-height: 2.25rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.65rem;
+    padding-inline: 0.75rem;
+    background: rgb(0 0 0 / 22%);
+    color: rgb(255 255 255 / 58%);
+    font: 500 0.65rem/1 var(--font-mono);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 7%);
+    backdrop-filter: blur(12px);
+  }
+
+  .browser__address :global(svg) {
+    width: 0.75rem;
+    min-width: 0.75rem;
+    height: 0.75rem;
+  }
+
+  .browser__address span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .browser__bar > a {
+    display: inline-flex;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    border-radius: 0.75rem;
+    background: rgb(255 255 255 / 9%);
+    color: white;
+    font-size: clamp(0.72rem, 0.85vw, 0.9rem);
+    font-weight: 650;
+    transition:
+      background-color 180ms ease,
+      transform 220ms var(--ease-out-quart);
+  }
+
+  .browser__bar > a span {
+    display: none;
+  }
+
+  .browser__bar > a :global(svg) {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .browser__viewport {
+    position: relative;
+    z-index: 1;
+    height: clamp(28rem, 68svh, 50rem);
+    margin: 0 0.625rem 0.625rem;
+    overflow: hidden;
+    border-radius: 0.7rem;
+    background: #f6f3ec;
+  }
+
+  .browser__viewport iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: white;
+  }
+
+  .template-info {
+    display: grid;
+    gap: 4rem;
+    padding: clamp(5rem, 10vw, 9rem) 0 0;
+  }
+
+  .template-info__main {
+    min-width: 0;
+  }
+
+  .template-info__category {
+    width: max-content;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    padding: 0.35rem 0.7rem;
+    color: rgb(255 255 255 / 68%);
+    font: 550 0.65rem/1 var(--font-mono);
+  }
+
+  .template-info h2 {
+    max-width: 14ch;
+    margin-top: 1.25rem;
+    font-size: clamp(2.5rem, 7vw, 5.5rem);
+    font-weight: 460;
+    letter-spacing: -0.04em;
+    line-height: 0.98;
+  }
+
+  .template-info__lead {
+    max-width: 44rem;
+    margin-top: 1.5rem;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1.7;
+  }
+
+  .template-info__included {
+    display: grid;
+    gap: 1.25rem;
+    margin-top: 3.5rem;
+  }
+
+  .template-info__included h3 {
+    font-size: clamp(1rem, 1.25vw, 1.25rem);
+    font-weight: 650;
+    letter-spacing: -0.025em;
+  }
+
+  .template-info__included ul {
+    display: grid;
+    gap: 0.9rem;
+    list-style: none;
+  }
+
+  .template-info__included li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    color: rgb(255 255 255 / 75%);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .template-info__included li :global(svg) {
+    width: 1rem;
+    min-width: 1rem;
+    height: 1rem;
+    margin-top: 0.2rem;
+    color: var(--accent-hover);
+    stroke-width: 2;
+  }
+
+  .template-info__technologies {
+    display: grid;
+    gap: 0.9rem;
+    margin-top: 3.5rem;
+  }
+
+  .template-info__technologies > p {
+    color: rgb(255 255 255 / 44%);
+    font: 550 0.68rem/1.5 var(--font-mono);
+  }
+
+  .template-info__technologies ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    list-style: none;
+  }
+
+  .template-info__technologies li {
+    border-radius: 999px;
+    padding: 0.42rem 0.75rem;
+    background: rgb(224 35 78 / 14%);
+    color: #ff9caf;
+    font: 600 0.68rem/1 var(--font-mono);
+  }
+
+  .purchase {
+    display: grid;
+    align-content: start;
+    gap: 1.5rem;
+    border: 1px solid var(--border-default);
+    border-radius: 1rem;
+    padding: clamp(1.5rem, 4vw, 2rem);
+    background: var(--surface-secondary);
+  }
+
+  .purchase__price {
+    font-size: clamp(2.2rem, 7vw, 3.5rem);
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  .purchase__meta {
+    margin-top: 0.55rem;
+    color: rgb(255 255 255 / 46%);
+    font: 500 0.68rem/1.5 var(--font-mono);
+  }
+
+  .purchase > a {
+    display: flex;
+    min-height: 3.5rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border-radius: 0.85rem;
+    padding: 0.85rem 1.1rem;
+    background: var(--accent);
+    color: white;
+    font-size: 1rem;
+    font-weight: 720;
+    transition:
+      background-color 180ms ease,
+      transform 220ms var(--ease-out-quart);
+  }
+
+  .purchase > a :global(svg) {
+    width: 1.05rem;
+    height: 1.05rem;
+  }
+
+  .purchase__note {
+    color: rgb(255 255 255 / 58%);
+    font-size: clamp(0.72rem, 0.85vw, 0.9rem);
+    font-weight: 500;
+    line-height: 1.6;
+  }
+
+  .purchase ul {
+    display: grid;
+    gap: 0.9rem;
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 1.5rem;
+    list-style: none;
+  }
+
+  .purchase li {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    color: rgb(255 255 255 / 68%);
+    font-size: clamp(0.72rem, 0.85vw, 0.9rem);
+    font-weight: 560;
+  }
+
+  .purchase li :global(svg) {
+    width: 0.95rem;
+    height: 0.95rem;
+    color: var(--accent-hover);
+  }
+
+  @media (hover: hover) {
+    .template-page__back:hover {
+      color: white;
+      transform: translateX(-0.18rem);
+    }
+
+    .browser__bar > a:hover {
+      background: rgb(255 255 255 / 15%);
+      transform: translateY(-0.1rem);
+    }
+
+    .purchase > a:hover {
+      background: var(--accent-hover);
+      transform: translateY(-0.12rem);
+    }
+  }
+
+  @media (min-width: 42rem) {
+    .template-page {
+      --page-gutter: 2rem;
+    }
+
+    .browser__bar {
+      gap: 1rem;
+      padding-inline: 1rem;
+    }
+
+    .browser__controls {
+      gap: 0.5rem;
+    }
+
+    .browser__bar > a {
+      padding-inline: 0.9rem;
+    }
+
+    .browser__bar > a span {
+      display: inline;
+    }
+
+    .browser__viewport {
+      margin: 0 0.75rem 0.75rem;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .template-page__title-row {
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 4rem;
+    }
+
+    .template-page__instruction {
+      justify-self: end;
+      text-align: right;
+    }
+
+    .template-info {
+      grid-template-columns: minmax(0, 1fr) minmax(20rem, 25rem);
+      gap: clamp(5rem, 10vw, 10rem);
+      align-items: start;
+    }
+
+    .template-info__included ul {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 2rem;
+    }
+
+    .purchase {
+      position: sticky;
+      top: calc(var(--header-height) + 2rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .template-page__back,
+    .browser__bar > a,
+    .purchase > a {
+      transition: none;
+    }
+  }
+</style>
