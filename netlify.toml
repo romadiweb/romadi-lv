@@ -3,3 +3,39 @@
 
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+[[redirects]]
+  from = "/majas-lapu-izstrade"
+  to = "/pakalpojumi/majaslapu-izstrade"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/interneta-veikalu-izstrade"
+  to = "/pakalpojumi/interneta-veikalu-izstrade"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/ui-ux-dizains"
+  to = "/pakalpojumi/zimola-un-ui-ux-dizains"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/seo-optimizacija"
+  to = "/pakalpojumi/digitala-izaugsme"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/google-reklamas"
+  to = "/pakalpojumi/digitala-izaugsme"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/socialo-tiklu-reklamas"
+  to = "/pakalpojumi/digitala-izaugsme"
+  status = 301
+  force = true

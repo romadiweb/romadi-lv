@@ -8,6 +8,11 @@ import { WEBSITE_TEMPLATES } from '@/data/templates';
 <BaseLayout
   title="Mājaslapu veidnes"
   description="Izvēlieties ROMADI izstrādātu mājaslapas veidni un pielāgojiet to savam uzņēmumam."
+  image="/images/social/romadi-veidnes-share-v2.png"
+  imageAlt="ROMADI mājaslapu veidņu izlase — Atelier Mājas, Miera SPA un Ezera nams"
+  imageWidth={1200}
+  imageHeight={630}
+  imageType="image/png"
   noindex
   footerCta="about"
 >
@@ -41,8 +46,8 @@ import { WEBSITE_TEMPLATES } from '@/data/templates';
                 <img
                   src={template.previewImage}
                   alt={template.previewAlt}
-                  width="960"
-                  height="600"
+                  width={template.previewWidth}
+                  height={template.previewHeight}
                   loading={index === 0 ? 'eager' : 'lazy'}
                   decoding="async"
                 />

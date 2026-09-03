@@ -21,7 +21,7 @@ export const SITE = {
 
   locale: 'lv_LV',
 
-  defaultOgImage: '/images/home/hero-landscape-1600.webp',
+  defaultOgImage: '/images/social/romadi-share-v2.png',
 
   searchPreviewImage: '/images/brand/romadi-search-thumbnail.png',
 
@@ -164,7 +164,7 @@ export const SITE = {
 
     openGraph: {
       type: 'website',
-      image: '/images/home/hero-landscape-1600.webp',
+      image: '/images/social/romadi-share-v2.png',
       imageAlt: 'ROMADI — mājaslapu izstrāde un digitālie risinājumi',
     },
 

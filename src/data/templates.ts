@@ -8,6 +8,9 @@ export interface WebsiteTemplate {
   price: number;
   previewImage: string;
   previewAlt: string;
+  previewWidth: number;
+  previewHeight: number;
+  socialImage: string;
   demoEyebrow: string;
   demoTitle: string;
   demoDescription: string;
@@ -34,6 +37,9 @@ export const WEBSITE_TEMPLATES: WebsiteTemplate[] = [
     price: 350,
     previewImage: '/images/templates/atelier-majas/atelier-hero.webp',
     previewAlt: 'Atelier Mājas sākumlapa ar mierpilnu koka mājas interjeru priežu mežā',
+    previewWidth: 1672,
+    previewHeight: 941,
+    socialImage: '/images/social/atelier-majas-share-v2.jpg',
     demoEyebrow: 'Telpa, kas paliek atmiņā',
     demoTitle: 'No ieceres līdz mājām, kurās gribas palikt.',
     demoDescription:
@@ -66,6 +72,9 @@ export const WEBSITE_TEMPLATES: WebsiteTemplate[] = [
     price: 350,
     previewImage: '/images/templates/miera-spa/miera-hero.webp',
     previewAlt: 'Miera SPA procedūru telpa ar ceriņkrāsas linu un skulpturālām sienām',
+    previewWidth: 1536,
+    previewHeight: 1024,
+    socialImage: '/images/social/miera-spa-share-v2.jpg',
     demoEyebrow: 'Rituāli ķermenim un prātam',
     demoTitle: 'Atgūt mieru savā ritmā.',
     demoDescription:
@@ -98,6 +107,9 @@ export const WEBSITE_TEMPLATES: WebsiteTemplate[] = [
     price: 390,
     previewImage: '/images/templates/ezera-nams/ezera-hero.webp',
     previewAlt: 'Ezera nams pie mierīga ziemeļu ezera zilajā stundā',
+    previewWidth: 1938,
+    previewHeight: 811,
+    socialImage: '/images/social/ezera-nams-share-v2.jpg',
     demoEyebrow: 'Kur daba nosaka dienas ritmu',
     demoTitle: 'Klusāka vieta, kur atgriezties.',
     demoDescription:
