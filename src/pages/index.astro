@@ -5,6 +5,7 @@ import HomeServices from '@/components/sections/home/HomeServices.astro';
 import HomeShowcase from '@/components/sections/home/HomeShowcase.astro';
 import HomeSupport from '@/components/sections/home/HomeSupport.astro';
 import HomeTemplateOffer from '@/components/sections/home/HomeTemplateOffer.astro';
+import ReviewsSection from '@/components/sections/reviews/ReviewsSection.astro';
 import { SITE } from '@/config/site';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 ---
@@ -22,5 +23,6 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
   <HomeServices />
   <HomeShowcase />
   <HomeSupport />
+  <ReviewsSection reviewSlugs={['liepajasteltis-lv', 'dianahunt-lv']} />
   <HomeTemplateOffer />
 </BaseLayout>

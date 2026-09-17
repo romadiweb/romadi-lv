@@ -63,6 +63,55 @@ on conflict (slug) do update set
   is_published = excluded.is_published,
   updated_at = now();
 
+insert into public.reviews (
+  slug,
+  client_name,
+  client_url,
+  logo_url,
+  quote,
+  reviewer_name,
+  reviewer_role,
+  rating,
+  sort_order,
+  is_published
+)
+values
+  (
+    'liepajasteltis-lv',
+    'Liepājas Teltis',
+    'https://liepajasteltis.lv',
+    '/images/projects/liepajasteltis-logo-metallic.webp',
+    'Pateicoties sadarbībai ar ROMADI, ieguvām pozitīvus rezultātus — pieauga pasūtījumu skaits un uzlabojās pozīcijas meklētājos.',
+    null,
+    null,
+    null,
+    10,
+    true
+  ),
+  (
+    'dianahunt-lv',
+    'Diana Hunt',
+    'https://dianahunt.lv',
+    '/images/projects/diana-logo-metallic.webp',
+    'Profesionāla komanda. Augstu vērtēju viņu darbu, jo uzsvars vienmēr tiek likts uz kvalitāti. Pieņemot viņu piedāvājumu izveidot eksāmenu sistēmu, ievērojami uzlabojusies mācību kvalitāte, un no studentiem saņemam ļoti pozitīvas atsauksmes!',
+    null,
+    null,
+    null,
+    20,
+    true
+  )
+on conflict (slug) do update set
+  client_name = excluded.client_name,
+  client_url = excluded.client_url,
+  logo_url = excluded.logo_url,
+  quote = excluded.quote,
+  reviewer_name = excluded.reviewer_name,
+  reviewer_role = excluded.reviewer_role,
+  rating = excluded.rating,
+  sort_order = excluded.sort_order,
+  is_published = excluded.is_published,
+  updated_at = now();
+
 insert into public.pricing_plans (
   service_key,
   name,

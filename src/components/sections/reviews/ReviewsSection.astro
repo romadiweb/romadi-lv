@@ -1,0 +1,640 @@
+---
+import { getPublishedReviews, type PublicReview } from '@/lib/reviews';
+
+interface Props {
+  reviewSlugs?: string | string[];
+  heading?: string;
+  description?: string;
+}
+
+const {
+  reviewSlugs,
+  heading = 'Ko saka mūsu klienti',
+  description = 'Atsauksmes no mūsu klientiem.',
+} = Astro.props;
+
+const requestedSlugs = Array.isArray(reviewSlugs) ? reviewSlugs : reviewSlugs ? [reviewSlugs] : [];
+
+const placeholderReviews: PublicReview[] = [
+  {
+    id: -1,
+    slug: 'liepajasteltis-lv',
+    client_name: 'Liepājas Teltis',
+    client_url: 'https://liepajasteltis.lv',
+    logo_url: '/images/projects/liepajasteltis-logo-metallic.webp',
+    quote:
+      'Pateicoties sadarbībai ar ROMADI, ieguvām pozitīvus rezultātus — pieauga pasūtījumu skaits un uzlabojās pozīcijas meklētājos.',
+    reviewer_name: null,
+    reviewer_role: null,
+    rating: null,
+    sort_order: 10,
+  },
+  {
+    id: -2,
+    slug: 'dianahunt-lv',
+    client_name: 'Diana Hunt',
+    client_url: 'https://dianahunt.lv',
+    logo_url: '/images/projects/diana-logo-metallic.webp',
+    quote:
+      'Profesionāla komanda. Augstu vērtēju viņu darbu, jo uzsvars vienmēr tiek likts uz kvalitāti. Pieņemot viņu piedāvājumu izveidot eksāmenu sistēmu, ievērojami uzlabojusies mācību kvalitāte, un no studentiem saņemam ļoti pozitīvas atsauksmes!',
+    reviewer_name: null,
+    reviewer_role: null,
+    rating: null,
+    sort_order: 20,
+  },
+];
+
+const databaseReviews = await getPublishedReviews(requestedSlugs);
+const databaseReviewBySlug = new Map(databaseReviews.map((review) => [review.slug, review]));
+const placeholderBySlug = new Map(placeholderReviews.map((review) => [review.slug, review]));
+
+const reviews =
+  requestedSlugs.length > 0
+    ? requestedSlugs.flatMap((slug) => {
+        const review = databaseReviewBySlug.get(slug) ?? placeholderBySlug.get(slug);
+        return review ? [review] : [];
+      })
+    : databaseReviews.length > 0
+      ? databaseReviews
+      : placeholderReviews;
+
+const sectionId = `reviews-${requestedSlugs.join('-') || 'all'}`;
+const hasMultipleReviews = reviews.length > 1;
+---
+
+{
+  reviews.length > 0 && (
+    <section
+      class="reviews"
+      aria-labelledby={`${sectionId}-title`}
+      data-reviews
+      data-review-count={reviews.length}
+    >
+      <div class="reviews__atmosphere" aria-hidden="true" />
+
+      <header class="reviews__header" data-reveal>
+        <h2 id={`${sectionId}-title`}>{heading}</h2>
+        <p>{description}</p>
+      </header>
+
+      <div class="reviews__stage" data-reveal>
+        <div class:list={['reviews__stack', !hasMultipleReviews && 'reviews__stack--single']}>
+          {reviews.map((review, index) => (
+            <article
+              class="reviews__card"
+              data-review-card
+              data-review-slug={review.slug}
+              aria-hidden={index === 0 ? 'false' : 'true'}
+              hidden={index !== 0}
+            >
+              <div class="reviews__brand">
+                {review.logo_url ? (
+                  <img
+                    src={review.logo_url}
+                    alt=""
+                    width="480"
+                    height="240"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ) : (
+                  <span aria-hidden="true">R</span>
+                )}
+              </div>
+
+              <blockquote
+                class:list={[
+                  'reviews__quote',
+                  review.quote && review.quote.length > 180 && 'reviews__quote--long',
+                  !review.quote && 'reviews__quote--pending',
+                ]}
+              >
+                {review.quote ?? 'Atsauksmes teksts tiks pievienots drīzumā.'}
+              </blockquote>
+
+              <footer class="reviews__footer">
+                <div>
+                  <strong>{review.reviewer_name ?? review.client_name}</strong>
+                  {review.reviewer_role && <span>{review.reviewer_role}</span>}
+                  {!review.quote && <span>Apstiprinātais teksts vēl tiek gaidīts</span>}
+                </div>
+
+                {review.client_url && (
+                  <a href={review.client_url} target="_blank" rel="noopener noreferrer">
+                    <span>{new URL(review.client_url).hostname.replace(/^www\./, '')}</span>
+                    <svg viewBox="0 0 20 20" aria-hidden="true">
+                      <path d="M7 5h8v8M15 5l-9.5 9.5" />
+                    </svg>
+                  </a>
+                )}
+              </footer>
+            </article>
+          ))}
+        </div>
+
+        {hasMultipleReviews && (
+          <div class="reviews__navigation" aria-label="Atsauksmju navigācija">
+            <button type="button" data-review-previous aria-label="Iepriekšējā atsauksme">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+            </button>
+
+            <div class="reviews__position" aria-live="polite" aria-atomic="true">
+              <span data-review-current>01</span>
+              <span aria-hidden="true">/</span>
+              <span>{String(reviews.length).padStart(2, '0')}</span>
+            </div>
+
+            <div class="reviews__dots" role="group" aria-label="Izvēlēties atsauksmi">
+              {reviews.map((review, index) => (
+                <button
+                  type="button"
+                  data-review-dot={index}
+                  aria-label={`Rādīt ${review.client_name} atsauksmi`}
+                  aria-current={index === 0 ? 'true' : 'false'}
+                />
+              ))}
+            </div>
+
+            <button type="button" data-review-next aria-label="Nākamā atsauksme">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            </button>
+          </div>
+        )}
+      </div>
+    </section>
+  )
+}
+
+<script>
+  const initReviews = (): void => {
+    document.querySelectorAll<HTMLElement>('[data-reviews]').forEach((section) => {
+      if (section.dataset.reviewsReady === 'true') return;
+      section.dataset.reviewsReady = 'true';
+
+      const cards = Array.from(section.querySelectorAll<HTMLElement>('[data-review-card]'));
+      const dots = Array.from(section.querySelectorAll<HTMLButtonElement>('[data-review-dot]'));
+      const previous = section.querySelector<HTMLButtonElement>('[data-review-previous]');
+      const next = section.querySelector<HTMLButtonElement>('[data-review-next]');
+      const current = section.querySelector<HTMLElement>('[data-review-current]');
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      let activeIndex = 0;
+
+      if (cards.length < 2) return;
+
+      const selectReview = (requestedIndex: number, direction = 1): void => {
+        const nextIndex = (requestedIndex + cards.length) % cards.length;
+        if (nextIndex === activeIndex) return;
+
+        const outgoingCard = cards[activeIndex];
+        const incomingCard = cards[nextIndex];
+        if (!outgoingCard || !incomingCard) return;
+
+        outgoingCard.hidden = true;
+        outgoingCard.setAttribute('aria-hidden', 'true');
+        incomingCard.hidden = false;
+        incomingCard.setAttribute('aria-hidden', 'false');
+
+        if (!reducedMotion.matches) {
+          incomingCard.animate(
+            [
+              {
+                opacity: 0,
+                transform: `translate3d(${direction * 1.4}rem, 0.75rem, 0) scale(.985)`,
+              },
+              { opacity: 1, transform: 'translate3d(0, 0, 0) scale(1)' },
+            ],
+            { duration: 440, easing: 'cubic-bezier(.16, 1, .3, 1)' },
+          );
+        }
+
+        activeIndex = nextIndex;
+        dots.forEach((dot, index) =>
+          dot.setAttribute('aria-current', String(index === activeIndex)),
+        );
+        if (current) current.textContent = String(activeIndex + 1).padStart(2, '0');
+      };
+
+      previous?.addEventListener('click', () => selectReview(activeIndex - 1, -1));
+      next?.addEventListener('click', () => selectReview(activeIndex + 1, 1));
+      dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => selectReview(index, index >= activeIndex ? 1 : -1));
+      });
+
+      section.addEventListener('keydown', (event) => {
+        if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+        if (!(event.target instanceof HTMLElement) || !event.target.closest('.reviews__navigation'))
+          return;
+        event.preventDefault();
+        selectReview(
+          activeIndex + (event.key === 'ArrowRight' ? 1 : -1),
+          event.key === 'ArrowRight' ? 1 : -1,
+        );
+      });
+    });
+  };
+
+  initReviews();
+  document.addEventListener('astro:page-load', initReviews);
+</script>
+
+<style>
+  .reviews {
+    position: relative;
+    isolation: isolate;
+    margin: 0 2rem clamp(4rem, 8vw, 8rem);
+    overflow: hidden;
+    border-radius: 2rem;
+    padding: clamp(3.25rem, 5vw, 4.75rem) 1.25rem clamp(3rem, 4.5vw, 4.25rem);
+    background:
+      radial-gradient(ellipse at 50% 112%, rgb(224 35 78 / 46%), transparent 42%),
+      radial-gradient(ellipse at -8% 12%, rgb(98 11 34 / 88%), transparent 43%),
+      radial-gradient(ellipse at 106% 18%, rgb(88 9 30 / 78%), transparent 45%),
+      linear-gradient(118deg, #620b22, #100507 47%, #58091e 72%, #100507);
+    box-shadow: 0 3rem 8rem rgb(0 0 0 / 34%);
+  }
+
+  .reviews::before {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background:
+      linear-gradient(112deg, transparent 18%, rgb(255 255 255 / 7%) 49%, transparent 76%),
+      radial-gradient(circle at 50% 12%, rgb(255 255 255 / 7%), transparent 27rem);
+    content: '';
+    filter: blur(28px);
+    pointer-events: none;
+    transform: skewX(-12deg);
+  }
+
+  .reviews__atmosphere {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    opacity: 0.62;
+    background-image:
+      radial-gradient(ellipse at 18% 28%, rgb(255 255 255 / 8%), transparent 27%),
+      radial-gradient(ellipse at 82% 72%, rgb(224 35 78 / 12%), transparent 32%),
+      linear-gradient(104deg, transparent 24%, rgb(255 255 255 / 4%) 51%, transparent 71%);
+    filter: blur(32px);
+    mask-image: linear-gradient(to bottom, black 12%, transparent 92%);
+    pointer-events: none;
+    transform: scale(1.08) skewX(-4deg);
+  }
+
+  .reviews__header {
+    display: grid;
+    justify-items: center;
+    max-width: 57rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .reviews__header h2 {
+    max-width: 14ch;
+    color: white;
+    font-size: clamp(2.3rem, 3vw, 4.5rem);
+    font-weight: 520;
+    letter-spacing: -0.04em;
+    line-height: 1.02;
+  }
+
+  .reviews__header p {
+    max-width: 36rem;
+    margin-top: 0.8rem;
+    color: rgb(255 238 242 / 76%);
+    font: 500 clamp(0.76rem, 0.9vw, 0.9rem)/1.65 var(--font-mono);
+  }
+
+  .reviews__stage {
+    display: grid;
+    justify-items: center;
+    width: min(100%, 32rem);
+    margin: clamp(2.5rem, 3.8vw, 3.5rem) auto 0;
+  }
+
+  .reviews__stack {
+    position: relative;
+    width: min(100%, 28rem);
+  }
+
+  .reviews__stack::before,
+  .reviews__stack::after {
+    position: absolute;
+    z-index: -1;
+    right: 2.25rem;
+    bottom: -0.8rem;
+    left: 2.25rem;
+    height: 3rem;
+    border: 1px solid rgb(255 255 255 / 7%);
+    border-radius: 1rem;
+    background: #19080c;
+    box-shadow: 0 1.8rem 3rem rgb(0 0 0 / 28%);
+    content: '';
+    transform: rotate(-1.4deg);
+  }
+
+  .reviews__stack::after {
+    right: 1.15rem;
+    bottom: -0.4rem;
+    left: 1.15rem;
+    background: #250a11;
+    transform: rotate(0.85deg);
+  }
+
+  .reviews__stack--single::before,
+  .reviews__stack--single::after {
+    display: none;
+  }
+
+  .reviews__card {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    min-height: clamp(21rem, 29vw, 24rem);
+    align-content: space-between;
+    gap: 1.5rem;
+    overflow: hidden;
+    border-radius: 1rem;
+    padding: clamp(1.35rem, 2.25vw, 2rem);
+    background:
+      radial-gradient(circle at 50% 0, rgb(255 255 255 / 5%), transparent 42%),
+      linear-gradient(145deg, #131313, #090909 64%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 8%),
+      0 2.25rem 5.5rem rgb(0 0 0 / 45%);
+    color: white;
+  }
+
+  .reviews__card[hidden] {
+    display: none;
+  }
+
+  .reviews__brand {
+    display: grid;
+    width: 6.5rem;
+    min-height: 3.75rem;
+    place-items: center;
+  }
+
+  .reviews__brand img {
+    width: 100%;
+    max-height: 3.75rem;
+    object-fit: contain;
+    object-position: left center;
+  }
+
+  .reviews__brand span {
+    display: grid;
+    width: 3rem;
+    aspect-ratio: 1;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--accent);
+    font-weight: 800;
+  }
+
+  .reviews__quote {
+    max-width: 30ch;
+    color: rgb(255 255 255 / 92%);
+    font-size: clamp(1rem, 1.25vw, 1.25rem);
+    font-weight: 560;
+    letter-spacing: -0.035em;
+    line-height: 1.28;
+  }
+
+  .reviews__quote--long {
+    max-width: 38ch;
+    font-size: clamp(0.9rem, 1vw, 1rem);
+    line-height: 1.42;
+  }
+
+  .reviews__quote--pending {
+    max-width: 34ch;
+    color: rgb(255 255 255 / 58%);
+    font-size: clamp(1rem, 1.25vw, 1.25rem);
+  }
+
+  .reviews__footer {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgb(255 255 255 / 8%);
+  }
+
+  .reviews__footer > div {
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  .reviews__footer strong {
+    font-size: 0.98rem;
+    font-weight: 760;
+    letter-spacing: -0.02em;
+  }
+
+  .reviews__footer span,
+  .reviews__footer a {
+    color: rgb(255 255 255 / 52%);
+    font: 550 0.72rem/1.5 var(--font-mono);
+  }
+
+  .reviews__footer a {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    gap: 0.45rem;
+    border-radius: 999px;
+    padding: 0.65rem 0.85rem;
+    color: rgb(255 255 255 / 72%);
+    transition:
+      background-color 220ms ease,
+      color 220ms ease,
+      transform 300ms var(--ease-out-expo);
+  }
+
+  .reviews__footer a:hover,
+  .reviews__footer a:focus-visible {
+    background: rgb(255 255 255 / 6%);
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  .reviews__footer svg {
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.7;
+  }
+
+  .reviews__navigation {
+    display: grid;
+    grid-template-columns: 3rem auto 1fr 3rem;
+    align-items: center;
+    gap: 0.85rem;
+    width: min(100%, 28rem);
+    margin-top: 1.5rem;
+  }
+
+  .reviews__navigation > button {
+    display: grid;
+    width: 3rem;
+    height: 3rem;
+    place-items: center;
+    border: 1px solid rgb(255 255 255 / 16%);
+    border-radius: 999px;
+    background: rgb(9 9 9 / 72%);
+    color: rgb(255 255 255 / 82%);
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition:
+      border-color 220ms ease,
+      background-color 220ms ease,
+      color 220ms ease,
+      transform 300ms var(--ease-out-expo);
+  }
+
+  .reviews__navigation > button:hover,
+  .reviews__navigation > button:focus-visible {
+    border-color: rgb(255 255 255 / 34%);
+    background: rgb(255 255 255 / 10%);
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  .reviews__navigation svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.7;
+  }
+
+  .reviews__position {
+    display: flex;
+    gap: 0.55ch;
+    color: rgb(255 255 255 / 48%);
+    font: 650 0.74rem/1 var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .reviews__position [data-review-current] {
+    color: white;
+  }
+
+  .reviews__dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+  }
+
+  .reviews__dots button {
+    position: relative;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .reviews__dots button::after {
+    position: absolute;
+    top: 50%;
+    right: 0.55rem;
+    left: 0.55rem;
+    height: 0.18rem;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 58%);
+    content: '';
+    transform: translateY(-50%);
+    transition:
+      background-color 220ms ease,
+      transform 300ms var(--ease-out-expo);
+  }
+
+  .reviews__dots button[aria-current='true']::after {
+    background: white;
+    transform: translateY(-50%) scaleX(1.18);
+  }
+
+  .reviews__dots button:hover::after,
+  .reviews__dots button:focus-visible::after {
+    background: rgb(255 255 255 / 82%);
+  }
+
+  @media (max-width: 700px) {
+    .reviews {
+      margin-inline: 0.75rem;
+      border-radius: 1.5rem;
+      padding: 3.5rem 0.75rem 3rem;
+    }
+
+    .reviews__header {
+      padding-inline: 0.5rem;
+    }
+
+    .reviews__stage {
+      margin-top: 2.5rem;
+    }
+
+    .reviews__stack::before {
+      right: 1.8rem;
+      left: 1.8rem;
+    }
+
+    .reviews__stack::after {
+      right: 0.85rem;
+      left: 0.85rem;
+    }
+
+    .reviews__card {
+      min-height: 21.5rem;
+      padding: 1.35rem;
+    }
+
+    .reviews__brand {
+      width: 5.75rem;
+      min-height: 3.3rem;
+    }
+
+    .reviews__footer {
+      align-items: start;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .reviews__footer a {
+      margin-left: -0.85rem;
+    }
+
+    .reviews__navigation {
+      grid-template-columns: 3rem 1fr 3rem;
+      gap: 0.5rem;
+      margin-top: 1.4rem;
+    }
+
+    .reviews__position {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reviews__footer a,
+    .reviews__navigation > button,
+    .reviews__dots button::after {
+      transition: none;
+    }
+  }
+</style>

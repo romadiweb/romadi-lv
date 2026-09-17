@@ -6,6 +6,54 @@ export interface Database {
   };
   public: {
     Tables: {
+      reviews: {
+        Row: {
+          client_name: string;
+          client_url: string | null;
+          created_at: string;
+          id: number;
+          is_published: boolean;
+          logo_url: string | null;
+          quote: string | null;
+          rating: number | null;
+          reviewer_name: string | null;
+          reviewer_role: string | null;
+          slug: string;
+          sort_order: number;
+          updated_at: string;
+        };
+        Insert: {
+          client_name: string;
+          client_url?: string | null;
+          created_at?: string;
+          id?: never;
+          is_published?: boolean;
+          logo_url?: string | null;
+          quote?: string | null;
+          rating?: number | null;
+          reviewer_name?: string | null;
+          reviewer_role?: string | null;
+          slug: string;
+          sort_order?: number;
+          updated_at?: string;
+        };
+        Update: {
+          client_name?: string;
+          client_url?: string | null;
+          created_at?: string;
+          id?: never;
+          is_published?: boolean;
+          logo_url?: string | null;
+          quote?: string | null;
+          rating?: number | null;
+          reviewer_name?: string | null;
+          reviewer_role?: string | null;
+          slug?: string;
+          sort_order?: number;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       pricing_plans: {
         Row: {
           created_at: string;
@@ -139,3 +187,4 @@ export interface Database {
 
 export type Project = Database['public']['Tables']['projects']['Row'];
 export type PricingPlan = Database['public']['Tables']['pricing_plans']['Row'];
+export type Review = Database['public']['Tables']['reviews']['Row'];

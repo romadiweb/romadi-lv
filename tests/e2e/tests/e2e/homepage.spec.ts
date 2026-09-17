@@ -174,6 +174,42 @@ test.describe('ROMADI homepage', () => {
     await expect(menu).not.toHaveAttribute('open', '', { timeout: 800 });
   });
 
+  test('reviews can be selected without autoplay', async ({ page }) => {
+    await page.goto('/');
+
+    const reviews = page.locator('[data-reviews]');
+    await expect(
+      reviews.getByRole('heading', { level: 2, name: /ko saka mūsu klienti/i }),
+    ).toBeVisible();
+    expect(
+      await reviews.evaluate((reviewsSection) => {
+        const supportSection = document.querySelector('.home-support');
+        return Boolean(
+          supportSection &&
+            supportSection.compareDocumentPosition(reviewsSection) &
+              Node.DOCUMENT_POSITION_FOLLOWING,
+        );
+      }),
+    ).toBe(true);
+    await expect(reviews.locator('[data-review-card]:not([hidden])')).toHaveAttribute(
+      'data-review-slug',
+      'liepajasteltis-lv',
+    );
+    await expect(reviews.locator('[data-review-card]:not([hidden]) .reviews__quote')).toContainText(
+      'pieauga pasūtījumu skaits un uzlabojās pozīcijas meklētājos',
+    );
+
+    await reviews.getByRole('button', { name: /nākamā atsauksme/i }).click();
+    await expect(reviews.locator('[data-review-card]:not([hidden])')).toHaveAttribute(
+      'data-review-slug',
+      'dianahunt-lv',
+    );
+    await expect(reviews.locator('[data-review-card]:not([hidden]) .reviews__quote')).toContainText(
+      'no studentiem saņemam ļoti pozitīvas atsauksmes',
+    );
+    await expect(reviews.locator('[data-review-current]')).toHaveText('02');
+  });
+
   test('mobile service artwork is ready before carousel interaction', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.addInitScript(() => {
