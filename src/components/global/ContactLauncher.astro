@@ -1,0 +1,397 @@
+---
+import { Icon } from 'astro-icon/components';
+
+import { SITE } from '@/config/site';
+
+const primaryPhone = SITE.contact.phones[0];
+const whatsappNumber = primaryPhone.href.replace(/^tel:\+?/, '');
+
+const contactOptions = [
+  {
+    label: 'Rakstīt WhatsApp',
+    href: `https://wa.me/${whatsappNumber}`,
+    icon: 'simple-icons:whatsapp',
+    external: true,
+  },
+  {
+    label: `Zvanīt ${primaryPhone.display}`,
+    href: primaryPhone.href,
+    icon: 'lucide:phone',
+    external: false,
+  },
+  {
+    label: `Rakstīt uz ${SITE.contact.email}`,
+    href: `mailto:${SITE.contact.email}`,
+    icon: 'lucide:mail',
+    external: false,
+  },
+] as const;
+---
+
+<div class="contact-launcher" data-contact-launcher data-open="false" data-visible="false">
+  <nav
+    class="contact-launcher__options"
+    id="contact-launcher-options"
+    aria-label="Ātrās saziņas iespējas"
+    aria-hidden="true"
+  >
+    {
+      contactOptions.map((option, index) => (
+        <a
+          href={option.href}
+          aria-label={option.label}
+          title={option.label}
+          target={option.external ? '_blank' : undefined}
+          rel={option.external ? 'noopener noreferrer' : undefined}
+          tabindex="-1"
+          style={`--contact-option-index: ${index}`}
+        >
+          <Icon name={option.icon} aria-hidden="true" />
+        </a>
+      ))
+    }
+  </nav>
+
+  <button
+    class="contact-launcher__toggle"
+    type="button"
+    aria-expanded="false"
+    aria-controls="contact-launcher-options"
+    aria-label="Atvērt saziņas iespējas"
+  >
+    <span>Sazināties</span>
+    <span class="contact-launcher__symbol" aria-hidden="true">
+      <Icon class="contact-launcher__message" name="lucide:message-circle-more" />
+      <span class="contact-launcher__close">
+        <span></span>
+        <span></span>
+      </span>
+    </span>
+  </button>
+</div>
+
+<script>
+  interface ContactLauncherWindow extends Window {
+    __romadiContactLauncherController?: AbortController;
+  }
+
+  const initContactLauncher = (): void => {
+    const root = document.querySelector<HTMLElement>('[data-contact-launcher]');
+    const toggle = root?.querySelector<HTMLButtonElement>('.contact-launcher__toggle');
+    const options = root?.querySelector<HTMLElement>('.contact-launcher__options');
+    const links = Array.from(
+      root?.querySelectorAll<HTMLAnchorElement>('.contact-launcher__options a') ?? [],
+    );
+
+    if (!root || !toggle || !options) return;
+
+    const launcherWindow = window as ContactLauncherWindow;
+    launcherWindow.__romadiContactLauncherController?.abort();
+
+    const controller = new AbortController();
+    const { signal } = controller;
+    launcherWindow.__romadiContactLauncherController = controller;
+
+    const setOpen = (isOpen: boolean, returnFocus = false): void => {
+      root.dataset.open = String(isOpen);
+      toggle.setAttribute('aria-expanded', String(isOpen));
+      toggle.setAttribute(
+        'aria-label',
+        isOpen ? 'Aizvērt saziņas iespējas' : 'Atvērt saziņas iespējas',
+      );
+      options.setAttribute('aria-hidden', String(!isOpen));
+      links.forEach((link) => (link.tabIndex = isOpen ? 0 : -1));
+
+      if (!isOpen && returnFocus) toggle.focus();
+    };
+
+    let frame = 0;
+
+    const updateVisibility = (): void => {
+      frame = 0;
+
+      const revealPoint = Math.min(680, window.innerHeight * 0.72);
+      const isVisible = window.scrollY > revealPoint;
+      root.dataset.visible = String(isVisible);
+
+      if (!isVisible && root.dataset.open === 'true') {
+        const focusedElement = document.activeElement;
+        setOpen(false);
+        if (focusedElement instanceof HTMLElement && root.contains(focusedElement)) {
+          focusedElement.blur();
+        }
+      }
+    };
+
+    const requestVisibilityUpdate = (): void => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(updateVisibility);
+    };
+
+    toggle.addEventListener('click', () => setOpen(root.dataset.open !== 'true'), { signal });
+
+    document.addEventListener(
+      'pointerdown',
+      (event) => {
+        if (root.dataset.open !== 'true' || !(event.target instanceof Node)) return;
+        if (!root.contains(event.target)) setOpen(false);
+      },
+      { signal },
+    );
+
+    document.addEventListener(
+      'keydown',
+      (event) => {
+        if (event.key !== 'Escape' || root.dataset.open !== 'true') return;
+        setOpen(false, true);
+      },
+      { signal },
+    );
+
+    window.addEventListener('scroll', requestVisibilityUpdate, { passive: true, signal });
+    window.addEventListener('resize', requestVisibilityUpdate, { passive: true, signal });
+    setOpen(false);
+    updateVisibility();
+  };
+
+  initContactLauncher();
+  document.addEventListener('astro:page-load', initContactLauncher);
+</script>
+
+<style>
+  .contact-launcher {
+    position: fixed;
+    z-index: 45;
+    bottom: clamp(1rem, 2.2vw, 2.25rem);
+    left: clamp(1rem, 2.2vw, 2.25rem);
+    display: grid;
+    justify-items: start;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate3d(0, 1rem, 0) scale(0.92);
+    visibility: hidden;
+    transition:
+      opacity 220ms ease,
+      transform 420ms var(--ease-out-expo),
+      visibility 0s linear 420ms;
+  }
+
+  .contact-launcher[data-visible='true'] {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate3d(0, 0, 0) scale(1);
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  .contact-launcher__options {
+    display: grid;
+    gap: 0.65rem;
+    margin: 0 0 0.75rem 0.15rem;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate3d(0, 0.55rem, 0) scale(0.96);
+    transform-origin: bottom left;
+    visibility: hidden;
+    transition:
+      opacity 140ms ease,
+      transform 160ms ease,
+      visibility 0s linear 160ms;
+  }
+
+  .contact-launcher[data-open='true'] .contact-launcher__options {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate3d(0, 0, 0) scale(1);
+    visibility: visible;
+    transition:
+      opacity 160ms ease,
+      transform 220ms var(--ease-out-expo),
+      visibility 0s;
+  }
+
+  .contact-launcher__options a {
+    display: grid;
+    width: 3.35rem;
+    height: 3.35rem;
+    border: 1px solid rgb(255 255 255 / 12%);
+    border-radius: 50%;
+    place-items: center;
+    background:
+      radial-gradient(circle at 50% 112%, rgb(98 11 34 / 62%), transparent 66%), rgb(9 9 9 / 96%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 8%),
+      0 0.9rem 2.2rem rgb(0 0 0 / 28%);
+    color: white;
+    opacity: 0;
+    transform: translate3d(0, 0.35rem, 0) scale(0.9);
+    transition:
+      background-color 160ms ease,
+      border-color 160ms ease,
+      box-shadow 220ms ease,
+      opacity 120ms ease,
+      transform 140ms ease;
+  }
+
+  .contact-launcher[data-open='true'] .contact-launcher__options a {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    transition:
+      background-color 160ms ease,
+      border-color 160ms ease,
+      box-shadow 220ms ease,
+      opacity 160ms ease calc(var(--contact-option-index) * 24ms),
+      transform 220ms var(--ease-out-expo) calc(var(--contact-option-index) * 24ms);
+  }
+
+  .contact-launcher__options a:hover,
+  .contact-launcher__options a:focus-visible {
+    border-color: rgb(247 95 127 / 56%);
+    background: #e0234e;
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 18%),
+      0 1rem 2.5rem rgb(224 35 78 / 28%);
+    transform: translateY(-0.125rem);
+  }
+
+  .contact-launcher__options a:focus-visible,
+  .contact-launcher__toggle:focus-visible {
+    outline: 3px solid rgb(247 95 127 / 52%);
+    outline-offset: 4px;
+  }
+
+  .contact-launcher__options :global(svg) {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .contact-launcher__toggle {
+    display: inline-flex;
+    min-width: 9rem;
+    min-height: 3.5rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border: 0;
+    border-radius: 999px;
+    padding: 0.8rem 1rem 0.8rem 1.25rem;
+    background: linear-gradient(135deg, #e0234e, #a91037);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 18%),
+      0 1rem 3rem rgb(224 35 78 / 26%);
+    color: white;
+    cursor: pointer;
+    font: 650 0.92rem/1 var(--font-sans);
+    letter-spacing: -0.015em;
+    transition:
+      box-shadow 220ms ease,
+      transform 220ms var(--ease-out-expo);
+  }
+
+  .contact-launcher__toggle:hover {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 22%),
+      0 1.25rem 3.5rem rgb(224 35 78 / 34%);
+    transform: translateY(-0.125rem);
+  }
+
+  .contact-launcher__toggle:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  .contact-launcher__symbol {
+    position: relative;
+    display: grid;
+    width: 1.35rem;
+    height: 1.35rem;
+    flex: 0 0 auto;
+    place-items: center;
+  }
+
+  .contact-launcher__message {
+    transition:
+      opacity 120ms ease,
+      transform 180ms var(--ease-out-expo);
+  }
+
+  .contact-launcher__symbol > :global(svg) {
+    width: 1.3rem;
+    height: 1.3rem;
+  }
+
+  .contact-launcher__close {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: rotate(-20deg) scale(0.76);
+    transition:
+      opacity 120ms ease,
+      transform 180ms var(--ease-out-expo);
+  }
+
+  .contact-launcher__close span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1.15rem;
+    height: 1.5px;
+    border-radius: 999px;
+    background: currentcolor;
+  }
+
+  .contact-launcher__close span:first-child {
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  .contact-launcher__close span:last-child {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+
+  .contact-launcher[data-open='true'] .contact-launcher__message {
+    opacity: 0;
+    transform: rotate(18deg) scale(0.76);
+  }
+
+  .contact-launcher[data-open='true'] .contact-launcher__close {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+
+  @media (max-width: 700px) {
+    .contact-launcher {
+      bottom: max(0.875rem, env(safe-area-inset-bottom));
+      left: max(0.875rem, env(safe-area-inset-left));
+    }
+
+    .contact-launcher__toggle {
+      width: 3.5rem;
+      min-width: 3.5rem;
+      height: 3.5rem;
+      min-height: 3.5rem;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .contact-launcher__toggle > span:first-child {
+      display: none;
+    }
+
+    .contact-launcher__options a {
+      width: 3.25rem;
+      height: 3.25rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .contact-launcher,
+    .contact-launcher__options,
+    .contact-launcher__options a,
+    .contact-launcher__toggle,
+    .contact-launcher__message,
+    .contact-launcher__close {
+      transform: none;
+      transition-duration: 1ms;
+      transition-delay: 0ms;
+    }
+  }
+</style>

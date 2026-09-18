@@ -174,6 +174,53 @@ test.describe('ROMADI homepage', () => {
     await expect(menu).not.toHaveAttribute('open', '', { timeout: 800 });
   });
 
+  test('contact launcher exposes direct contact options and closes with Escape', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        'romadi_cookie_consent_v1',
+        JSON.stringify({ choice: 'denied', updatedAt: Date.now() }),
+      );
+    });
+    await page.goto('/');
+
+    const launcher = page.locator('[data-contact-launcher]');
+    const toggle = launcher.getByRole('button', { name: /atvērt saziņas iespējas/i });
+    const options = launcher.getByRole('navigation', { name: /ātrās saziņas iespējas/i });
+    const scrollTop = page.locator('[data-scroll-top]');
+
+    await expect(launcher).toHaveAttribute('data-visible', 'false');
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await expect(options).toHaveAttribute('aria-hidden', 'true');
+
+    await page.evaluate(() => window.scrollTo(0, Math.min(1000, document.body.scrollHeight)));
+    await expect(launcher).toHaveAttribute('data-visible', 'true');
+    await expect(scrollTop).toHaveAttribute('data-visible', 'true');
+    await expect(toggle.locator(':scope > span').first()).toBeHidden();
+    expect(await toggle.boundingBox()).toMatchObject({ width: 56, height: 56 });
+
+    await toggle.click();
+
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    await expect(options).toHaveAttribute('aria-hidden', 'false');
+    await expect(launcher.getByRole('link', { name: /rakstīt whatsapp/i })).toHaveAttribute(
+      'href',
+      'https://wa.me/37126625125',
+    );
+    await expect(launcher.getByRole('link', { name: /zvanīt \+371 26 625 125/i })).toHaveAttribute(
+      'href',
+      'tel:+37126625125',
+    );
+    await expect(launcher.getByRole('link', { name: /rakstīt uz info@romadi.lv/i })).toHaveAttribute(
+      'href',
+      'mailto:info@romadi.lv',
+    );
+
+    await page.keyboard.press('Escape');
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await expect(toggle).toBeFocused();
+  });
+
   test('reviews can be selected without autoplay', async ({ page }) => {
     await page.goto('/');
 
