@@ -33,10 +33,10 @@
 
 <script>
   type ConsentChoice = 'granted' | 'denied' | null;
-  type ConsentApi = {
+  interface ConsentApi {
     getChoice: () => ConsentChoice;
     setAnalytics: (granted: boolean) => void;
-  };
+  }
 
   const getConsentApi = (): ConsentApi | undefined =>
     (window as typeof window & { romadiConsent?: ConsentApi }).romadiConsent;

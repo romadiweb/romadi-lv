@@ -1,0 +1,167 @@
+---
+import PortalLayout from '@/layouts/PortalLayout.astro';
+
+export const prerender = false;
+
+const identity = Astro.locals.portalIdentity;
+if (!identity) return Astro.redirect('/portal/login?reason=session');
+
+const existingCsrf = Astro.cookies.get('portal_csrf')?.value;
+const csrfToken = existingCsrf ?? crypto.randomUUID();
+if (!existingCsrf) {
+  Astro.cookies.set('portal_csrf', csrfToken, {
+    httpOnly: false,
+    maxAge: 60 * 60 * 8,
+    path: '/',
+    sameSite: 'strict',
+    secure: import.meta.env.PROD,
+  });
+}
+---
+
+<PortalLayout
+  title="Satura vadības centrs"
+  description="ROMADI projektu, atsauksmju un cenu plānu pārvaldība."
+>
+  <main
+    id="portal-main"
+    class="portal-dashboard"
+    data-portal-dashboard
+    data-role={identity.role}
+    data-csrf={csrfToken}
+  >
+    <aside class="portal-sidebar">
+      <a class="portal-sidebar-brand" href="/" aria-label="ROMADI sākumlapa">
+        <img src="/images/brand/romadi-logo-white.svg" width="116" height="31" alt="ROMADI" />
+        <span>CMS</span>
+      </a>
+
+      <nav class="portal-nav" aria-label="Satura sadaļas">
+        <button type="button" class="is-active" data-resource="projects">
+          <span class="portal-nav-signal"></span>
+          <span>Projekti</span>
+          <b data-count="projects">—</b>
+        </button>
+        <button type="button" data-resource="reviews">
+          <span class="portal-nav-signal"></span>
+          <span>Atsauksmes</span>
+          <b data-count="reviews">—</b>
+        </button>
+        <button type="button" data-resource="pricing_plans">
+          <span class="portal-nav-signal"></span>
+          <span>Cenu plāni</span>
+          <b data-count="pricing_plans">—</b>
+        </button>
+        {identity.role === 'super-admin' && (
+          <button type="button" data-resource="audit">
+            <span class="portal-nav-signal"></span>
+            <span>Izmaiņu žurnāls</span>
+          </button>
+        )}
+      </nav>
+
+      <div class="portal-sidebar-foot">
+        <div class="portal-user-summary">
+          <span>{identity.email.slice(0, 1).toUpperCase()}</span>
+          <div>
+            <strong>{identity.email}</strong>
+            <small>{identity.role === 'super-admin' ? 'Super-admins' : 'Administrators'}</small>
+          </div>
+        </div>
+        <button type="button" class="portal-logout" data-logout>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M10 17l5-5-5-5M15 12H3M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"></path>
+          </svg>
+          <span>Izrakstīties</span>
+        </button>
+      </div>
+    </aside>
+
+    <section class="portal-workspace">
+      <header class="portal-workspace-header">
+        <div>
+          <h1 data-section-title>Projekti</h1>
+          <p data-section-description>Pārvaldi portfolio saturu un publicēšanas stāvokli.</p>
+        </div>
+        <button type="button" class="portal-create-action" data-create>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+          <span>Jauns ieraksts</span>
+        </button>
+      </header>
+
+      <div class="portal-work-grid" data-work-grid>
+        <section class="portal-list-panel" aria-labelledby="content-list-title">
+          <header>
+            <h2 id="content-list-title">Saturs</h2>
+            <span data-list-status>Ielādē…</span>
+          </header>
+          <div class="portal-list" data-content-list aria-live="polite"></div>
+        </section>
+
+        <section class="portal-editor-panel" data-editor-panel aria-labelledby="editor-title">
+          <header>
+            <div>
+              <h2 id="editor-title" data-editor-title>Izvēlies ierakstu</h2>
+              <p>Vienkāršs teksts; HTML tiek noraidīts serverī.</p>
+            </div>
+            <span class="portal-draft-state" data-record-state>Nav izvēlēts</span>
+          </header>
+
+          <div class="portal-editor-empty" data-editor-empty>
+            <span class="portal-empty-glyph" aria-hidden="true"></span>
+            <h3>Saturs gaida izvēli</h3>
+            <p>Izvēlies ierakstu kreisajā pusē vai izveido jaunu.</p>
+          </div>
+
+          <form class="portal-editor-form" data-editor-form hidden>
+            <div class="portal-form-fields" data-form-fields></div>
+            <div class="portal-editor-actions">
+              <button type="button" class="portal-delete-action" data-delete hidden>Dzēst</button>
+              <span class="portal-save-status" data-save-status aria-live="polite"></span>
+              <button type="submit" class="portal-primary-action">Saglabāt izmaiņas</button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </section>
+
+    <div class="portal-toast" data-toast role="status" aria-live="polite" hidden></div>
+
+    <dialog class="portal-confirm-dialog" data-delete-dialog>
+      <form method="dialog">
+        <span class="portal-dialog-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 10v6M14 10v6"></path>
+          </svg>
+        </span>
+        <h2>Dzēst šo ierakstu?</h2>
+        <p>Šo darbību nevar atsaukt. Izmaiņa tiks saglabāta audita žurnālā.</p>
+        <div>
+          <button value="cancel" class="portal-secondary-action">Atcelt</button>
+          <button value="confirm" class="portal-danger-action">Dzēst neatgriezeniski</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="portal-confirm-dialog" data-discard-dialog>
+      <form method="dialog">
+        <span class="portal-dialog-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M9 14l-4-4 4-4M5 10h8a6 6 0 0 1 6 6v2"></path>
+          </svg>
+        </span>
+        <h2>Atmest nesaglabātās izmaiņas?</h2>
+        <p>Šajā ierakstā ir izmaiņas, kas vēl nav saglabātas.</p>
+        <div>
+          <button value="cancel" class="portal-secondary-action">Turpināt rediģēt</button>
+          <button value="confirm" class="portal-danger-action">Atmest izmaiņas</button>
+        </div>
+      </form>
+    </dialog>
+  </main>
+
+  <script>
+    import { initPortalDashboard } from '@/lib/portal/dashboard';
+    initPortalDashboard();
+  </script>
+</PortalLayout>

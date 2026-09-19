@@ -6,6 +6,42 @@ export interface Database {
   };
   public: {
     Tables: {
+      cms_audit_log: {
+        Row: {
+          actor_id: string | null;
+          actor_role: string | null;
+          changed_at: string;
+          id: number;
+          new_data: Json | null;
+          old_data: Json | null;
+          operation: 'INSERT' | 'UPDATE' | 'DELETE';
+          record_id: number | null;
+          table_name: 'projects' | 'pricing_plans' | 'reviews';
+        };
+        Insert: {
+          actor_id?: string | null;
+          actor_role?: string | null;
+          changed_at?: string;
+          id?: never;
+          new_data?: Json | null;
+          old_data?: Json | null;
+          operation: 'INSERT' | 'UPDATE' | 'DELETE';
+          record_id?: number | null;
+          table_name: 'projects' | 'pricing_plans' | 'reviews';
+        };
+        Update: {
+          actor_id?: string | null;
+          actor_role?: string | null;
+          changed_at?: string;
+          id?: never;
+          new_data?: Json | null;
+          old_data?: Json | null;
+          operation?: 'INSERT' | 'UPDATE' | 'DELETE';
+          record_id?: number | null;
+          table_name?: 'projects' | 'pricing_plans' | 'reviews';
+        };
+        Relationships: [];
+      };
       reviews: {
         Row: {
           client_name: string;
@@ -179,7 +215,21 @@ export interface Database {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      consume_portal_login_attempt: {
+        Args: {
+          p_block_seconds?: number;
+          p_max_attempts?: number;
+          p_rate_key: string;
+          p_window_seconds?: number;
+        };
+        Returns: { allowed: boolean; retry_after_seconds: number }[];
+      };
+      reset_portal_login_attempts: {
+        Args: { p_rate_key: string };
+        Returns: undefined;
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };
@@ -188,3 +238,4 @@ export interface Database {
 export type Project = Database['public']['Tables']['projects']['Row'];
 export type PricingPlan = Database['public']['Tables']['pricing_plans']['Row'];
 export type Review = Database['public']['Tables']['reviews']['Row'];
+export type CmsAuditLog = Database['public']['Tables']['cms_audit_log']['Row'];

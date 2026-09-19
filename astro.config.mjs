@@ -1,4 +1,5 @@
 import { defineConfig } from 'astro/config';
+import netlify from '@astrojs/netlify';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import icon from 'astro-icon';
@@ -8,8 +9,18 @@ export default defineConfig({
   // Replace before production launch.
   site: 'https://romadi.lv',
 
+  // Keep supervised portal previews free of development-only overlay controls.
+  devToolbar: { enabled: false },
+
   // Static-first architecture for maximum performance and crawlability.
   output: 'static',
+  adapter: netlify({
+    devFeatures: {
+      edgeFunctions: false,
+      environmentVariables: false,
+      images: false,
+    },
+  }),
 
   trailingSlash: 'never',
 
@@ -25,7 +36,7 @@ export default defineConfig({
   integrations: [
     mdx(),
     sitemap({
-      filter: (page) => !new URL(page).pathname.startsWith('/veidnes'),
+      filter: (page) => !new globalThis.URL(page).pathname.startsWith('/veidnes'),
     }),
     icon(),
   ],

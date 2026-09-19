@@ -1,0 +1,116 @@
+---
+import PortalLayout from '@/layouts/PortalLayout.astro';
+import { getPortalEnvironment } from '@/lib/portal/supabase-server';
+
+export const prerender = false;
+
+const errorCode = Astro.url.searchParams.get('error');
+const reason = Astro.url.searchParams.get('reason');
+const retry = Number(Astro.url.searchParams.get('retry') ?? 0);
+const turnstileSiteKey = getPortalEnvironment().turnstileSiteKey;
+
+const messages: Record<string, string> = {
+  configuration:
+    'Portāla savienojums vēl nav konfigurēts. Pārbaudi servera Supabase un Turnstile atslēgas.',
+  forbidden: 'Šim kontam nav piešķirta CMS administratora loma.',
+  invalid: 'E-pasts vai parole nav pareiza.',
+  rate: `Pārāk daudz mēģinājumu. Mēģini vēlreiz pēc aptuveni ${Math.max(1, Math.ceil(retry / 60))} minūtēm.`,
+  turnstile: 'Drošības pārbaude neizdevās. Atjauno pārbaudi un mēģini vēlreiz.',
+  unavailable: 'Pieteikšanās pašlaik nav pieejama. Mēģini vēlreiz pēc brīža.',
+};
+const errorMessage = errorCode ? messages[errorCode] : null;
+const sessionMessage = reason === 'session' ? 'Sesija ir beigusies. Piesakies vēlreiz.' : null;
+---
+
+<PortalLayout
+  title="Portāla pieteikšanās"
+  description="Droša ROMADI satura pārvaldības portāla pieteikšanās."
+>
+  <main id="portal-main" class="portal-login-shell">
+    <section class="portal-login-panel" aria-labelledby="login-title">
+      <header class="portal-login-brand">
+        <a href="/" aria-label="Atgriezties ROMADI sākumlapā">
+          <img src="/images/brand/romadi-logo-white.svg" width="128" height="34" alt="ROMADI" />
+        </a>
+        <span class="portal-status-mark">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3l7 3v5c0 4.6-2.9 8.2-7 10-4.1-1.8-7-5.4-7-10V6l7-3Z"></path>
+            <path d="m9.5 12 1.7 1.7 3.6-3.8"></path>
+          </svg>
+          Privāts portāls
+        </span>
+      </header>
+
+      <h1 id="login-title" class="portal-visually-hidden">ROMADI portāla pieteikšanās</h1>
+
+      {(errorMessage || sessionMessage) && (
+        <div class="portal-alert" role="alert">
+          <span aria-hidden="true">!</span>
+          <p>{errorMessage ?? sessionMessage}</p>
+        </div>
+      )}
+
+      <form class="portal-login-form" action="/api/portal/login" method="post">
+        <label class="portal-field">
+          <span>E-pasta adrese</span>
+          <input
+            name="email"
+            type="email"
+            inputmode="email"
+            autocomplete="username"
+            maxlength="254"
+            required
+          />
+        </label>
+
+        <label class="portal-field">
+          <span>Parole</span>
+          <input
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            maxlength="1024"
+            required
+          />
+        </label>
+
+        {turnstileSiteKey ? (
+          <div class="portal-turnstile-wrap">
+            <div
+              class="cf-turnstile"
+              data-sitekey={turnstileSiteKey}
+              data-action="portal_login"
+              data-theme="dark"
+              data-language="lv"
+              data-size="flexible"
+            ></div>
+          </div>
+        ) : (
+          <p class="portal-config-note" role="alert">
+            Trūkst Turnstile publiskās atslēgas. Pieteikšanās ir apturēta.
+          </p>
+        )}
+
+        <button class="portal-primary-action" type="submit" disabled={!turnstileSiteKey}>
+          <span>Pieslēgties portālam</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6"></path>
+          </svg>
+        </button>
+      </form>
+
+      <footer class="portal-login-footer">
+        <div class="portal-security-note">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="5" y="10" width="14" height="10" rx="2"></rect>
+            <path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v2"></path>
+          </svg>
+          <p>ROMADI administrācijas vide. Nepilnvarota piekļuve nav atļauta.</p>
+        </div>
+        <a href="mailto:info@romadi.lv">Vajadzīga palīdzība?</a>
+      </footer>
+    </section>
+  </main>
+
+  <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</PortalLayout>

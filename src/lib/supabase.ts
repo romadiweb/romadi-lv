@@ -6,7 +6,7 @@ const supabasePublishableKey = import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabasePublishableKey);
 
-export const supabase = isSupabaseConfigured
+export const supabase = supabaseUrl && supabasePublishableKey
   ? createClient<Database>(supabaseUrl, supabasePublishableKey, {
       auth: {
         autoRefreshToken: false,

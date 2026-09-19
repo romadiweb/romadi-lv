@@ -1,0 +1,31 @@
+---
+import '@fontsource-variable/manrope';
+import '@/styles/global.css';
+import '@/styles/portal.css';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="lv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#080305" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="referrer" content="same-origin" />
+    <title>{title} | ROMADI</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/romadi-favicon-v2.svg" />
+  </head>
+  <body class="portal-body">
+    <a class="portal-skip-link" href="#portal-main">Pāriet uz saturu</a>
+    <slot />
+  </body>
+</html>

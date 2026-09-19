@@ -44,3 +44,8 @@ All commands are run from the root of the project, from a terminal:
 ## 👀 Want to learn more?
 
 Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## Portal CMS
+
+Project setup and local development notes live in this repository. For the
+private Supabase-backed content portal, see
+[`docs/portal-cms-setup.md`](docs/portal-cms-setup.md).
