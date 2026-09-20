@@ -1,20 +1,4 @@
 ---
-/**
- * ROMADI — Why Choose section
- * ------------------------------------------------------------
- * Drop-in Astro component. No dependencies, no external assets.
- *
- * Usage:
- *   import RomadiWhyChoose from "../components/RomadiWhyChoose.astro";
- *   <RomadiWhyChoose />
- *
- * Optional props:
- *   <RomadiWhyChoose
- *      title="Kāpēc izvēlēties ROMADI"
- *      interval={5200}
- *   />
- */
-
 interface Props {
   title?: string;
   interval?: number;
@@ -283,10 +267,10 @@ const phases = [
     if (!stage || dynamics.length === 0) return;
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const interval = Math.max(3200, Number(section.dataset.interval) || 5200);
+    const interval = Math.max(3200, Number(el.dataset.interval) || 5200);
 
     let active = 0;
-    let timer: NodeJS.Timeout | null = null;
+    let timer: number | undefined;
     let visible = true;
     let userPausedUntil = 0;
 
@@ -296,7 +280,7 @@ const phases = [
       ['24', '12'],
     ];
 
-    const activate = (next, manual = false) => {
+    const activate = (next: number, manual = false) => {
       const count = dynamics.length;
       active = ((next % count) + count) % count;
 
@@ -312,7 +296,7 @@ const phases = [
         button.setAttribute('aria-selected', String(isActive));
       });
 
-      if (incidentNumber) incidentNumber.textContent = counts[active][0];
+      if (incidentNumber) incidentNumber.textContent = counts[active]?.[0] ?? null;
 
       if (wordWindow && !reducedMotion) {
         wordWindow.classList.remove('is-flashing');
@@ -320,7 +304,7 @@ const phases = [
         wordWindow.classList.add('is-flashing');
       }
       successNumbers.forEach((el, i) => {
-        if (i === active) el.textContent = counts[active][1];
+        if (i === active) el.textContent = counts[active]?.[1] ?? null;
       });
 
       if (manual) userPausedUntil = performance.now() + interval * 1.35;
@@ -348,7 +332,7 @@ const phases = [
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        visible = entry.isIntersecting;
+        visible = entry?.isIntersecting ?? false;
         if (visible) schedule();
         else window.clearTimeout(timer);
       },
@@ -360,9 +344,10 @@ const phases = [
     let raf = 0;
     section.addEventListener('pointermove', (event) => {
       if (reducedMotion) return;
+      const pointerEvent = event as PointerEvent;
       const rect = stage.getBoundingClientRect();
-      const x = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
-      const y = Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height));
+      const x = Math.max(0, Math.min(1, (pointerEvent.clientX - rect.left) / rect.width));
+      const y = Math.max(0, Math.min(1, (pointerEvent.clientY - rect.top) / rect.height));
 
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
