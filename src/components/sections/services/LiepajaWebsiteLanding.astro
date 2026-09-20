@@ -11,7 +11,6 @@ interface FaqItem {
 interface Props {
   faqs: readonly FaqItem[];
 }
-
 const { faqs } = Astro.props;
 const contactHref = '/kontakti?pakalpojums=majaslapu-izstrade';
 
@@ -186,10 +185,10 @@ const process = [
 
 const reviewSignals = [
   { icon: 'lucide:building-2', label: 'Liepājas Teltis', active: true },
-  { icon: 'lucide:trending-up', label: 'Pasūtījumu pieaugums' },
-  { icon: 'lucide:search', label: 'Meklētāju pozīcijas' },
-  { icon: 'lucide:life-buoy', label: 'Atbalsts pēc palaišanas' },
-  { icon: 'lucide:code-xml', label: 'Individuāla izstrāde' },
+  { icon: 'lucide:trending-up', label: 'Pasūtījumu pieaugums', active: false },
+  { icon: 'lucide:search', label: 'Meklētāju pozīcijas', active: false },
+  { icon: 'lucide:life-buoy', label: 'Atbalsts pēc palaišanas', active: false },
+  { icon: 'lucide:code-xml', label: 'Individuāla izstrāde', active: false },
 ] as const;
 
 const reviewFacts = [
