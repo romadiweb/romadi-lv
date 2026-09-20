@@ -1,0 +1,1518 @@
+---
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  subtitle?: string;
+  class?: string;
+  embedded?: boolean;
+}
+
+const {
+  eyebrow = 'ROMADI / DIGITAL REACH',
+  title = 'Digitāli. Bez robežām.',
+  subtitle = 'Dizains, izstrāde un digitālās sistēmas — veidotas ātrumam, mērogam un reālai lietošanai.',
+  class: className = '',
+  embedded = false,
+} = Astro.props;
+---
+
+<section
+  class:list={['rg-section', { 'rg-section--embedded': embedded }, className]}
+  data-romadi-globe
+>
+  <div class="rg-shell">
+    <header class="rg-copy">
+      {
+        eyebrow && (
+          <div class="rg-eyebrow" aria-hidden="true">
+            <span class="rg-eyebrow-dot" />
+            <span>{eyebrow}</span>
+          </div>
+        )
+      }
+
+      <h2>{title}</h2>
+      <p>{subtitle}</p>
+    </header>
+
+    <div class="rg-stage" data-stage>
+      <canvas class="rg-canvas" data-canvas aria-hidden="true"></canvas>
+
+      <div
+        class="rg-marker"
+        data-marker
+        data-lat="56.5047"
+        data-lon="21.0108"
+        data-callout-id="liepaja"
+      >
+        <span class="rg-node" aria-hidden="true"><span></span></span>
+      </div>
+
+      <div
+        class="rg-marker"
+        data-marker
+        data-lat="40.7128"
+        data-lon="-74.0060"
+        data-callout-id="commerce"
+      >
+        <span class="rg-node" aria-hidden="true"><span></span></span>
+      </div>
+
+      <div
+        class="rg-marker"
+        data-marker
+        data-lat="25.2048"
+        data-lon="55.2708"
+        data-callout-id="systems"
+      >
+        <span class="rg-node" aria-hidden="true"><span></span></span>
+      </div>
+
+      <div class="rg-callout rg-callout--left-top" data-callout="liepaja" data-anchor="right">
+        <span class="rg-callout-leader" data-callout-leader aria-hidden="true"></span>
+        <div class="rg-card" data-callout-card>
+          <small>LIEPĀJA / WEB IZSTRĀDE</small>
+          <strong>Vietējā bāze</strong>
+          <span>Ātras mājaslapas un digitāli produkti ar tiešu saziņu tepat Liepājā.</span>
+        </div>
+      </div>
+
+      <div class="rg-callout rg-callout--right-top" data-callout="commerce" data-anchor="left">
+        <span class="rg-callout-leader" data-callout-leader aria-hidden="true"></span>
+        <div class="rg-card" data-callout-card>
+          <small>LATVIJA / E-KOMERCIJA</small>
+          <strong>No intereses līdz pirkumam</strong>
+          <span>Veikali, maksājumi un integrācijas ar pārdomātu klienta ceļu.</span>
+        </div>
+      </div>
+
+      <div class="rg-callout rg-callout--left-bottom" data-callout="systems" data-anchor="right">
+        <span class="rg-callout-leader" data-callout-leader aria-hidden="true"></span>
+        <div class="rg-card" data-callout-card>
+          <small>BEZ ROBEŽĀM / SISTĒMAS</small>
+          <strong>Risinājumi, kas aug līdzi</strong>
+          <span>Automatizācija un iekšējie rīki procesiem dažādās komandās un tirgos.</span>
+        </div>
+      </div>
+
+      <div class="rg-hud rg-hud--left" aria-hidden="true">
+        <span>56.5047° N</span>
+        <span>21.0108° E</span>
+      </div>
+
+      <div class="rg-hud rg-hud--right" aria-hidden="true">
+        <span>ROMADI / LIEPĀJA</span>
+        <span>WEB / DESIGN / SYSTEMS</span>
+      </div>
+
+      <div class="rg-vignette" aria-hidden="true"></div>
+      <div class="rg-floor-glow" aria-hidden="true"></div>
+      <div class="rg-bottom-fade" aria-hidden="true"></div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .rg-section {
+    --rg-accent: var(--romadi-accent, #e62d67);
+    --rg-bg: var(--romadi-background, #0a0a0c);
+    --rg-text: var(--romadi-text, #f4f1f2);
+    --rg-muted: var(--romadi-muted, #948e91);
+    --rg-line: rgba(255, 255, 255, 0.075);
+
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background:
+      radial-gradient(
+        circle at 50% 22%,
+        color-mix(in srgb, var(--rg-accent) 6%, transparent),
+        transparent 34%
+      ),
+      linear-gradient(180deg, #0c0c0f 0%, var(--rg-bg) 56%, #08080a 100%);
+    color: var(--rg-text);
+    min-height: 980px;
+    border-top: 1px solid rgba(255, 255, 255, 0.045);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.045);
+  }
+
+  .rg-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.18;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.014) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.45) 25%, #000 100%);
+  }
+
+  .rg-section::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.11;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.02) 0,
+      rgba(255, 255, 255, 0.02) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+    mix-blend-mode: soft-light;
+  }
+
+  .rg-shell {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 1440px);
+    min-height: inherit;
+    margin: 0 auto;
+    padding: 92px 28px 0;
+  }
+
+  .rg-copy {
+    position: relative;
+    z-index: 6;
+    width: min(820px, 100%);
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .rg-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 21px;
+    color: color-mix(in srgb, var(--rg-text) 58%, transparent);
+    font-size: 11px;
+    font-weight: 650;
+    line-height: 1;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .rg-eyebrow-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--rg-accent);
+    box-shadow: 0 0 18px color-mix(in srgb, var(--rg-accent) 72%, transparent);
+  }
+
+  .rg-copy h2 {
+    margin: 0;
+    font: inherit;
+    font-size: clamp(44px, 5.3vw, 78px);
+    font-weight: 600;
+    line-height: 0.98;
+    letter-spacing: -0.052em;
+    text-wrap: balance;
+  }
+
+  .rg-copy p {
+    width: min(720px, 92%);
+    margin: 24px auto 0;
+    color: var(--rg-muted);
+    font-size: clamp(16px, 1.45vw, 20px);
+    line-height: 1.55;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+
+  .rg-stage {
+    position: relative;
+    width: min(1280px, 100%);
+    height: 760px;
+    margin: 16px auto 0;
+    overflow: visible;
+    cursor: grab;
+    touch-action: pan-y;
+    user-select: none;
+  }
+
+  .rg-stage.is-dragging {
+    cursor: grabbing;
+  }
+
+  .rg-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 1;
+  }
+
+  .rg-vignette,
+  .rg-floor-glow,
+  .rg-bottom-fade {
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .rg-vignette {
+    z-index: 2;
+    inset: 0;
+    background:
+      linear-gradient(
+        90deg,
+        rgba(10, 10, 12, 0.86) 0%,
+        transparent 14%,
+        transparent 86%,
+        rgba(10, 10, 12, 0.86) 100%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(10, 10, 12, 0.22) 0%,
+        transparent 20%,
+        transparent 76%,
+        rgba(10, 10, 12, 0.62) 100%
+      );
+  }
+
+  .rg-floor-glow {
+    z-index: 0;
+    width: 72%;
+    aspect-ratio: 2.6 / 1;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    background: radial-gradient(
+      ellipse,
+      color-mix(in srgb, var(--rg-accent) 16%, transparent),
+      transparent 67%
+    );
+    filter: blur(36px);
+    opacity: 0.75;
+  }
+
+  .rg-bottom-fade {
+    z-index: 4;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 26%;
+    background: linear-gradient(to bottom, transparent, var(--rg-bg) 94%);
+  }
+
+  .rg-marker {
+    --marker-scale: 1;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 5;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    transform: translate3d(-9999px, -9999px, 0);
+    transition: opacity 260ms ease;
+    will-change: transform, opacity;
+    pointer-events: none;
+  }
+
+  .rg-node {
+    position: absolute;
+    left: -19px;
+    top: -19px;
+    width: 38px;
+    height: 38px;
+    border: 1px solid color-mix(in srgb, var(--rg-accent) 72%, transparent);
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--rg-bg) 86%, transparent);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.025) inset,
+      0 0 26px color-mix(in srgb, var(--rg-accent) 13%, transparent);
+    transform: scale(var(--marker-scale));
+  }
+
+  .rg-node::before,
+  .rg-node::after {
+    content: '';
+    position: absolute;
+    inset: 7px;
+    border-radius: 50%;
+    border: 1px solid color-mix(in srgb, var(--rg-accent) 28%, transparent);
+  }
+
+  .rg-node::after {
+    inset: 13px;
+    border: 0;
+    background: var(--rg-accent);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--rg-accent) 74%, transparent);
+  }
+
+  .rg-node > span {
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    border: 1px solid color-mix(in srgb, var(--rg-accent) 32%, transparent);
+    animation: rg-pulse 2.8s ease-out infinite;
+  }
+
+  @keyframes rg-pulse {
+    0% {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    22% {
+      opacity: 0.65;
+    }
+    100% {
+      transform: scale(1.7);
+      opacity: 0;
+    }
+  }
+
+  .rg-callout {
+    position: absolute;
+    inset: 0;
+    z-index: 6;
+    visibility: visible;
+    opacity: 1;
+    pointer-events: none;
+  }
+
+  .rg-runtime .rg-callout {
+    visibility: hidden;
+    opacity: 0;
+    transition:
+      opacity 150ms ease-out,
+      visibility 0s linear 150ms;
+  }
+
+  .rg-runtime .rg-callout.is-visible {
+    visibility: visible;
+    opacity: 1;
+    transition:
+      opacity 260ms cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0s linear 0s;
+  }
+
+  .rg-callout-leader {
+    position: absolute;
+    z-index: 0;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--rg-accent) 72%, transparent),
+      color-mix(in srgb, var(--rg-accent) 18%, transparent)
+    );
+    transform-origin: 0 50%;
+    pointer-events: none;
+    will-change: width, transform;
+  }
+
+  .rg-card {
+    position: absolute;
+    z-index: 1;
+    width: 250px;
+    padding: 17px 18px 18px;
+    border: 1px solid color-mix(in srgb, var(--rg-accent) 38%, transparent);
+    background: color-mix(in srgb, #0b0b0e 89%, transparent);
+    backdrop-filter: blur(18px) saturate(120%);
+    box-shadow:
+      0 18px 60px rgba(0, 0, 0, 0.28),
+      inset 0 1px rgba(255, 255, 255, 0.025);
+    pointer-events: none;
+  }
+
+  .rg-callout--left-top .rg-card {
+    top: 21%;
+    left: clamp(24px, 6vw, 82px);
+  }
+
+  .rg-callout--right-top .rg-card {
+    top: 26%;
+    right: clamp(24px, 6vw, 82px);
+  }
+
+  .rg-callout--left-bottom .rg-card {
+    top: 52%;
+    left: clamp(38px, 10vw, 136px);
+  }
+
+  .rg-card::before,
+  .rg-card::after {
+    content: '';
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    pointer-events: none;
+  }
+
+  .rg-card::before {
+    left: -1px;
+    top: -1px;
+    border-left: 1px solid var(--rg-accent);
+    border-top: 1px solid var(--rg-accent);
+  }
+
+  .rg-card::after {
+    right: -1px;
+    bottom: -1px;
+    border-right: 1px solid var(--rg-accent);
+    border-bottom: 1px solid var(--rg-accent);
+  }
+
+  .rg-card small {
+    display: block;
+    margin-bottom: 9px;
+    color: var(--rg-accent);
+    font-size: 10px;
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+  }
+
+  .rg-card strong {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--rg-text);
+    font-size: 15px;
+    font-weight: 650;
+    line-height: 1.22;
+    letter-spacing: -0.018em;
+  }
+
+  .rg-card > span {
+    display: block;
+    color: color-mix(in srgb, var(--rg-text) 58%, transparent);
+    font-size: 12px;
+    line-height: 1.48;
+  }
+
+  .rg-hud {
+    position: absolute;
+    z-index: 3;
+    bottom: 52px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    color: rgba(255, 255, 255, 0.32);
+    font-size: 9px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    pointer-events: none;
+  }
+
+  .rg-hud--left {
+    left: 24px;
+  }
+  .rg-hud--right {
+    right: 24px;
+    text-align: right;
+  }
+
+  @media (max-width: 900px) {
+    .rg-section {
+      min-height: 900px;
+    }
+
+    .rg-shell {
+      padding: 74px 20px 0;
+    }
+
+    .rg-stage {
+      width: calc(100% + 40px);
+      margin-left: -20px;
+      height: 690px;
+    }
+
+    .rg-card {
+      width: 216px;
+      padding: 14px 15px 15px;
+    }
+
+    .rg-callout--left-top .rg-card {
+      left: 18px;
+    }
+
+    .rg-callout--right-top .rg-card {
+      right: 18px;
+    }
+
+    .rg-callout--left-bottom .rg-card {
+      left: 34px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .rg-section {
+      min-height: 820px;
+    }
+
+    .rg-shell {
+      padding: 62px 16px 0;
+    }
+
+    .rg-copy h2 {
+      font-size: clamp(42px, 13vw, 62px);
+    }
+
+    .rg-copy p {
+      width: 100%;
+      margin-top: 18px;
+      font-size: 15px;
+    }
+
+    .rg-stage {
+      width: calc(100% + 32px);
+      height: 610px;
+      margin: 10px 0 0 -16px;
+    }
+
+    .rg-node {
+      left: -16px;
+      top: -16px;
+      width: 32px;
+      height: 32px;
+    }
+
+    .rg-node::before {
+      inset: 6px;
+    }
+    .rg-node::after {
+      inset: 11px;
+    }
+
+    .rg-card {
+      width: min(168px, 46vw);
+      padding: 10px 11px 11px;
+      backdrop-filter: blur(14px);
+    }
+
+    .rg-callout--left-top .rg-card {
+      top: 54px;
+      left: 10px;
+    }
+
+    .rg-callout--right-top .rg-card {
+      top: 54px;
+      right: 10px;
+    }
+
+    .rg-callout--left-bottom .rg-card {
+      top: 196px;
+      left: 10px;
+    }
+
+    .rg-card strong {
+      font-size: 12px;
+    }
+    .rg-card > span {
+      font-size: 10px;
+    }
+    .rg-hud {
+      display: none;
+    }
+  }
+
+  .rg-section--embedded {
+    min-height: 40rem;
+    overflow: visible;
+    border-top: 0;
+    background:
+      radial-gradient(
+        circle at 50% 64%,
+        color-mix(in srgb, var(--rg-accent) 12%, transparent),
+        transparent 28rem
+      ),
+      #08080a;
+  }
+
+  .rg-section--embedded .rg-shell {
+    width: 100%;
+    padding: 3rem 0 0;
+  }
+
+  .rg-section--embedded .rg-copy h2 {
+    max-width: 26ch;
+    margin-inline: auto;
+    font-size: clamp(2.35rem, 3.7vw, 3.25rem);
+  }
+
+  .rg-section--embedded .rg-copy p {
+    max-width: 42rem;
+    margin-top: 1.1rem;
+    font-size: 0.94rem;
+    line-height: 1.55;
+  }
+
+  .rg-section--embedded .rg-stage {
+    width: 100%;
+    height: 29rem;
+    margin-top: 1.25rem;
+  }
+
+  .rg-section--embedded .rg-hud {
+    bottom: 1.25rem;
+  }
+
+  @media (max-width: 900px) {
+    .rg-section--embedded {
+      min-height: 42rem;
+    }
+
+    .rg-section--embedded .rg-shell {
+      padding: 2.5rem 1rem 0;
+    }
+
+    .rg-section--embedded .rg-stage {
+      width: calc(100% + 2rem);
+      height: 30rem;
+      margin: 1rem 0 0 -1rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .rg-section--embedded {
+      min-height: 41rem;
+      overflow: visible;
+    }
+
+    .rg-section--embedded .rg-shell {
+      padding: 2.5rem 0 0;
+    }
+
+    .rg-section--embedded .rg-copy {
+      padding-inline: 1rem;
+    }
+
+    .rg-section--embedded .rg-copy h2 {
+      font-size: clamp(2.4rem, 12vw, 3.25rem);
+    }
+
+    .rg-section--embedded .rg-stage {
+      width: 100%;
+      height: 30rem;
+      margin: 0.75rem 0 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rg-node > span {
+      animation: none;
+    }
+
+    .rg-runtime .rg-callout,
+    .rg-runtime .rg-callout.is-visible {
+      transition-duration: 1ms;
+    }
+  }
+</style>
+
+<script is:inline>
+  const initRomadiGlobes = () => {
+    document.querySelectorAll('[data-romadi-globe]').forEach((root) => {
+      if (!(root instanceof HTMLElement) || root.dataset.rgReady === '1') return;
+      root.dataset.rgReady = '1';
+
+      const stage = root.querySelector('[data-stage]');
+      const canvas = root.querySelector('[data-canvas]');
+      const markerEls = [...root.querySelectorAll('[data-marker]')];
+      const calloutEls = [...root.querySelectorAll('[data-callout]')];
+
+      if (!(stage instanceof HTMLElement) || !(canvas instanceof HTMLCanvasElement)) return;
+
+      const callouts = new Map();
+      for (const el of calloutEls) {
+        if (!(el instanceof HTMLElement)) continue;
+        const id = el.dataset.callout;
+        const card = el.querySelector('[data-callout-card]');
+        const leader = el.querySelector('[data-callout-leader]');
+        if (!id || !(card instanceof HTMLElement) || !(leader instanceof HTMLElement)) continue;
+        callouts.set(id, { el, card, leader, anchor: el.dataset.anchor || 'left' });
+      }
+
+      if (callouts.size !== markerEls.length) return;
+      root.classList.add('rg-runtime');
+
+      const ctx = canvas.getContext('2d', { alpha: true });
+      if (!ctx) return;
+
+      const DEG = Math.PI / 180;
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const pointerFine = window.matchMedia('(pointer: fine)').matches;
+
+      const css = getComputedStyle(root);
+      const ACCENT = css.getPropertyValue('--rg-accent').trim() || '#e62d67';
+
+      const LAND = [
+        // North America
+        [
+          [-168, 72],
+          [-154, 71],
+          [-145, 66],
+          [-139, 60],
+          [-132, 56],
+          [-127, 51],
+          [-124, 45],
+          [-122, 39],
+          [-117, 32],
+          [-111, 29],
+          [-106, 25],
+          [-101, 21],
+          [-96, 18],
+          [-90, 19],
+          [-86, 21],
+          [-83, 25],
+          [-81, 30],
+          [-78, 34],
+          [-74, 39],
+          [-70, 44],
+          [-65, 47],
+          [-61, 53],
+          [-62, 58],
+          [-69, 62],
+          [-78, 65],
+          [-92, 69],
+          [-110, 72],
+          [-132, 73],
+          [-151, 75],
+        ],
+        // Central America
+        [
+          [-101, 21],
+          [-96, 20],
+          [-91, 18],
+          [-88, 17],
+          [-86, 15],
+          [-84, 10],
+          [-81, 8],
+          [-78, 9],
+          [-82, 13],
+          [-86, 16],
+          [-90, 18],
+          [-95, 19],
+        ],
+        // South America
+        [
+          [-81, 12],
+          [-75, 11],
+          [-69, 8],
+          [-61, 8],
+          [-54, 6],
+          [-48, 2],
+          [-43, -2],
+          [-38, -7],
+          [-36, -12],
+          [-39, -19],
+          [-42, -24],
+          [-46, -29],
+          [-50, -34],
+          [-54, -40],
+          [-58, -47],
+          [-64, -54],
+          [-69, -55],
+          [-71, -49],
+          [-70, -42],
+          [-72, -35],
+          [-70, -28],
+          [-72, -20],
+          [-75, -14],
+          [-78, -7],
+          [-80, 0],
+        ],
+        // Greenland
+        [
+          [-73, 59],
+          [-62, 59],
+          [-48, 61],
+          [-38, 66],
+          [-25, 73],
+          [-22, 80],
+          [-35, 84],
+          [-52, 82],
+          [-65, 76],
+        ],
+        // Europe
+        [
+          [-11, 36],
+          [-9, 43],
+          [-10, 49],
+          [-5, 55],
+          [2, 59],
+          [8, 58],
+          [12, 55],
+          [18, 55],
+          [23, 59],
+          [30, 60],
+          [37, 57],
+          [40, 52],
+          [35, 48],
+          [29, 45],
+          [25, 41],
+          [19, 40],
+          [15, 43],
+          [10, 43],
+          [5, 44],
+          [1, 43],
+          [-4, 42],
+        ],
+        // Scandinavia
+        [
+          [5, 58],
+          [8, 64],
+          [14, 70],
+          [21, 71],
+          [29, 69],
+          [33, 64],
+          [27, 59],
+          [20, 56],
+          [13, 57],
+        ],
+        // UK + Ireland
+        [
+          [-10, 50],
+          [-8, 56],
+          [-5, 59],
+          [-2, 58],
+          [1, 53],
+          [-2, 50],
+          [-6, 50],
+        ],
+        // Africa
+        [
+          [-17, 37],
+          [-8, 36],
+          [1, 36],
+          [10, 37],
+          [20, 34],
+          [28, 31],
+          [34, 27],
+          [40, 18],
+          [44, 11],
+          [51, 10],
+          [49, 4],
+          [44, -2],
+          [42, -10],
+          [38, -17],
+          [33, -24],
+          [28, -31],
+          [20, -35],
+          [12, -35],
+          [5, -31],
+          [1, -25],
+          [-5, -18],
+          [-9, -8],
+          [-13, 2],
+          [-16, 13],
+          [-17, 24],
+        ],
+        // Madagascar
+        [
+          [47, -13],
+          [50, -16],
+          [50, -23],
+          [47, -26],
+          [44, -21],
+          [45, -15],
+        ],
+        // Asia main
+        [
+          [30, 41],
+          [35, 49],
+          [42, 55],
+          [52, 60],
+          [63, 66],
+          [78, 70],
+          [96, 75],
+          [116, 72],
+          [136, 67],
+          [154, 61],
+          [170, 55],
+          [178, 49],
+          [169, 43],
+          [160, 39],
+          [150, 38],
+          [142, 34],
+          [136, 29],
+          [128, 25],
+          [121, 20],
+          [114, 18],
+          [108, 13],
+          [101, 7],
+          [95, 8],
+          [90, 18],
+          [83, 22],
+          [77, 27],
+          [70, 29],
+          [64, 28],
+          [58, 31],
+          [52, 36],
+          [44, 39],
+          [38, 39],
+        ],
+        // Arabian peninsula
+        [
+          [35, 31],
+          [43, 31],
+          [50, 27],
+          [56, 24],
+          [55, 18],
+          [51, 13],
+          [45, 12],
+          [40, 17],
+          [37, 23],
+        ],
+        // India
+        [
+          [68, 24],
+          [72, 28],
+          [78, 30],
+          [84, 27],
+          [89, 23],
+          [88, 18],
+          [84, 12],
+          [80, 7],
+          [76, 8],
+          [73, 14],
+          [70, 20],
+        ],
+        // South East Asia
+        [
+          [94, 21],
+          [101, 21],
+          [106, 18],
+          [110, 13],
+          [108, 8],
+          [104, 2],
+          [100, 0],
+          [97, 6],
+        ],
+        // Japan
+        [
+          [129, 31],
+          [134, 34],
+          [138, 37],
+          [142, 42],
+          [145, 44],
+          [143, 37],
+          [138, 33],
+          [132, 31],
+        ],
+        // Australia
+        [
+          [112, -11],
+          [121, -10],
+          [132, -11],
+          [143, -14],
+          [151, -20],
+          [154, -29],
+          [150, -36],
+          [143, -40],
+          [133, -43],
+          [124, -39],
+          [117, -34],
+          [113, -26],
+        ],
+        // Tasmania
+        [
+          [144, -40],
+          [149, -41],
+          [148, -44],
+          [145, -44],
+        ],
+        // New Zealand
+        [
+          [166, -35],
+          [172, -37],
+          [176, -42],
+          [174, -46],
+          [169, -44],
+          [167, -40],
+        ],
+      ];
+
+      const markers = markerEls
+        .filter((el) => el instanceof HTMLElement)
+        .map((el) => {
+          const callout = callouts.get(el.dataset.calloutId || '');
+          if (!callout) return null;
+          return {
+            el,
+            callout,
+            lat: Number(el.dataset.lat || 0),
+            lon: Number(el.dataset.lon || 0),
+          };
+        })
+        .filter(Boolean);
+
+      const network = [
+        { a: [56.5047, 21.0108], b: [40.7128, -74.006], phase: 0.08 },
+        { a: [56.5047, 21.0108], b: [25.2048, 55.2708], phase: 0.42 },
+        { a: [56.5047, 21.0108], b: [1.3521, 103.8198], phase: 0.72 },
+      ];
+
+      const state = {
+        width: 0,
+        height: 0,
+        dpr: 1,
+        cx: 0,
+        cy: 0,
+        radius: 0,
+        spin: -10 * DEG,
+        manualYaw: 0,
+        cursorYaw: 0,
+        cursorPitch: 0,
+        targetCursorYaw: 0,
+        targetCursorPitch: 0,
+        dragging: false,
+        lastX: 0,
+        lastY: 0,
+        resumeAt: 0,
+        visible: true,
+        lastTime: performance.now(),
+      };
+
+      const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+      const hash = (x, y, salt = 0) => {
+        const n = Math.sin(x * 12.9898 + y * 78.233 + salt * 37.719) * 43758.5453;
+        return n - Math.floor(n);
+      };
+
+      const inPolygon = (lon, lat, polygon) => {
+        let inside = false;
+        for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+          const xi = polygon[i][0];
+          const yi = polygon[i][1];
+          const xj = polygon[j][0];
+          const yj = polygon[j][1];
+          const hit =
+            yi > lat !== yj > lat && lon < ((xj - xi) * (lat - yi)) / (yj - yi || 1e-9) + xi;
+          if (hit) inside = !inside;
+        }
+        return inside;
+      };
+
+      const isLand = (lon, lat) => LAND.some((polygon) => inPolygon(lon, lat, polygon));
+
+      const toVec = (lat, lon) => {
+        const p = lat * DEG;
+        const l = lon * DEG;
+        const cp = Math.cos(p);
+        return {
+          x: cp * Math.sin(l),
+          y: Math.sin(p),
+          z: cp * Math.cos(l),
+        };
+      };
+
+      const rotate = (v, yaw, pitch) => {
+        const cy = Math.cos(yaw);
+        const sy = Math.sin(yaw);
+        const x1 = v.x * cy + v.z * sy;
+        const z1 = -v.x * sy + v.z * cy;
+
+        const cx = Math.cos(pitch);
+        const sx = Math.sin(pitch);
+        const y2 = v.y * cx - z1 * sx;
+        const z2 = v.y * sx + z1 * cx;
+
+        return { x: x1, y: y2, z: z2 };
+      };
+
+      const projectRotated = (v, radial = 1) => {
+        const perspective = 1 + Math.max(-0.08, v.z * 0.035);
+        return {
+          x: state.cx + v.x * state.radius * radial * perspective,
+          y: state.cy - v.y * state.radius * radial * perspective,
+          z: v.z,
+        };
+      };
+
+      const landPoints = [];
+      for (let lat = -58; lat <= 82; lat += 2.15) {
+        for (let lon = -178; lon <= 178; lon += 2.15) {
+          if (!isLand(lon, lat)) continue;
+          const jLat = lat + (hash(lon, lat, 1) - 0.5) * 0.72;
+          const jLon = lon + (hash(lon, lat, 2) - 0.5) * 0.72;
+          landPoints.push({
+            v: toVec(jLat, jLon),
+            seed: hash(lon, lat, 3),
+          });
+        }
+      }
+
+      const slerp = (a, b, t) => {
+        const dot = clamp(a.x * b.x + a.y * b.y + a.z * b.z, -1, 1);
+        const omega = Math.acos(dot);
+        const sinOmega = Math.sin(omega);
+
+        if (sinOmega < 1e-5) {
+          return {
+            x: a.x + (b.x - a.x) * t,
+            y: a.y + (b.y - a.y) * t,
+            z: a.z + (b.z - a.z) * t,
+          };
+        }
+
+        const aa = Math.sin((1 - t) * omega) / sinOmega;
+        const bb = Math.sin(t * omega) / sinOmega;
+        return {
+          x: a.x * aa + b.x * bb,
+          y: a.y * aa + b.y * bb,
+          z: a.z * aa + b.z * bb,
+        };
+      };
+
+      const resize = () => {
+        const rect = stage.getBoundingClientRect();
+        state.width = Math.max(1, rect.width);
+        state.height = Math.max(1, rect.height);
+        state.dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+
+        canvas.width = Math.round(state.width * state.dpr);
+        canvas.height = Math.round(state.height * state.dpr);
+        ctx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
+
+        const mobile = state.width < 640;
+        const tablet = state.width < 900;
+        const embedded = root.classList.contains('rg-section--embedded');
+        state.radius = embedded
+          ? mobile
+            ? Math.min(state.width * 0.68, state.height * 0.48)
+            : tablet
+              ? Math.min(state.width * 0.48, state.height * 0.58)
+              : Math.min(state.width * 0.35, state.height * 0.6)
+          : mobile
+            ? Math.min(state.width * 0.59, state.height * 0.46)
+            : tablet
+              ? Math.min(state.width * 0.43, state.height * 0.49)
+              : Math.min(state.width * 0.315, state.height * 0.52);
+
+        state.cx = state.width * 0.5;
+        state.cy = embedded
+          ? state.height * 0.67
+          : mobile
+            ? state.height * 0.59
+            : state.height * 0.6;
+      };
+
+      const drawSphere = () => {
+        ctx.save();
+        ctx.globalAlpha = 1;
+
+        const glow = ctx.createRadialGradient(
+          state.cx - state.radius * 0.24,
+          state.cy - state.radius * 0.32,
+          state.radius * 0.04,
+          state.cx,
+          state.cy,
+          state.radius * 1.05,
+        );
+        glow.addColorStop(0, 'rgba(255,255,255,0.028)');
+        glow.addColorStop(0.56, 'rgba(255,255,255,0.012)');
+        glow.addColorStop(1, 'rgba(255,255,255,0.002)');
+
+        ctx.beginPath();
+        ctx.arc(state.cx, state.cy, state.radius, 0, Math.PI * 2);
+        ctx.fillStyle = glow;
+        ctx.fill();
+
+        ctx.globalAlpha = 0.17;
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(state.cx, state.cy, state.radius + 0.5, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.globalAlpha = 0.08;
+        ctx.beginPath();
+        ctx.arc(state.cx, state.cy, state.radius - 4, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.restore();
+      };
+
+      const drawPolyline = (points, stroke, alpha, width = 1) => {
+        ctx.save();
+        ctx.strokeStyle = stroke;
+        ctx.lineWidth = width;
+        ctx.globalAlpha = alpha;
+        ctx.beginPath();
+
+        let penDown = false;
+        for (const point of points) {
+          if (point.z <= -0.015) {
+            penDown = false;
+            continue;
+          }
+
+          if (!penDown) {
+            ctx.moveTo(point.x, point.y);
+            penDown = true;
+          } else {
+            ctx.lineTo(point.x, point.y);
+          }
+        }
+        ctx.stroke();
+        ctx.restore();
+      };
+
+      const drawGrid = (yaw, pitch) => {
+        for (let lat = -60; lat <= 60; lat += 20) {
+          const points = [];
+          for (let lon = -180; lon <= 180; lon += 4) {
+            const v = rotate(toVec(lat, lon), yaw, pitch);
+            points.push(projectRotated(v));
+          }
+          drawPolyline(points, '#ffffff', 0.075, 0.8);
+        }
+
+        for (let lon = -160; lon < 180; lon += 20) {
+          const points = [];
+          for (let lat = -82; lat <= 82; lat += 3) {
+            const v = rotate(toVec(lat, lon), yaw, pitch);
+            points.push(projectRotated(v));
+          }
+          drawPolyline(points, '#ffffff', 0.068, 0.8);
+        }
+      };
+
+      const drawLand = (yaw, pitch) => {
+        ctx.save();
+        ctx.fillStyle = ACCENT;
+        ctx.shadowColor = ACCENT;
+
+        for (const point of landPoints) {
+          const v = rotate(point.v, yaw, pitch);
+          if (v.z <= -0.01) continue;
+
+          const p = projectRotated(v, 1.004);
+          const depth = clamp(v.z, 0, 1);
+          const size = 0.62 + point.seed * 0.72 + depth * 0.38;
+          const alpha = 0.18 + depth * 0.76;
+
+          ctx.globalAlpha = alpha;
+          ctx.shadowBlur = point.seed > 0.93 && depth > 0.55 ? 8 : 0;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.shadowBlur = 0;
+        ctx.restore();
+      };
+
+      const drawNetwork = (yaw, pitch, now) => {
+        for (const route of network) {
+          const from = toVec(route.a[0], route.a[1]);
+          const to = toVec(route.b[0], route.b[1]);
+          const projected = [];
+
+          for (let i = 0; i <= 54; i++) {
+            const t = i / 54;
+            const base = slerp(from, to, t);
+            const lift = 1 + Math.sin(Math.PI * t) * 0.055;
+            const v = rotate(base, yaw, pitch);
+            const p = projectRotated(v, lift);
+            projected.push(p);
+          }
+
+          drawPolyline(projected, ACCENT, 0.26, 1);
+
+          const travelT = (((now * 0.000055 + route.phase) % 1) + 1) % 1;
+          const base = slerp(from, to, travelT);
+          const lift = 1 + Math.sin(Math.PI * travelT) * 0.055;
+          const v = rotate(base, yaw, pitch);
+          if (v.z > 0.02) {
+            const p = projectRotated(v, lift);
+            ctx.save();
+            ctx.fillStyle = ACCENT;
+            ctx.shadowColor = ACCENT;
+            ctx.shadowBlur = 14;
+            ctx.globalAlpha = 0.92;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 2.2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+          }
+        }
+      };
+
+      const drawRim = () => {
+        ctx.save();
+        ctx.strokeStyle = ACCENT;
+        ctx.globalAlpha = 0.09;
+        ctx.shadowColor = ACCENT;
+        ctx.shadowBlur = 20;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(state.cx, state.cy, state.radius + 1, -0.22 * Math.PI, 0.17 * Math.PI);
+        ctx.stroke();
+        ctx.restore();
+      };
+
+      const updateMarkers = (yaw, pitch) => {
+        const projectedMarkers = markers.map((marker) => {
+          const v = rotate(toVec(marker.lat, marker.lon), yaw, pitch);
+          const p = projectRotated(v, 1.015);
+          const visible = v.z > 0.13;
+          const depth = clamp((v.z - 0.13) / 0.87, 0, 1);
+          const insideStage =
+            p.x > 16 && p.x < state.width - 16 && p.y > 8 && p.y < state.height - 24;
+
+          return { marker, p, visible: visible && insideStage, depth };
+        });
+
+        const visibleProjections = projectedMarkers
+          .filter(({ visible }) => visible)
+          .sort((a, b) => b.depth - a.depth);
+        const activeProjections = visibleProjections.length ? [visibleProjections[0]] : [];
+
+        if (state.width >= 720 && activeProjections[0]) {
+          const primary = activeProjections[0];
+          const nearby = visibleProjections.slice(1).find((candidate) => {
+            const distance = Math.hypot(candidate.p.x - primary.p.x, candidate.p.y - primary.p.y);
+            return candidate.depth > 0.2 && distance < state.radius * 0.9;
+          });
+          if (nearby) activeProjections.push(nearby);
+        }
+
+        const activeMarkers = new Set(activeProjections.map(({ marker }) => marker));
+
+        for (const { marker, p, visible, depth } of projectedMarkers) {
+          marker.el.classList.toggle('rg-marker--active', activeMarkers.has(marker));
+
+          marker.el.style.opacity = visible ? String(0.28 + depth * 0.72) : '0';
+          marker.el.style.transform = `translate3d(${p.x}px, ${p.y}px, 0)`;
+          marker.el.style.setProperty('--marker-scale', String(0.84 + depth * 0.18));
+          marker.callout.el.classList.toggle('is-visible', activeMarkers.has(marker));
+        }
+
+        for (const { marker, p } of activeProjections) {
+          const { card, leader, anchor } = marker.callout;
+          const cardLeft = card.offsetLeft;
+          const cardRight = cardLeft + card.offsetWidth;
+          const cardTop = card.offsetTop;
+          const cardBottom = cardTop + card.offsetHeight;
+          const attachX = anchor === 'right' ? cardRight : cardLeft;
+          const attachY = clamp(p.y, cardTop + 12, cardBottom - 12);
+          const deltaX = attachX - p.x;
+          const deltaY = attachY - p.y;
+          const distance = Math.hypot(deltaX, deltaY);
+          const nodeRadius = state.width < 640 ? 17 : 20;
+          const angle = Math.atan2(deltaY, deltaX);
+          const leaderLength = Math.max(0, distance - nodeRadius);
+          const startX = p.x + Math.cos(angle) * nodeRadius;
+          const startY = p.y + Math.sin(angle) * nodeRadius;
+
+          leader.style.width = `${leaderLength}px`;
+          leader.style.transform = `translate3d(${startX}px, ${startY}px, 0) rotate(${angle}rad)`;
+        }
+      };
+
+      const render = (now) => {
+        requestAnimationFrame(render);
+        if (!state.visible) {
+          state.lastTime = now;
+          return;
+        }
+
+        const dt = Math.min(34, Math.max(0, now - state.lastTime));
+        state.lastTime = now;
+
+        state.cursorYaw += (state.targetCursorYaw - state.cursorYaw) * 0.045;
+        state.cursorPitch += (state.targetCursorPitch - state.cursorPitch) * 0.045;
+
+        if (!reduceMotion && !state.dragging && now > state.resumeAt) {
+          state.spin += dt * 0.000055;
+        }
+
+        const yaw = state.spin + state.manualYaw + state.cursorYaw;
+        const pitch = -0.055 + state.cursorPitch;
+
+        ctx.clearRect(0, 0, state.width, state.height);
+        drawSphere();
+        drawGrid(yaw, pitch);
+        drawNetwork(yaw, pitch, now);
+        drawLand(yaw, pitch);
+        drawRim();
+        updateMarkers(yaw, pitch);
+      };
+
+      const ro = new ResizeObserver(resize);
+      ro.observe(stage);
+      resize();
+
+      const io = new IntersectionObserver(
+        ([entry]) => {
+          state.visible = Boolean(entry?.isIntersecting);
+        },
+        { rootMargin: '220px 0px 220px 0px', threshold: 0.01 },
+      );
+      io.observe(root);
+
+      if (!reduceMotion && pointerFine) {
+        stage.addEventListener('pointermove', (event) => {
+          if (state.dragging) {
+            const dx = event.clientX - state.lastX;
+            const dy = event.clientY - state.lastY;
+            state.lastX = event.clientX;
+            state.lastY = event.clientY;
+            state.manualYaw += dx * 0.0053;
+            state.targetCursorPitch = clamp(state.targetCursorPitch - dy * 0.00065, -0.09, 0.09);
+            state.resumeAt = performance.now() + 1800;
+            return;
+          }
+
+          const rect = stage.getBoundingClientRect();
+          const nx = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
+          const ny = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
+          state.targetCursorYaw = nx * 0.055;
+          state.targetCursorPitch = clamp(-ny * 0.032, -0.04, 0.04);
+        });
+
+        stage.addEventListener('pointerleave', () => {
+          if (!state.dragging) {
+            state.targetCursorYaw = 0;
+            state.targetCursorPitch = 0;
+          }
+        });
+
+        stage.addEventListener('pointerdown', (event) => {
+          if (event.pointerType === 'touch') return;
+          state.dragging = true;
+          state.lastX = event.clientX;
+          state.lastY = event.clientY;
+          state.resumeAt = performance.now() + 1800;
+          stage.classList.add('is-dragging');
+          stage.setPointerCapture(event.pointerId);
+        });
+
+        const endDrag = (event) => {
+          if (!state.dragging) return;
+          state.dragging = false;
+          state.resumeAt = performance.now() + 1800;
+          state.targetCursorYaw = 0;
+          state.targetCursorPitch = 0;
+          stage.classList.remove('is-dragging');
+          if (stage.hasPointerCapture(event.pointerId)) {
+            stage.releasePointerCapture(event.pointerId);
+          }
+        };
+
+        stage.addEventListener('pointerup', endDrag);
+        stage.addEventListener('pointercancel', endDrag);
+      }
+
+      requestAnimationFrame(render);
+    });
+  };
+
+  initRomadiGlobes();
+  document.addEventListener('astro:page-load', initRomadiGlobes);
+</script>

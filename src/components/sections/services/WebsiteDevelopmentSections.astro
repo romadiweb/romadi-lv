@@ -420,6 +420,10 @@ const pricing = [
       piedāvājumu un sazināties tieši tad, kad viņiem rodas vajadzība.
     </p>
     <a href={contactHref} data-astro-reload>Pārrunāt projektu <span aria-hidden="true">↗</span></a>
+    <p class="website-value__local-note">
+      Meklējat vietējo partneri?
+      <a href="/pakalpojumi/majaslapu-izstrade-liepaja">Mājaslapu izstrāde Liepājā</a>
+    </p>
   </div>
 
   <div class="website-value__comparison" aria-label="Mājaslapas ietekmes salīdzinājums">
@@ -666,6 +670,23 @@ const pricing = [
   .website-value__copy > a:hover {
     background: rgb(255 255 255 / 90%);
     transform: translateY(-2px);
+  }
+
+  .website-value__copy > .website-value__local-note {
+    margin-top: 1rem;
+    color: var(--text-muted);
+    font: 550 0.78rem/1.6 var(--font-mono);
+  }
+
+  .website-value__local-note a {
+    color: #f75f7f;
+    text-decoration-line: underline;
+    text-decoration-color: rgb(247 95 127 / 38%);
+    text-underline-offset: 0.25em;
+  }
+
+  .website-value__local-note a:hover {
+    text-decoration-color: currentColor;
   }
 
   .website-proof__marks {

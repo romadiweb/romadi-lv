@@ -1,0 +1,128 @@
+---
+import LiepajaWebsiteLanding from '@/components/sections/services/LiepajaWebsiteLanding.astro';
+import { SITE } from '@/config/site';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+const title = 'Mājaslapu izstrāde Liepājā';
+const description =
+  'Profesionāla mājaslapu izstrāde Liepājā uzņēmumiem: individuāls dizains, ātrdarbība, tehniskais SEO un partneris tepat Liepājā.';
+const canonicalUrl = new URL(
+  '/pakalpojumi/majaslapu-izstrade-liepaja',
+  Astro.site ?? SITE.url,
+).toString();
+const organizationId = new URL('/#organization', Astro.site ?? SITE.url).toString();
+
+const faqs = [
+  {
+    question: 'Cik maksā mājaslapas izstrāde Liepājā?',
+    answer:
+      'Landing lapas izstrāde šobrīd sākas no 500 €, bet biznesa mājaslapas — no 1 100 €. Precīzu cenu nosakām pēc īsas sarunas par sadaļām, saturu, valodām un vajadzīgajām funkcijām.',
+  },
+  {
+    question: 'Vai mājaslapai būs individuāls dizains?',
+    answer:
+      'Jā. Dizainu un satura struktūru veidojam konkrētajam uzņēmumam, auditorijai un mērķim, nevis pielāgojam gatavu šablonu.',
+  },
+  {
+    question: 'Vai varēšu pats mainīt mājaslapas saturu?',
+    answer:
+      'Ja projektam vajadzīga satura pārvaldība, izveidojam ērtu CMS un sakārtojam laukus tā, lai ikdienas izmaiņas var veikt bez programmētāja palīdzības.',
+  },
+  {
+    question: 'Vai SEO ir iekļauts mājaslapas izstrādē?',
+    answer:
+      'Iekļaujam tehniskos SEO pamatus: semantisku struktūru, metadatus, ātrdarbību, indeksējamību un korektu mobilās versijas darbību. Papildu satura un izaugsmes SEO plānu veidojam atbilstoši konkurencei un mērķiem.',
+  },
+  {
+    question: 'Vai strādājat tikai ar uzņēmumiem Liepājā?',
+    answer:
+      'Nē. ROMADI atrodas Liepājā, bet strādājam ar uzņēmumiem visā Latvijā. Sadarbību varam organizēt attālināti, saglabājot skaidru procesu un regulāru saziņu.',
+  },
+] as const;
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebPage',
+      '@id': `${canonicalUrl}#webpage`,
+      url: canonicalUrl,
+      name: `${title} | ${SITE.name}`,
+      description,
+      inLanguage: 'lv-LV',
+      about: { '@id': `${canonicalUrl}#service` },
+      breadcrumb: { '@id': `${canonicalUrl}#breadcrumb` },
+    },
+    {
+      '@type': 'Service',
+      '@id': `${canonicalUrl}#service`,
+      name: 'Mājaslapu izstrāde Liepājā',
+      serviceType: 'Mājaslapu izstrāde un web dizains',
+      description,
+      url: canonicalUrl,
+      provider: { '@id': organizationId },
+      areaServed: [
+        { '@type': 'City', name: 'Liepāja' },
+        { '@type': 'AdministrativeArea', name: 'Kurzeme' },
+        { '@type': 'Country', name: 'Latvija' },
+      ],
+      availableChannel: {
+        '@type': 'ServiceChannel',
+        serviceUrl: new URL('/kontakti', Astro.site ?? SITE.url).toString(),
+        servicePhone: SITE.contact.phones[0]?.display,
+      },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${canonicalUrl}#breadcrumb`,
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Sākums',
+          item: new URL('/', Astro.site ?? SITE.url).toString(),
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Pakalpojumi',
+          item: new URL('/pakalpojumi', Astro.site ?? SITE.url).toString(),
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: 'Mājaslapu izstrāde Liepājā',
+          item: canonicalUrl,
+        },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${canonicalUrl}#faq`,
+      mainEntity: faqs.map((faq) => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.answer,
+        },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  image="/images/projects/liepajas-teltis-1600.webp"
+  imageAlt="ROMADI veidotā Liepājas Teltis mājaslapa"
+  imageWidth={1600}
+  imageHeight={794}
+  imageType="image/webp"
+  twitterCard="summary_large_image"
+  footerCta={false}
+>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  <LiepajaWebsiteLanding faqs={faqs} />
+</BaseLayout>

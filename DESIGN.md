@@ -2,95 +2,95 @@
 name: ROMADI
 description: High-end digital experiences shaped with technical precision and a deep cherry atmosphere.
 colors:
-  canvas-black: "#050505"
-  true-black: "#000000"
-  surface-primary: "#090909"
-  surface-secondary: "#0C0C0C"
-  surface-elevated: "#111111"
-  text-primary: "#FFFFFF"
-  text-secondary: "#B5B5BB"
-  text-muted: "#8E8E93"
-  signal: "#E0234E"
-  signal-hover: "#F75F7F"
-  signal-deep: "#A91037"
-  wine-field: "#620B22"
-  wine-shadow: "#100507"
-  wine-edge: "#58091E"
-  cherry-glow: "#E41648"
+  canvas-black: '#050505'
+  true-black: '#000000'
+  surface-primary: '#090909'
+  surface-secondary: '#0C0C0C'
+  surface-elevated: '#111111'
+  text-primary: '#FFFFFF'
+  text-secondary: '#B5B5BB'
+  text-muted: '#8E8E93'
+  signal: '#E0234E'
+  signal-hover: '#F75F7F'
+  signal-deep: '#A91037'
+  wine-field: '#620B22'
+  wine-shadow: '#100507'
+  wine-edge: '#58091E'
+  cherry-glow: '#E41648'
 typography:
   display:
-    fontFamily: "Manrope Variable, Manrope, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "clamp(3.75rem, 7.25vw, 7rem)"
+    fontFamily: 'Manrope Variable, Manrope, ui-sans-serif, system-ui, sans-serif'
+    fontSize: 'clamp(3.75rem, 7.25vw, 7rem)'
     fontWeight: 400
     lineHeight: 0.98
-    letterSpacing: "-0.04em"
+    letterSpacing: '-0.04em'
   headline:
-    fontFamily: "Manrope Variable, Manrope, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "clamp(2.3rem, 4.25vw, 4.5rem)"
+    fontFamily: 'Manrope Variable, Manrope, ui-sans-serif, system-ui, sans-serif'
+    fontSize: 'clamp(2.3rem, 4.25vw, 4.5rem)'
     fontWeight: 500
     lineHeight: 1
-    letterSpacing: "-0.04em"
+    letterSpacing: '-0.04em'
   title:
-    fontFamily: "Manrope Variable, Manrope, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "clamp(1rem, 1.25vw, 1.25rem)"
+    fontFamily: 'Manrope Variable, Manrope, ui-sans-serif, system-ui, sans-serif'
+    fontSize: 'clamp(1rem, 1.25vw, 1.25rem)'
     fontWeight: 600
     lineHeight: 1.4
-    letterSpacing: "-0.035em"
+    letterSpacing: '-0.035em'
   body:
-    fontFamily: "Manrope Variable, Manrope, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "1rem"
+    fontFamily: 'Manrope Variable, Manrope, ui-sans-serif, system-ui, sans-serif'
+    fontSize: '1rem'
     fontWeight: 500
     lineHeight: 1.5
   label:
-    fontFamily: "JetBrains Mono, SFMono-Regular, Consolas, Liberation Mono, monospace"
-    fontSize: "clamp(0.72rem, 0.85vw, 0.9rem)"
+    fontFamily: 'JetBrains Mono, SFMono-Regular, Consolas, Liberation Mono, monospace'
+    fontSize: 'clamp(0.72rem, 0.85vw, 0.9rem)'
     fontWeight: 550
     lineHeight: 1.6
-    letterSpacing: "normal"
+    letterSpacing: 'normal'
 rounded:
-  field: "12.8px"
-  card: "16px"
-  panel: "24px"
-  section: "32px"
-  pill: "999px"
+  field: '12.8px'
+  card: '16px'
+  panel: '24px'
+  section: '32px'
+  pill: '999px'
 spacing:
-  xs: "8px"
-  sm: "16px"
-  md: "24px"
-  lg: "32px"
-  xl: "48px"
-  section: "clamp(5rem, 9vw, 9rem)"
+  xs: '8px'
+  sm: '16px'
+  md: '24px'
+  lg: '32px'
+  xl: '48px'
+  section: 'clamp(5rem, 9vw, 9rem)'
 components:
   button-primary:
-    backgroundColor: "{colors.signal}"
-    textColor: "{colors.text-primary}"
-    typography: "{typography.body}"
-    rounded: "{rounded.pill}"
-    padding: "12.8px 24.8px"
-    height: "52px"
+    backgroundColor: '{colors.signal}'
+    textColor: '{colors.text-primary}'
+    typography: '{typography.body}'
+    rounded: '{rounded.pill}'
+    padding: '12.8px 24.8px'
+    height: '52px'
   button-primary-hover:
-    backgroundColor: "{colors.signal-hover}"
-    textColor: "{colors.text-primary}"
-    rounded: "{rounded.pill}"
+    backgroundColor: '{colors.signal-hover}'
+    textColor: '{colors.text-primary}'
+    rounded: '{rounded.pill}'
   button-secondary:
-    backgroundColor: "{colors.surface-elevated}"
-    textColor: "{colors.text-primary}"
-    typography: "{typography.body}"
-    rounded: "{rounded.pill}"
-    padding: "12.8px 24.8px"
-    height: "52px"
+    backgroundColor: '{colors.surface-elevated}'
+    textColor: '{colors.text-primary}'
+    typography: '{typography.body}'
+    rounded: '{rounded.pill}'
+    padding: '12.8px 24.8px'
+    height: '52px'
   input:
-    backgroundColor: "{colors.surface-primary}"
-    textColor: "{colors.text-primary}"
-    typography: "{typography.body}"
-    rounded: "{rounded.field}"
-    padding: "12.8px 16px"
-    height: "52px"
+    backgroundColor: '{colors.surface-primary}'
+    textColor: '{colors.text-primary}'
+    typography: '{typography.body}'
+    rounded: '{rounded.field}'
+    padding: '12.8px 16px'
+    height: '52px'
   surface-card:
-    backgroundColor: "{colors.surface-secondary}"
-    textColor: "{colors.text-primary}"
-    rounded: "{rounded.card}"
-    padding: "24px"
+    backgroundColor: '{colors.surface-secondary}'
+    textColor: '{colors.text-primary}'
+    rounded: '{rounded.card}'
+    padding: '24px'
 ---
 
 # Design System: ROMADI
@@ -167,6 +167,16 @@ The palette is a dark neutral system energized by a specific cherry-to-wine spec
 
 **The Two-Line Promise Rule.** Major CTA copy should resolve into intentional short lines, not an accidental narrow column or a three-line orphan.
 
+For service-landing extensions, use Manrope for both display and body copy. Reserve mono for coordinates and compact data or status readouts; descriptive paragraphs stay in Manrope.
+
+## Layout
+
+The service-landing pattern established in Liepāja uses a first hero with a minimum height of one small viewport (`100svh`), wide desktop page margins (`2rem`), and one primary CTA. Body sections return to a centered content rail capped at `74rem`; the hero and closing CTA retain the wider page silhouette. These are reusable landing-page patterns, not a replacement for every incumbent section layout.
+
+Structural dotted side rails begin after the hero, at the first viewport boundary, and frame the body content. They remain distinct from atmospheric texture and do not introduce a two-axis grid behind the content. Narrow layouts reduce the gutters and remove the side rails when space is insufficient.
+
+The closing CTA matches the footer's outer width and meets it directly with no vertical gap. Keep their side edges aligned at each breakpoint, round only the exposed outer corners, and omit the footer's duplicate CTA when the page supplies its own closing section.
+
 ## Elevation
 
 ROMADI uses a hybrid of tonal layering and atmospheric depth. Most content sits flat on stepped black surfaces; shadows appear on floating navigation, image previews, primary actions, and major panels. Grain, vignettes, translucent radial light, and inset highlights carry more of the depth than conventional card shadows.
@@ -221,6 +231,14 @@ ROMADI uses a hybrid of tonal layering and atmospheric depth. Most content sits 
 ### Signature Atmospheric Section
 
 The hero, showcase, CTA, and footer transition share a family of layered wine gradients, organic grain, soft vignettes, and moving fields. They should feel related without using an identical composition. The hero may use liquid goo; the showcase uses image concepts; the CTA uses a calmer central glow; the footer resolves into a dotted black panel.
+
+### Hero Proof Rail
+
+A lightweight translucent rail anchors local facts to the bottom of a service hero. Use a fine top separator and a restrained transparent wine wash so the rail remains part of the hero field. Keep the evidence secondary to the headline and single primary CTA; reflow the facts as the viewport narrows.
+
+### Embedded Signal Globe
+
+The reusable location-to-world composition embeds the signal globe directly in the page, without a separate framed panel. Its heading stays clearly above the sphere, while the globe and supporting facts form a compact desktop composition that can be read within one viewport. Nodes may coexist, but only one connected information card is active at a time; its leader remains visible and the card dynamically faces inward according to its projected position. Preserve legibility as markers move, and allow the composition to grow vertically on mobile.
 
 ## Do's and Don'ts
 

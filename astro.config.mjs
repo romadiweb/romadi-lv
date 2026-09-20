@@ -26,6 +26,9 @@ export default defineConfig({
 
   redirects: {
     '/majas-lapu-izstrade': '/pakalpojumi/majaslapu-izstrade',
+    '/majaslapu-izstrade-liepaja': '/pakalpojumi/majaslapu-izstrade-liepaja',
+    '/majas-lapu-izstrade-liepaja': '/pakalpojumi/majaslapu-izstrade-liepaja',
+    '/pakalpojumi/majas-lapu-izstrade-liepaja': '/pakalpojumi/majaslapu-izstrade-liepaja',
     '/interneta-veikalu-izstrade': '/pakalpojumi/interneta-veikalu-izstrade',
     '/ui-ux-dizains': '/pakalpojumi/zimola-un-ui-ux-dizains',
     '/seo-optimizacija': '/pakalpojumi/digitala-izaugsme',
