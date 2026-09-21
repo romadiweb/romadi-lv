@@ -45,6 +45,7 @@ const channelLabels: Record<PortalLead['contact_channel'], string> = {
   facebook: 'Facebook',
   instagram: 'Instagram',
   linkedin: 'LinkedIn',
+  tiktok: 'TikTok',
   other: 'Cits',
   phone: 'Telefons',
 };

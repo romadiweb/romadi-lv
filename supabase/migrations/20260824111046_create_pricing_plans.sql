@@ -39,4 +39,4 @@ create policy "published pricing plans are publicly readable"
   on public.pricing_plans
   for select
   to anon, authenticated
-  using (is_published = true);
+  using (is_published = true);;

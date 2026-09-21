@@ -32,6 +32,26 @@ const errorResponse = (error: unknown) => {
   if (error instanceof PortalAuthError || error instanceof PortalRequestError) {
     return jsonResponse({ error: error.message }, error.status);
   }
+
+  const supabaseError = error as { code?: unknown; message?: unknown };
+  const errorCode = typeof supabaseError.code === 'string' ? supabaseError.code : '';
+  const errorMessage = typeof supabaseError.message === 'string' ? supabaseError.message : '';
+
+  if (
+    errorCode === '42P01' ||
+    errorCode === 'PGRST205' ||
+    errorMessage.includes('portal_leads')
+  ) {
+    console.error('Portal leads table is not available', error);
+    return jsonResponse(
+      {
+        error:
+          'Leads tabula vēl nav izveidota Supabase. Palaid migrāciju 20260921142000_create_portal_leads.sql un pārlādē portālu.',
+      },
+      503,
+    );
+  }
+
   console.error('Portal leads endpoint failed', error);
   return jsonResponse({ error: 'The leads request could not be completed.' }, 500);
 };

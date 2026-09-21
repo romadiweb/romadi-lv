@@ -29,7 +29,7 @@ create table public.portal_leads (
   constraint portal_leads_outreach_owner_length check (char_length(outreach_owner) between 1 and 120),
   constraint portal_leads_notes_length check (notes is null or char_length(notes) <= 4000),
   constraint portal_leads_contact_channel check (
-    contact_channel in ('instagram', 'facebook', 'linkedin', 'email', 'phone', 'other')
+    contact_channel in ('instagram', 'facebook', 'linkedin', 'tiktok', 'email', 'phone', 'other')
   ),
   constraint portal_leads_status check (
     status in (

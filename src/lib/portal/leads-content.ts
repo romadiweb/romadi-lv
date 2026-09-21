@@ -17,6 +17,7 @@ export const LEAD_CONTACT_CHANNELS = [
   'instagram',
   'facebook',
   'linkedin',
+  'tiktok',
   'email',
   'phone',
   'other',

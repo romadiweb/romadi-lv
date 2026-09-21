@@ -40,4 +40,4 @@ create policy "published projects are publicly readable"
   on public.projects
   for select
   to anon, authenticated
-  using (is_published = true);
+  using (is_published = true);;

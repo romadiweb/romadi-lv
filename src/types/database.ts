@@ -45,7 +45,14 @@ export interface Database {
       portal_leads: {
         Row: {
           company_name: string;
-          contact_channel: 'instagram' | 'facebook' | 'linkedin' | 'email' | 'phone' | 'other';
+          contact_channel:
+            | 'instagram'
+            | 'facebook'
+            | 'linkedin'
+            | 'tiktok'
+            | 'email'
+            | 'phone'
+            | 'other';
           contacted_at: string | null;
           created_at: string;
           follow_up_due_at: string | null;
@@ -71,7 +78,14 @@ export interface Database {
         };
         Insert: {
           company_name: string;
-          contact_channel?: 'instagram' | 'facebook' | 'linkedin' | 'email' | 'phone' | 'other';
+          contact_channel?:
+            | 'instagram'
+            | 'facebook'
+            | 'linkedin'
+            | 'tiktok'
+            | 'email'
+            | 'phone'
+            | 'other';
           contacted_at?: string | null;
           created_at?: string;
           follow_up_due_at?: never;
@@ -97,7 +111,14 @@ export interface Database {
         };
         Update: {
           company_name?: string;
-          contact_channel?: 'instagram' | 'facebook' | 'linkedin' | 'email' | 'phone' | 'other';
+          contact_channel?:
+            | 'instagram'
+            | 'facebook'
+            | 'linkedin'
+            | 'tiktok'
+            | 'email'
+            | 'phone'
+            | 'other';
           contacted_at?: string | null;
           created_at?: string;
           follow_up_due_at?: never;
