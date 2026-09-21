@@ -36,28 +36,82 @@ if (!existingCsrf) {
         <span>CMS</span>
       </a>
 
-      <nav class="portal-nav" aria-label="Satura sadaļas">
-        <button type="button" class="is-active" data-resource="projects">
-          <span class="portal-nav-signal"></span>
-          <span>Projekti</span>
-          <b data-count="projects">—</b>
-        </button>
-        <button type="button" data-resource="reviews">
-          <span class="portal-nav-signal"></span>
-          <span>Atsauksmes</span>
-          <b data-count="reviews">—</b>
-        </button>
-        <button type="button" data-resource="pricing_plans">
-          <span class="portal-nav-signal"></span>
-          <span>Cenu plāni</span>
-          <b data-count="pricing_plans">—</b>
-        </button>
-        {identity.role === 'super-admin' && (
-          <button type="button" data-resource="audit">
+      <nav class="portal-nav" aria-label="Portāla sadaļas">
+        <section class="portal-nav-group" aria-labelledby="portal-nav-clients">
+          <h2 id="portal-nav-clients">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            <span>Klienti</span>
+          </h2>
+          <button type="button" class="is-active" data-section="leads">
             <span class="portal-nav-signal"></span>
-            <span>Izmaiņu žurnāls</span>
+            <span>Leads</span>
+            <b data-count="leads">—</b>
           </button>
-        )}
+        </section>
+
+        <section class="portal-nav-group" aria-labelledby="portal-nav-tasks">
+          <h2 id="portal-nav-tasks">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+            <span>Uzdevumi</span>
+          </h2>
+          <button type="button" class="is-disabled" disabled>
+            <span class="portal-nav-signal"></span>
+            <span>Kvotas</span>
+            <b>Drīz</b>
+          </button>
+        </section>
+
+        <section class="portal-nav-group" aria-labelledby="portal-nav-finance">
+          <h2 id="portal-nav-finance">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            <span>Finanses</span>
+          </h2>
+          <button type="button" class="is-disabled" disabled>
+            <span class="portal-nav-signal"></span>
+            <span>Ieņēmumi</span>
+            <b>Drīz</b>
+          </button>
+        </section>
+
+        <section class="portal-nav-group" aria-labelledby="portal-nav-partners">
+          <h2 id="portal-nav-partners">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5M21 3l-7 7M8 21H3v-5M3 21l7-7M21 16v5h-5M21 21l-7-7M3 8V3h5M3 3l7 7"></path></svg>
+            <span>Sadarbības</span>
+          </h2>
+          <button type="button" class="is-disabled" disabled>
+            <span class="portal-nav-signal"></span>
+            <span>Partneri</span>
+            <b>Drīz</b>
+          </button>
+        </section>
+
+        <section class="portal-nav-group" aria-labelledby="portal-nav-website">
+          <h2 id="portal-nav-website">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18v14H3zM8 20h8M12 18v2"></path></svg>
+            <span>Mājaslapa</span>
+          </h2>
+          <button type="button" data-resource="projects">
+            <span class="portal-nav-signal"></span>
+            <span>Projekti</span>
+            <b data-count="projects">—</b>
+          </button>
+          <button type="button" data-resource="reviews">
+            <span class="portal-nav-signal"></span>
+            <span>Atsauksmes</span>
+            <b data-count="reviews">—</b>
+          </button>
+          <button type="button" data-resource="pricing_plans">
+            <span class="portal-nav-signal"></span>
+            <span>Cenu plāni</span>
+            <b data-count="pricing_plans">—</b>
+          </button>
+          {identity.role === 'super-admin' && (
+            <button type="button" data-resource="audit">
+              <span class="portal-nav-signal"></span>
+              <span>Izmaiņu žurnāls</span>
+            </button>
+          )}
+        </section>
       </nav>
 
       <div class="portal-sidebar-foot">
@@ -80,16 +134,127 @@ if (!existingCsrf) {
     <section class="portal-workspace">
       <header class="portal-workspace-header">
         <div>
-          <h1 data-section-title>Projekti</h1>
-          <p data-section-description>Pārvaldi portfolio saturu un publicēšanas stāvokli.</p>
+          <h1 data-section-title>Leads</h1>
+          <p data-section-description>Vadi jaunos kontaktus no atrašanas brīža līdz klienta statusam.</p>
         </div>
         <button type="button" class="portal-create-action" data-create>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
-          <span>Jauns ieraksts</span>
+          <span>Jauns lead</span>
         </button>
       </header>
 
-      <div class="portal-work-grid" data-work-grid>
+      <div class="portal-lead-grid" data-lead-grid>
+        <section class="portal-lead-board-panel" aria-labelledby="lead-board-title">
+          <header>
+            <div>
+              <h2 id="lead-board-title">Pipeline</h2>
+              <span data-lead-status>Ielādē…</span>
+            </div>
+            <label class="portal-lead-search">
+              <span class="portal-visually-hidden">Meklēt lead</span>
+              <input type="search" data-lead-search placeholder="Meklēt uzņēmumu, nozari, platformu" />
+            </label>
+          </header>
+          <div class="portal-lead-metrics" aria-label="Lead kopsavilkums">
+            <article>
+              <span data-lead-metric="open">—</span>
+              <p>Aktīvi lead</p>
+            </article>
+            <article>
+              <span data-lead-metric="followups">—</span>
+              <p>Follow-up šonedēļ</p>
+            </article>
+            <article>
+              <span data-lead-metric="quota">Kvotas gatavs</span>
+              <p>Uzdevumu norma tiks pieslēgta pie šīs plūsmas</p>
+            </article>
+          </div>
+          <div class="portal-kanban" data-lead-kanban aria-live="polite"></div>
+        </section>
+
+        <section class="portal-lead-editor-panel" aria-labelledby="lead-editor-title">
+          <header>
+            <div>
+              <h2 id="lead-editor-title" data-lead-editor-title>Jauns lead</h2>
+              <p data-lead-editor-copy>Izveido kontaktu un ieliec to pareizajā statusā.</p>
+            </div>
+            <span class="portal-draft-state" data-lead-form-state>Nav saglabāts</span>
+          </header>
+
+          <form class="portal-lead-form" data-lead-form>
+            <div class="portal-form-fields">
+              <label class="portal-field is-wide">
+                <span>Uzņēmums / Nosaukums</span>
+                <input name="company_name" required maxlength="180" autocomplete="organization" />
+              </label>
+              <label class="portal-field">
+                <span>Kur atrasts? Platforma</span>
+                <input name="found_on" required maxlength="180" placeholder="Instagram, Google Maps…" />
+              </label>
+              <label class="portal-field">
+                <span>Nozare</span>
+                <input name="industry" maxlength="120" placeholder="Restorāni, ražošana…" />
+              </label>
+              <label class="portal-field">
+                <span>Kurā datumā uzrunāts</span>
+                <input name="contacted_at" type="date" />
+              </label>
+              <label class="portal-field">
+                <span>Kurš uzrunāja</span>
+                <input name="outreach_owner" required maxlength="120" autocomplete="name" />
+              </label>
+              <label class="portal-field">
+                <span>Saziņas kanāls</span>
+                <select name="contact_channel">
+                  <option value="instagram">Instagram</option>
+                  <option value="facebook">Facebook</option>
+                  <option value="linkedin">LinkedIn</option>
+                  <option value="email">E-pasts</option>
+                  <option value="phone">Telefons</option>
+                  <option value="other">Cits</option>
+                </select>
+              </label>
+              <label class="portal-field">
+                <span>Statuss</span>
+                <select name="status">
+                  <option value="not_contacted">Nav uzrunāts</option>
+                  <option value="contacted">Uzrunāts</option>
+                  <option value="answered">Atbildēja</option>
+                  <option value="interested">Ieinteresēts</option>
+                  <option value="offer_sent">Piedāvājums nosūtīts</option>
+                  <option value="negotiation">Sarunas</option>
+                  <option value="client">Klients</option>
+                  <option value="rejected">Noraidīts</option>
+                  <option value="no_response">Neatbild</option>
+                  <option value="deferred">Atlikts</option>
+                </select>
+              </label>
+              <label class="portal-checkbox-field">
+                <input type="checkbox" name="has_website" />
+                <span class="portal-checkbox-control"></span>
+                <span>Mājaslapa ir</span>
+              </label>
+              <label class="portal-checkbox-field">
+                <input type="checkbox" name="follow_up_enabled" checked />
+                <span class="portal-checkbox-control"></span>
+                <span>Follow-up</span>
+              </label>
+              <label class="portal-field is-wide">
+                <span>Piezīmes</span>
+                <textarea name="notes" maxlength="4000" rows="5"></textarea>
+              </label>
+            </div>
+            <div class="portal-editor-actions">
+              <button type="button" class="portal-delete-action" data-lead-delete hidden>Dzēst</button>
+              <span class="portal-save-status" data-lead-save-status aria-live="polite"></span>
+              <button type="button" class="portal-secondary-action" data-lead-reset>Notīrīt</button>
+              <button type="submit" class="portal-primary-action">Saglabāt lead</button>
+            </div>
+          </form>
+        </section>
+      </div>
+
+      <div class="portal-work-grid" data-work-grid hidden>
         <section class="portal-list-panel" aria-labelledby="content-list-title">
           <header>
             <h2 id="content-list-title">Saturs</h2>

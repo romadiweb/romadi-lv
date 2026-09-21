@@ -60,6 +60,50 @@ const defaultBackground = Buffer.from(`
   </svg>
 `);
 
+const liepajaServiceBackground = Buffer.from(`
+  <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
+    <defs>
+      <linearGradient id="wine" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#070707"/>
+        <stop offset="0.42" stop-color="#180609"/>
+        <stop offset="1" stop-color="#620b22"/>
+      </linearGradient>
+      <radialGradient id="glowA" cx="82%" cy="24%" r="54%">
+        <stop offset="0" stop-color="#e0234e" stop-opacity=".42"/>
+        <stop offset="1" stop-color="#e0234e" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="glowB" cx="18%" cy="90%" r="58%">
+        <stop offset="0" stop-color="#f75f7f" stop-opacity=".18"/>
+        <stop offset="1" stop-color="#f75f7f" stop-opacity="0"/>
+      </radialGradient>
+      <pattern id="dots" width="18" height="18" patternUnits="userSpaceOnUse">
+        <circle cx="2" cy="2" r="1.15" fill="#fff" opacity=".16"/>
+      </pattern>
+    </defs>
+    <rect width="1200" height="630" fill="url(#wine)"/>
+    <rect width="1200" height="630" fill="url(#glowA)"/>
+    <rect width="1200" height="630" fill="url(#glowB)"/>
+    <rect x="650" y="56" width="460" height="460" rx="230" fill="none" stroke="#fff" stroke-opacity=".08"/>
+    <rect x="704" y="110" width="352" height="352" rx="176" fill="none" stroke="#e0234e" stroke-opacity=".22"/>
+    <path d="M705 332c76-64 174-61 254-3 44 32 83 41 143 17" fill="none" stroke="#f75f7f" stroke-width="5" stroke-opacity=".44" stroke-linecap="round"/>
+    <path d="M690 390c110-84 217-70 343-15" fill="none" stroke="#fff" stroke-width="2" stroke-opacity=".18" stroke-linecap="round"/>
+    <rect x="648" y="56" width="480" height="480" fill="url(#dots)" opacity=".28"/>
+    <circle cx="808" cy="242" r="11" fill="#e0234e"/>
+    <circle cx="808" cy="242" r="26" fill="none" stroke="#e0234e" stroke-opacity=".38"/>
+    <circle cx="970" cy="344" r="8" fill="#f75f7f"/>
+    <circle cx="970" cy="344" r="20" fill="none" stroke="#f75f7f" stroke-opacity=".32"/>
+    <path d="M0 1h1200M0 629h1200" stroke="#fff" stroke-opacity=".08"/>
+    <text x="72" y="108" fill="#fff" font-family="Arial, sans-serif" font-size="40" font-weight="700" letter-spacing="1">ROMADI</text>
+    <text x="72" y="206" fill="#f75f7f" font-family="Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="2">ROMADI / LIEPĀJA</text>
+    <text x="72" y="294" fill="#fff" font-family="Arial, sans-serif" font-size="62" font-weight="500" letter-spacing="-2">
+      <tspan x="72">Mājaslapu</tspan>
+      <tspan x="72" dy="68">izstrāde</tspan>
+      <tspan x="72" dy="68">Liepājā.</tspan>
+    </text>
+    <text x="72" y="548" fill="#b5b5bb" font-family="Arial, sans-serif" font-size="20">Individuāls dizains · ātra izstrāde · tehniska kārtība</text>
+  </svg>
+`);
+
 async function photoCard(path, cardWidth, cardHeight, rotation) {
   const mask = Buffer.from(
     `<svg width="${cardWidth}" height="${cardHeight}"><rect width="${cardWidth}" height="${cardHeight}" rx="18" fill="#fff"/></svg>`,
@@ -88,6 +132,9 @@ await Promise.all([
     .composite([{ input: logo, left: 72, top: 66 }])
     .png({ compressionLevel: 9, palette: true })
     .toFile('public/images/social/romadi-share-v2.png'),
+  sharp(liepajaServiceBackground)
+    .png({ compressionLevel: 9, palette: true })
+    .toFile('public/images/social/majaslapu-izstrade-liepaja-share-v1.png'),
   sharp(background)
     .composite([
       { input: logo, left: 72, top: 66 },

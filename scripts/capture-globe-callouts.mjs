@@ -3,7 +3,7 @@ import { chromium } from 'playwright';
 const browser = await chromium.launch();
 
 const desktop = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
-await desktop.goto('http://127.0.0.1:4321/pakalpojumi/majaslapu-izstrade-liepaja');
+await desktop.goto('http://127.0.0.1:4321/pakalpojumi/majas-lapu-izstrade-liepaja');
 const desktopReject = desktop.getByRole('button', { name: 'Noraidīt' });
 if (await desktopReject.isVisible()) await desktopReject.click();
 const desktopGlobe = desktop.locator('[data-romadi-globe]');
@@ -34,9 +34,11 @@ if (stageBox) {
     await desktop.mouse.move(x + 90, y, { steps: 6 });
     await desktop.mouse.up();
     await desktop.waitForTimeout(120);
-    const ids = await desktop.locator('[data-callout].is-visible').evaluateAll((callouts) =>
-      callouts.map((callout) => (callout instanceof HTMLElement ? callout.dataset.callout : '')),
-    );
+    const ids = await desktop
+      .locator('[data-callout].is-visible')
+      .evaluateAll((callouts) =>
+        callouts.map((callout) => (callout instanceof HTMLElement ? callout.dataset.callout : '')),
+      );
     visibleCalloutSets.push(ids);
     if (ids.includes('commerce')) {
       await desktopGlobe.screenshot({ path: '.impeccable/review/callouts-desktop-commerce.png' });
@@ -48,7 +50,7 @@ console.log(JSON.stringify({ visibleCalloutSets }));
 await desktop.close();
 
 const mobile = await browser.newPage({ viewport: { width: 390, height: 844 } });
-await mobile.goto('http://127.0.0.1:4321/pakalpojumi/majaslapu-izstrade-liepaja');
+await mobile.goto('http://127.0.0.1:4321/pakalpojumi/majas-lapu-izstrade-liepaja');
 const mobileReject = mobile.getByRole('button', { name: 'Noraidīt' });
 if (await mobileReject.isVisible()) await mobileReject.click();
 const mobileGlobe = mobile.locator('[data-romadi-globe]');

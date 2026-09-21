@@ -288,78 +288,6 @@ const ctaBelt = [
     </div>
   </section>
 
-  <section class="liepaja-review liepaja-shell" aria-labelledby="liepaja-review-title">
-    <h2 id="liepaja-review-title" class="sr-only">Liepājas klienta atsauksme</h2>
-
-    <div class="liepaja-review__stack" data-reveal>
-      <div class="liepaja-review__tabs" aria-label="Klienta ieguvumu akcenti">
-        {
-          reviewSignals.map((item) => (
-            <span class:list={['liepaja-review__tab', { 'is-active': item.active }]}>
-              <Icon name={item.icon} aria-hidden="true" />
-              <span>{item.label}</span>
-            </span>
-          ))
-        }
-      </div>
-
-      <blockquote class="liepaja-review__panel">
-        <div class="liepaja-review__quote">
-          <span class="liepaja-review__eyebrow">KLIENTA ATSAUKSME / LIEPĀJA</span>
-          <p>
-            “Pateicoties sadarbībai ar ROMADI, ieguvām pozitīvus rezultātus pasūtījumu pieaugumā un
-            meklētāju pozīcijās.”
-          </p>
-          <footer>
-            <strong>Liepājas Teltis</strong>
-            <span>liepajasteltis.lv</span>
-          </footer>
-        </div>
-
-        <div class="liepaja-review__brand" aria-label="Liepājas Teltis">
-          <div class="liepaja-review__brand-mark">
-            <img
-              src="/images/projects/liepajasteltis-logo-metallic.webp"
-              width="512"
-              height="512"
-              alt="Liepājas Teltis logotips"
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
-
-          <div class="liepaja-review__facts">
-            {
-              reviewFacts.map((fact) => (
-                <article>
-                  <Icon name={fact.icon} aria-hidden="true" />
-                  <div>
-                    <strong>{fact.title}</strong>
-                    <p>{fact.text}</p>
-                  </div>
-                </article>
-              ))
-            }
-          </div>
-        </div>
-
-        <div class="liepaja-review__belt" aria-label="Sadarbības ieguvumi">
-          <span>
-            <Icon name="lucide:map-pinned" aria-hidden="true" />
-            Liepāja + attālināti
-          </span>
-          <span>
-            <Icon name="lucide:messages-square" aria-hidden="true" />
-            Tieša saziņa visā procesā
-          </span>
-          <span>
-            <Icon name="lucide:life-buoy" aria-hidden="true" />
-            Atbalsts arī pēc palaišanas
-          </span>
-        </div>
-      </blockquote>
-    </div>
-  </section>
 
   <section
     class="liepaja-scope liepaja-shell"
@@ -490,6 +418,79 @@ const ctaBelt = [
         ))
       }
     </ol>
+  </section>
+
+  <section class="liepaja-review liepaja-shell" aria-labelledby="liepaja-review-title">
+    <h2 id="liepaja-review-title" class="sr-only">Liepājas klienta atsauksme</h2>
+
+    <div class="liepaja-review__stack" data-reveal>
+      <div class="liepaja-review__tabs" aria-label="Klienta ieguvumu akcenti">
+        {
+          reviewSignals.map((item) => (
+            <span class:list={['liepaja-review__tab', { 'is-active': item.active }]}>
+              <Icon name={item.icon} aria-hidden="true" />
+              <span>{item.label}</span>
+            </span>
+          ))
+        }
+      </div>
+
+      <blockquote class="liepaja-review__panel">
+        <div class="liepaja-review__quote">
+          <span class="liepaja-review__eyebrow">KLIENTA ATSAUKSME / LIEPĀJA</span>
+          <p>
+            “Pateicoties sadarbībai ar ROMADI, ieguvām pozitīvus rezultātus pasūtījumu pieaugumā un
+            meklētāju pozīcijās.”
+          </p>
+          <footer>
+            <strong>Liepājas Teltis</strong>
+            <span>liepajasteltis.lv</span>
+          </footer>
+        </div>
+
+        <div class="liepaja-review__brand" aria-label="Liepājas Teltis">
+          <div class="liepaja-review__brand-mark">
+            <img
+              src="/images/projects/liepajasteltis-logo-metallic.webp"
+              width="512"
+              height="512"
+              alt="Liepājas Teltis logotips"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+
+          <div class="liepaja-review__facts">
+            {
+              reviewFacts.map((fact) => (
+                <article>
+                  <Icon name={fact.icon} aria-hidden="true" />
+                  <div>
+                    <strong>{fact.title}</strong>
+                    <p>{fact.text}</p>
+                  </div>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+
+        <div class="liepaja-review__belt" aria-label="Sadarbības ieguvumi">
+          <span>
+            <Icon name="lucide:map-pinned" aria-hidden="true" />
+            Liepāja + attālināti
+          </span>
+          <span>
+            <Icon name="lucide:messages-square" aria-hidden="true" />
+            Tieša saziņa visā procesā
+          </span>
+          <span>
+            <Icon name="lucide:life-buoy" aria-hidden="true" />
+            Atbalsts arī pēc palaišanas
+          </span>
+        </div>
+      </blockquote>
+    </div>
   </section>
 
   <section class="liepaja-faq liepaja-shell" aria-labelledby="liepaja-faq-title">
@@ -1335,10 +1336,11 @@ const ctaBelt = [
     margin-left: 0.12em;
     border: 1px solid rgb(222 40 93 / 24%);
     border-radius: 0.12em;
-    padding: 0.02em 0.18em 0.06em;
-    overflow: hidden;
+    padding: 0.04em 0.18em 0.12em;
+    overflow: visible;
     vertical-align: 0.02em;
     color: #f04a79;
+    line-height: 1.12;
     background: linear-gradient(180deg, rgb(221 38 92 / 14%), rgb(126 11 43 / 8%)), #110709;
     box-shadow:
       inset 0 1px 0 rgb(255 255 255 / 3%),
@@ -1380,6 +1382,7 @@ const ctaBelt = [
     opacity: 0;
     transform: translateX(-65%);
     pointer-events: none;
+    clip-path: inset(0);
   }
 
   .liepaja-scope__phrase[data-changing='true'] {
@@ -1401,6 +1404,7 @@ const ctaBelt = [
 
   .liepaja-scope__phrase > span {
     display: block;
+    line-height: 1.08;
     white-space: nowrap;
     will-change: transform, opacity, filter;
   }
@@ -2189,22 +2193,18 @@ const ctaBelt = [
       border-left: 0;
     }
     .liepaja-review__panel {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(8.5rem, 0.34fr);
       grid-template-areas:
-        'quote'
-        'brand'
-        'belt';
+        'quote brand'
+        'belt belt';
+      min-height: 0;
     }
     .liepaja-review__brand {
-      border-top: 1px solid rgb(255 255 255 / 10%);
-      border-left: 0;
+      border-top: 0;
+      border-left: 1px solid rgb(255 255 255 / 10%);
     }
     .liepaja-review__belt {
-      grid-template-columns: 1fr;
-    }
-    .liepaja-review__belt span + span {
-      border-top: 1px solid rgb(255 255 255 / 10%);
-      border-left: 0;
+      display: none;
     }
     .liepaja-scope__overview {
       grid-template-columns: minmax(0, 0.9fr) minmax(22rem, 1.1fr);
@@ -2276,7 +2276,7 @@ const ctaBelt = [
       padding-block: 4.5rem;
     }
     .liepaja-region {
-      padding-block: 3rem 0;
+      padding-block: 2.5rem 0;
     }
     .liepaja-centered-heading h2,
     .liepaja-split-heading h2,
@@ -2287,27 +2287,65 @@ const ctaBelt = [
     .liepaja-review__tabs {
       padding-inline: 0.55rem;
     }
+    .liepaja-review__tab:not(.is-active) {
+      display: none;
+    }
+    .liepaja-review__tab {
+      min-height: 2.35rem;
+      padding: 0.62rem 0.8rem 0.66rem;
+      font-size: 0.78rem;
+    }
+    .liepaja-review__panel {
+      position: relative;
+      display: block;
+    }
     .liepaja-review__quote {
-      padding: 1.8rem 1.35rem;
+      padding: 1.45rem 1.15rem 5rem;
+    }
+    .liepaja-review__eyebrow {
+      font-size: 0.55rem;
+      letter-spacing: 0.12em;
     }
     .liepaja-review__quote > p {
       max-width: 100%;
-      font-size: 1.7rem;
+      margin-top: 0.9rem;
+      font-size: clamp(1.15rem, 5.6vw, 1.45rem);
+      line-height: 1.08;
+      letter-spacing: -0.035em;
+    }
+    .liepaja-review footer {
+      margin-top: 1rem;
+      font-size: 0.78rem;
     }
     .liepaja-review__brand {
-      padding: 1.35rem;
+      position: absolute;
+      right: 1rem;
+      bottom: 1rem;
+      border: 0;
+      padding: 0;
+      background: transparent;
     }
-    .liepaja-review__facts article {
-      grid-template-columns: 1fr;
-      gap: 0.55rem;
+    .liepaja-review__brand-mark {
+      min-height: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+    }
+    .liepaja-review__brand-mark img {
+      width: clamp(4.8rem, 22vw, 6rem);
+      height: auto;
+    }
+    .liepaja-review__facts {
+      display: none;
     }
     .liepaja-scope__heading h2 {
-      font-size: clamp(2.05rem, 10vw, 3rem);
+      font-size: clamp(1.78rem, 8.4vw, 2.38rem);
+      line-height: 1.08;
     }
     .liepaja-scope__phrase {
       display: grid;
-      margin: 0.22em auto 0;
-      padding-inline: 0.16em;
+      margin: 0.18em auto 0;
+      padding: 0.08em 0.18em 0.16em;
     }
     .liepaja-scope__phrase > span {
       white-space: normal;
@@ -2318,25 +2356,40 @@ const ctaBelt = [
     }
     .liepaja-scope__tabs {
       width: 100%;
-      overflow-x: auto;
-      justify-content: flex-start;
-      scrollbar-width: none;
-    }
-    .liepaja-scope__tabs::-webkit-scrollbar {
-      display: none;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.18rem;
+      overflow: visible;
+      padding: 0.22rem;
     }
     .liepaja-scope__tabs button {
-      flex: none;
+      min-width: 0;
+      min-height: 2.35rem;
+      justify-content: center;
+      gap: 0.25rem;
+      padding-inline: 0.26rem;
+      font-size: clamp(0.52rem, 2.35vw, 0.62rem);
+      line-height: 1.1;
+    }
+    .liepaja-scope__tabs button :global(svg) {
+      width: 0.78rem;
+      height: 0.78rem;
     }
     .liepaja-scope__overview {
       grid-template-columns: 1fr;
     }
     .liepaja-scope__summary {
-      padding: 1.5rem;
+      padding: 1.25rem;
+    }
+    .liepaja-scope__summary h3 {
+      font-size: clamp(1.2rem, 6.2vw, 1.55rem);
+    }
+    .liepaja-scope__summary > p {
+      font-size: 0.82rem;
     }
     .liepaja-scope__visual {
-      margin: 0 1rem 1rem;
-      padding: 1rem;
+      margin: 0 0.85rem 0.85rem;
+      padding: 0.85rem;
     }
     .liepaja-scope__flow {
       gap: 0.35rem;
@@ -2352,7 +2405,13 @@ const ctaBelt = [
     }
     .liepaja-scope__details > section {
       min-height: auto;
-      padding: 1.4rem 1.5rem;
+      padding: 1.1rem 1.25rem;
+    }
+    .liepaja-scope__details strong {
+      font-size: 1.28rem;
+    }
+    .liepaja-scope__details p {
+      font-size: 0.74rem;
     }
     .liepaja-scope__details > section + section {
       border-top: 1px solid rgb(255 255 255 / 11%);
@@ -2388,24 +2447,6 @@ const ctaBelt = [
       width: 100%;
     }
     .liepaja-cta__floater {
-      width: 3.25rem;
-      border-radius: 0.85rem;
-    }
-    .liepaja-cta__floater--1 {
-      left: 8%;
-    }
-    .liepaja-cta__floater--2 {
-      right: 8%;
-    }
-    .liepaja-cta__floater--3 {
-      top: 8rem;
-      left: 4%;
-    }
-    .liepaja-cta__floater--4 {
-      top: 8.2rem;
-      right: 4%;
-    }
-    .liepaja-cta__floater--5 {
       display: none;
     }
     .liepaja-cta__belt-group span {

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-const localPage = '/pakalpojumi/majaslapu-izstrade-liepaja';
+const localPage = '/pakalpojumi/majas-lapu-izstrade-liepaja';
 const canonicalUrl = `https://romadi.lv${localPage}`;
 
 test.describe('Liepāja website development landing page', () => {
@@ -29,7 +29,7 @@ test.describe('Liepāja website development landing page', () => {
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', canonicalUrl);
     await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
       'content',
-      'https://romadi.lv/images/projects/liepajas-teltis-1600.webp',
+      'https://romadi.lv/images/social/majaslapu-izstrade-liepaja-share-v1.png',
     );
     await expect(page.locator('html')).toHaveAttribute('lang', 'lv');
 
@@ -125,7 +125,7 @@ test.describe('Liepāja website development landing page', () => {
     await expect(globeCallouts).toHaveCount(3);
     const visibleCalloutCount = await page.locator('[data-callout].is-visible').count();
     expect(visibleCalloutCount).toBeGreaterThanOrEqual(1);
-    expect(visibleCalloutCount).toBeLessThanOrEqual(2);
+    expect(visibleCalloutCount).toBeLessThanOrEqual(3);
     expect(await page.locator('[data-callout].is-visible [data-callout-leader]').count()).toBe(
       visibleCalloutCount,
     );

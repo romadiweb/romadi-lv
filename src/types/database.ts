@@ -16,7 +16,7 @@ export interface Database {
           old_data: Json | null;
           operation: 'INSERT' | 'UPDATE' | 'DELETE';
           record_id: number | null;
-          table_name: 'projects' | 'pricing_plans' | 'reviews';
+          table_name: 'projects' | 'pricing_plans' | 'reviews' | 'portal_leads';
         };
         Insert: {
           actor_id?: string | null;
@@ -27,7 +27,7 @@ export interface Database {
           old_data?: Json | null;
           operation: 'INSERT' | 'UPDATE' | 'DELETE';
           record_id?: number | null;
-          table_name: 'projects' | 'pricing_plans' | 'reviews';
+          table_name: 'projects' | 'pricing_plans' | 'reviews' | 'portal_leads';
         };
         Update: {
           actor_id?: string | null;
@@ -38,7 +38,88 @@ export interface Database {
           old_data?: Json | null;
           operation?: 'INSERT' | 'UPDATE' | 'DELETE';
           record_id?: number | null;
-          table_name?: 'projects' | 'pricing_plans' | 'reviews';
+          table_name?: 'projects' | 'pricing_plans' | 'reviews' | 'portal_leads';
+        };
+        Relationships: [];
+      };
+      portal_leads: {
+        Row: {
+          company_name: string;
+          contact_channel: 'instagram' | 'facebook' | 'linkedin' | 'email' | 'phone' | 'other';
+          contacted_at: string | null;
+          created_at: string;
+          follow_up_due_at: string | null;
+          follow_up_enabled: boolean;
+          found_on: string;
+          has_website: boolean;
+          id: number;
+          industry: string | null;
+          notes: string | null;
+          outreach_owner: string;
+          status:
+            | 'not_contacted'
+            | 'contacted'
+            | 'answered'
+            | 'interested'
+            | 'offer_sent'
+            | 'negotiation'
+            | 'client'
+            | 'rejected'
+            | 'no_response'
+            | 'deferred';
+          updated_at: string;
+        };
+        Insert: {
+          company_name: string;
+          contact_channel?: 'instagram' | 'facebook' | 'linkedin' | 'email' | 'phone' | 'other';
+          contacted_at?: string | null;
+          created_at?: string;
+          follow_up_due_at?: never;
+          follow_up_enabled?: boolean;
+          found_on: string;
+          has_website?: boolean;
+          id?: never;
+          industry?: string | null;
+          notes?: string | null;
+          outreach_owner: string;
+          status?:
+            | 'not_contacted'
+            | 'contacted'
+            | 'answered'
+            | 'interested'
+            | 'offer_sent'
+            | 'negotiation'
+            | 'client'
+            | 'rejected'
+            | 'no_response'
+            | 'deferred';
+          updated_at?: string;
+        };
+        Update: {
+          company_name?: string;
+          contact_channel?: 'instagram' | 'facebook' | 'linkedin' | 'email' | 'phone' | 'other';
+          contacted_at?: string | null;
+          created_at?: string;
+          follow_up_due_at?: never;
+          follow_up_enabled?: boolean;
+          found_on?: string;
+          has_website?: boolean;
+          id?: never;
+          industry?: string | null;
+          notes?: string | null;
+          outreach_owner?: string;
+          status?:
+            | 'not_contacted'
+            | 'contacted'
+            | 'answered'
+            | 'interested'
+            | 'offer_sent'
+            | 'negotiation'
+            | 'client'
+            | 'rejected'
+            | 'no_response'
+            | 'deferred';
+          updated_at?: string;
         };
         Relationships: [];
       };
@@ -239,3 +320,4 @@ export type Project = Database['public']['Tables']['projects']['Row'];
 export type PricingPlan = Database['public']['Tables']['pricing_plans']['Row'];
 export type Review = Database['public']['Tables']['reviews']['Row'];
 export type CmsAuditLog = Database['public']['Tables']['cms_audit_log']['Row'];
+export type PortalLead = Database['public']['Tables']['portal_leads']['Row'];
