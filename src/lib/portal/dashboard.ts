@@ -1,8 +1,12 @@
-import type { PortalLead } from '@/types/database';
+import type { PortalLead, PortalTextTemplateRow } from '@/types/database';
+import type { TextTemplateVariant } from '@/lib/portal/text-templates';
 
 type Resource = 'projects' | 'reviews' | 'pricing_plans';
-type View = Resource | 'audit' | 'leads';
+type View = Resource | 'audit' | 'dashboard' | 'leads' | 'templates';
 type PortalRecord = Record<string, unknown> & { id: number };
+type PortalTextTemplate = Omit<PortalTextTemplateRow, 'variants'> & {
+  variants: TextTemplateVariant[];
+};
 type FieldType = 'text' | 'textarea' | 'url' | 'number' | 'date' | 'list' | 'checkbox';
 type LeadStatus = PortalLead['status'];
 
@@ -89,7 +93,13 @@ const definitions: Record<Resource, ResourceDefinition> = {
       { key: 'logo_url', label: 'Logotipa ceļš', type: 'text' },
       { key: 'portfolio_image_url', label: 'Portfolio attēla ceļš', type: 'text' },
       { key: 'alt_text', label: 'Attēla alternatīvais teksts', type: 'text' },
-      { key: 'features', label: 'Iespējas', type: 'list', wide: true, hint: 'Viena vērtība katrā rindā' },
+      {
+        key: 'features',
+        label: 'Iespējas',
+        type: 'list',
+        wide: true,
+        hint: 'Viena vērtība katrā rindā',
+      },
       { key: 'technologies', label: 'Tehnoloģijas', type: 'list', wide: true },
       { key: 'integrations', label: 'Integrācijas', type: 'list', wide: true },
       { key: 'completed_at', label: 'Pabeigšanas datums', type: 'date' },
@@ -154,7 +164,13 @@ const definitions: Record<Resource, ResourceDefinition> = {
       { key: 'price_prefix', label: 'Cenas prefikss', type: 'text' },
       { key: 'price_label', label: 'Cena', type: 'text', required: true },
       { key: 'description', label: 'Apraksts', type: 'textarea', required: true, wide: true },
-      { key: 'features', label: 'Iekļautais', type: 'list', wide: true, hint: 'Viena vērtība katrā rindā' },
+      {
+        key: 'features',
+        label: 'Iekļautais',
+        type: 'list',
+        wide: true,
+        hint: 'Viena vērtība katrā rindā',
+      },
       { key: 'cta_label', label: 'Pogas teksts', type: 'text', required: true },
       { key: 'cta_href', label: 'Pogas saite', type: 'text' },
       { key: 'sort_order', label: 'Secība', type: 'number', required: true, min: 0 },
@@ -179,7 +195,9 @@ const text = (tag: string, value: string, className?: string) => {
 
 const formatDate = (value: string | null) =>
   value
-    ? new Intl.DateTimeFormat('lv-LV', { day: '2-digit', month: 'short' }).format(new Date(`${value}T12:00:00`))
+    ? new Intl.DateTimeFormat('lv-LV', { day: '2-digit', month: 'short' }).format(
+        new Date(`${value}T12:00:00`),
+      )
     : 'Nav datuma';
 
 const isFollowUpDue = (lead: PortalLead) => {
@@ -203,6 +221,23 @@ export function initPortalDashboard(): void {
   const contentList = $<HTMLElement>(root, '[data-content-list]');
   const workGrid = $<HTMLElement>(root, '[data-work-grid]');
   const leadGrid = $<HTMLElement>(root, '[data-lead-grid]');
+  const homeView = $<HTMLElement>(root, '[data-dashboard-home-view]');
+  const homeTaskList = $<HTMLElement>(root, '[data-home-task-list]');
+  const templateGrid = $<HTMLElement>(root, '[data-template-grid]');
+  const templateStatus = $<HTMLElement>(root, '[data-template-status]');
+  const templateSearch = $<HTMLInputElement>(root, '[data-template-search]');
+  const templateCategoryFilter = $<HTMLSelectElement>(root, '[data-template-category-filter]');
+  const templateCategoryOptions = $<HTMLDataListElement>(root, '[data-template-category-options]');
+  const templateList = $<HTMLElement>(root, '[data-template-list]');
+  const templateForm = $<HTMLFormElement>(root, '[data-template-form]');
+  const templateEmpty = $<HTMLElement>(root, '[data-template-empty]');
+  const templateEditorTitle = $<HTMLElement>(root, '[data-template-editor-title]');
+  const templateFormState = $<HTMLElement>(root, '[data-template-form-state]');
+  const templateSaveStatus = $<HTMLElement>(root, '[data-template-save-status]');
+  const templateDeleteButton = $<HTMLButtonElement>(root, '[data-template-delete]');
+  const templateResetButton = $<HTMLButtonElement>(root, '[data-template-reset]');
+  const addVariantButton = $<HTMLButtonElement>(root, '[data-add-variant]');
+  const variantList = $<HTMLElement>(root, '[data-variant-list]');
   const editorPanel = $<HTMLElement>(root, '[data-editor-panel]');
   const editorTitle = $<HTMLElement>(root, '[data-editor-title]');
   const editorEmpty = $<HTMLElement>(root, '[data-editor-empty]');
@@ -219,6 +254,7 @@ export function initPortalDashboard(): void {
   const leadKanban = $<HTMLElement>(root, '[data-lead-kanban]');
   const leadSearch = $<HTMLInputElement>(root, '[data-lead-search]');
   const leadForm = $<HTMLFormElement>(root, '[data-lead-form]');
+  const leadOutreachFields = $<HTMLElement>(leadForm, '[data-lead-outreach-fields]');
   const leadEditorTitle = $<HTMLElement>(root, '[data-lead-editor-title]');
   const leadEditorCopy = $<HTMLElement>(root, '[data-lead-editor-copy]');
   const leadFormState = $<HTMLElement>(root, '[data-lead-form-state]');
@@ -228,17 +264,25 @@ export function initPortalDashboard(): void {
 
   const cache = new Map<Resource, PortalRecord[]>();
   let leads: PortalLead[] = [];
+  let templates: PortalTextTemplate[] = [];
+  let templatesLoaded = false;
   let activeResource: Resource = 'projects';
-  let activeView: View = 'leads';
+  let activeView: View = 'dashboard';
   let activeRecord: PortalRecord | null = null;
   let activeLead: PortalLead | null = null;
-  let deleteMode: 'cms' | 'lead' | null = null;
+  let activeTemplate: PortalTextTemplate | null = null;
+  let deleteMode: 'cms' | 'lead' | 'template' | null = null;
   let isDirty = false;
   let toastTimer = 0;
 
   const setDirty = (dirty: boolean) => {
     isDirty = dirty;
-    const target = activeView === 'leads' ? leadSaveStatus : saveStatus;
+    const target =
+      activeView === 'leads'
+        ? leadSaveStatus
+        : activeView === 'templates'
+          ? templateSaveStatus
+          : saveStatus;
     if (dirty) target.textContent = 'Nesaglabātas izmaiņas';
     else if (target.textContent === 'Nesaglabātas izmaiņas') target.textContent = '';
   };
@@ -298,18 +342,20 @@ export function initPortalDashboard(): void {
     return payload;
   };
 
-  const updateCount = (view: Resource | 'leads', count: number) => {
+  const updateCount = (view: Resource | 'leads' | 'text_templates', count: number) => {
     const counter = root.querySelector<HTMLElement>(`[data-count="${view}"]`);
     if (counter) counter.textContent = String(count);
   };
 
   const setNavState = (view: View) => {
-    root.querySelectorAll<HTMLButtonElement>('[data-resource], [data-section]').forEach((button) => {
-      const target = button.dataset.resource ?? button.dataset.section;
-      const active = target === view;
-      button.classList.toggle('is-active', active);
-      button.setAttribute('aria-current', active ? 'page' : 'false');
-    });
+    root
+      .querySelectorAll<HTMLButtonElement>('[data-resource], [data-section]')
+      .forEach((button) => {
+        const target = button.dataset.resource ?? button.dataset.section;
+        const active = target === view;
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-current', active ? 'page' : 'false');
+      });
   };
 
   const loadResource = async (resource: Resource, force = false): Promise<PortalRecord[]> => {
@@ -326,6 +372,22 @@ export function initPortalDashboard(): void {
     leads = response.data;
     updateCount('leads', leads.length);
     return leads;
+  };
+
+  const loadTemplates = async (force = false): Promise<PortalTextTemplate[]> => {
+    if (!force && templatesLoaded) return templates;
+    const response = await request<{ data: PortalTextTemplate[] }>('/api/portal/text-templates');
+    templates = response.data;
+    templatesLoaded = true;
+    updateCount('text_templates', templates.length);
+    return templates;
+  };
+
+  const hideWorkspaceViews = () => {
+    homeView.hidden = true;
+    leadGrid.hidden = true;
+    templateGrid.hidden = true;
+    workGrid.hidden = true;
   };
 
   const createField = (definition: FieldDefinition, record: Record<string, unknown>) => {
@@ -351,7 +413,11 @@ export function initPortalDashboard(): void {
     wrapper.append(text('span', definition.label));
 
     const value = record[definition.key];
-    const displayValue = Array.isArray(value) ? value.join('\n') : value == null ? '' : String(value);
+    const displayValue = Array.isArray(value)
+      ? value.join('\n')
+      : value == null
+        ? ''
+        : String(value);
     const control =
       definition.type === 'textarea' || definition.type === 'list'
         ? document.createElement('textarea')
@@ -440,7 +506,7 @@ export function initPortalDashboard(): void {
     activeRecord = null;
     const definition = definitions[resource];
     setNavState(resource);
-    leadGrid.hidden = true;
+    hideWorkspaceViews();
     workGrid.hidden = false;
     sectionTitle.textContent = definition.title;
     sectionDescription.textContent = definition.description;
@@ -477,7 +543,7 @@ export function initPortalDashboard(): void {
     setDirty(false);
     activeView = 'audit';
     setNavState('audit');
-    leadGrid.hidden = true;
+    hideWorkspaceViews();
     workGrid.hidden = false;
     sectionTitle.textContent = 'Izmaiņu žurnāls';
     sectionDescription.textContent = 'Pēdējās satura izmaiņas ar autoru, laiku un darbības veidu.';
@@ -503,7 +569,12 @@ export function initPortalDashboard(): void {
         const heading = document.createElement('div');
         heading.append(
           text('strong', `${operationLabels[operation] ?? operation}: ${String(entry.table_name)}`),
-          text('time', new Intl.DateTimeFormat('lv-LV', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(String(entry.changed_at)))),
+          text(
+            'time',
+            new Intl.DateTimeFormat('lv-LV', { dateStyle: 'medium', timeStyle: 'short' }).format(
+              new Date(String(entry.changed_at)),
+            ),
+          ),
         );
         row.append(
           heading,
@@ -521,7 +592,11 @@ export function initPortalDashboard(): void {
     } catch (error) {
       listStatus.textContent = 'Kļūda';
       contentList.replaceChildren(
-        text('p', error instanceof Error ? error.message : 'Žurnālu nevar ielādēt.', 'portal-list-empty is-error'),
+        text(
+          'p',
+          error instanceof Error ? error.message : 'Žurnālu nevar ielādēt.',
+          'portal-list-empty is-error',
+        ),
       );
     }
   };
@@ -534,7 +609,8 @@ export function initPortalDashboard(): void {
       if (!(input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement)) continue;
       if (field.type === 'checkbox' && input instanceof HTMLInputElement) {
         result[field.key] = input.checked;
-      } else if (field.type === 'number') result[field.key] = input.value ? Number(input.value) : null;
+      } else if (field.type === 'number')
+        result[field.key] = input.value ? Number(input.value) : null;
       else if (field.type === 'list') {
         result[field.key] = input.value
           .split('\n')
@@ -553,18 +629,46 @@ export function initPortalDashboard(): void {
     name: string,
   ): T => {
     const control = leadForm.elements.namedItem(name);
-    if (!(control instanceof HTMLInputElement || control instanceof HTMLTextAreaElement || control instanceof HTMLSelectElement)) {
+    if (!(
+      control instanceof HTMLInputElement ||
+      control instanceof HTMLTextAreaElement ||
+      control instanceof HTMLSelectElement
+    )) {
       throw new Error(`Missing lead field: ${name}`);
     }
     return control as T;
+  };
+
+  const setLeadOutreachState = (isContacted: boolean, clearDetails = false) => {
+    const toggle = leadControl<HTMLInputElement>('is_contacted');
+    const status = leadControl<HTMLSelectElement>('status');
+    const owner = leadControl<HTMLInputElement>('outreach_owner');
+    const contactedAt = leadControl<HTMLInputElement>('contacted_at');
+    const followUp = leadControl<HTMLInputElement>('follow_up_enabled');
+
+    toggle.checked = isContacted;
+    toggle.setAttribute('aria-expanded', String(isContacted));
+    leadOutreachFields.hidden = !isContacted;
+    owner.required = isContacted;
+
+    if (isContacted) {
+      if (!status.value || status.value === 'not_contacted') status.value = 'contacted';
+      return;
+    }
+
+    status.value = 'not_contacted';
+    followUp.checked = false;
+    if (clearDetails) {
+      owner.value = '';
+      contactedAt.value = '';
+    }
   };
 
   const resetLeadForm = () => {
     setDirty(false);
     activeLead = null;
     leadForm.reset();
-    leadControl<HTMLInputElement>('follow_up_enabled').checked = true;
-    leadControl<HTMLSelectElement>('status').value = 'not_contacted';
+    setLeadOutreachState(false, true);
     leadEditorTitle.textContent = 'Jauns lead';
     leadEditorCopy.textContent = 'Izveido kontaktu un ieliec to pareizajā statusā.';
     leadFormState.textContent = 'Nav saglabāts';
@@ -584,8 +688,10 @@ export function initPortalDashboard(): void {
     leadControl<HTMLInputElement>('company_name').value = lead.company_name;
     leadControl<HTMLInputElement>('found_on').value = lead.found_on;
     leadControl<HTMLInputElement>('industry').value = lead.industry ?? '';
+    const isContacted = lead.status !== 'not_contacted';
+    setLeadOutreachState(isContacted);
     leadControl<HTMLInputElement>('contacted_at').value = lead.contacted_at ?? '';
-    leadControl<HTMLInputElement>('outreach_owner').value = lead.outreach_owner;
+    leadControl<HTMLInputElement>('outreach_owner').value = lead.outreach_owner ?? '';
     leadControl<HTMLSelectElement>('contact_channel').value = lead.contact_channel;
     leadControl<HTMLSelectElement>('status').value = lead.status;
     leadControl<HTMLInputElement>('has_website').checked = lead.has_website;
@@ -593,23 +699,33 @@ export function initPortalDashboard(): void {
     leadControl<HTMLTextAreaElement>('notes').value = lead.notes ?? '';
     leadEditorTitle.textContent = lead.company_name;
     leadEditorCopy.textContent = `${channelLabels[lead.contact_channel]} · ${lead.found_on}`;
-    leadFormState.textContent = lead.follow_up_due_at ? `Follow-up: ${formatDate(lead.follow_up_due_at)}` : 'Nav follow-up';
+    leadFormState.textContent = lead.follow_up_due_at
+      ? `Follow-up: ${formatDate(lead.follow_up_due_at)}`
+      : 'Nav follow-up';
     leadFormState.dataset.state = isFollowUpDue(lead) ? 'published' : 'draft';
     leadDeleteButton.hidden = !canDelete;
   };
 
-  const serializeLeadForm = () => ({
-    company_name: leadControl<HTMLInputElement>('company_name').value.trim(),
-    contact_channel: leadControl<HTMLSelectElement>('contact_channel').value,
-    contacted_at: leadControl<HTMLInputElement>('contacted_at').value || null,
-    follow_up_enabled: leadControl<HTMLInputElement>('follow_up_enabled').checked,
-    found_on: leadControl<HTMLInputElement>('found_on').value.trim(),
-    has_website: leadControl<HTMLInputElement>('has_website').checked,
-    industry: leadControl<HTMLInputElement>('industry').value.trim() || null,
-    notes: leadControl<HTMLTextAreaElement>('notes').value.trim() || null,
-    outreach_owner: leadControl<HTMLInputElement>('outreach_owner').value.trim(),
-    status: leadControl<HTMLSelectElement>('status').value,
-  });
+  const serializeLeadForm = () => {
+    const isContacted = leadControl<HTMLInputElement>('is_contacted').checked;
+
+    return {
+      company_name: leadControl<HTMLInputElement>('company_name').value.trim(),
+      contact_channel: leadControl<HTMLSelectElement>('contact_channel').value,
+      contacted_at: isContacted
+        ? leadControl<HTMLInputElement>('contacted_at').value || null
+        : null,
+      follow_up_enabled: isContacted && leadControl<HTMLInputElement>('follow_up_enabled').checked,
+      found_on: leadControl<HTMLInputElement>('found_on').value.trim(),
+      has_website: leadControl<HTMLInputElement>('has_website').checked,
+      industry: leadControl<HTMLInputElement>('industry').value.trim() || null,
+      notes: leadControl<HTMLTextAreaElement>('notes').value.trim() || null,
+      outreach_owner: isContacted
+        ? leadControl<HTMLInputElement>('outreach_owner').value.trim() || null
+        : null,
+      status: isContacted ? leadControl<HTMLSelectElement>('status').value : 'not_contacted',
+    };
+  };
 
   const renderLeadBoard = () => {
     const query = leadSearch.value.trim().toLowerCase();
@@ -621,16 +737,22 @@ export function initPortalDashboard(): void {
         )
       : leads;
 
-    const openCount = leads.filter((lead) => !['client', 'rejected', 'no_response'].includes(lead.status)).length;
+    const openCount = leads.filter(
+      (lead) => !['client', 'rejected', 'no_response'].includes(lead.status),
+    ).length;
     const dueCount = leads.filter(isFollowUpDue).length;
     root.querySelector<HTMLElement>('[data-lead-metric="open"]')!.textContent = String(openCount);
-    root.querySelector<HTMLElement>('[data-lead-metric="followups"]')!.textContent = String(dueCount);
+    root.querySelector<HTMLElement>('[data-lead-metric="followups"]')!.textContent =
+      String(dueCount);
     leadStatus.textContent = `${filtered.length} no ${leads.length} lead`;
 
     if (leads.length === 0) {
       const empty = document.createElement('div');
       empty.className = 'portal-list-empty';
-      empty.append(text('strong', 'Lead pipeline ir tukšs.'), text('p', 'Izveido pirmo lead un sāc plūsmu no “Nav uzrunāts”.'));
+      empty.append(
+        text('strong', 'Lead pipeline ir tukšs.'),
+        text('p', 'Izveido pirmo lead un sāc plūsmu no “Nav uzrunāts”.'),
+      );
       leadKanban.replaceChildren(empty);
       return;
     }
@@ -679,7 +801,14 @@ export function initPortalDashboard(): void {
           text('strong', lead.company_name),
           text('small', `${lead.found_on}${lead.industry ? ` · ${lead.industry}` : ''}`),
           meta,
-          text('em', lead.follow_up_due_at ? `Follow-up ${formatDate(lead.follow_up_due_at)}` : `Uzrunāts ${formatDate(lead.contacted_at)}`),
+          text(
+            'em',
+            lead.status === 'not_contacted'
+              ? 'Nav uzrunāts'
+              : lead.follow_up_due_at
+                ? `Follow-up ${formatDate(lead.follow_up_due_at)}`
+                : `Uzrunāts ${formatDate(lead.contacted_at)}`,
+          ),
         );
         cards.append(card);
       }
@@ -694,10 +823,11 @@ export function initPortalDashboard(): void {
     setDirty(false);
     activeView = 'leads';
     setNavState('leads');
-    workGrid.hidden = true;
+    hideWorkspaceViews();
     leadGrid.hidden = false;
     sectionTitle.textContent = 'Leads';
-    sectionDescription.textContent = 'Vadi jaunos kontaktus no atrašanas brīža līdz klienta statusam.';
+    sectionDescription.textContent =
+      'Vadi jaunos kontaktus no atrašanas brīža līdz klienta statusam.';
     createButton.hidden = false;
     createButton.querySelector('span')?.replaceChildren(document.createTextNode('Jauns lead'));
     leadStatus.textContent = 'Ielādē…';
@@ -712,7 +842,12 @@ export function initPortalDashboard(): void {
       failure.className = 'portal-list-empty is-error';
       failure.append(
         text('strong', 'Lead nevar ielādēt.'),
-        text('p', error instanceof Error ? error.message : 'Pārbaudi datubāzes migrāciju un mēģini vēlreiz.'),
+        text(
+          'p',
+          error instanceof Error
+            ? error.message
+            : 'Pārbaudi datubāzes migrāciju un mēģini vēlreiz.',
+        ),
       );
       const retry = text('button', 'Mēģināt vēlreiz') as HTMLButtonElement;
       retry.type = 'button';
@@ -722,9 +857,325 @@ export function initPortalDashboard(): void {
     }
   };
 
+  const copyToClipboard = async (value: string) => {
+    if (!value.trim()) {
+      notify('Šis teksta variants vēl ir tukšs.', 'error');
+      return;
+    }
+
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error('Clipboard API unavailable');
+      await navigator.clipboard.writeText(value);
+      notify('Teksts nokopēts starpliktuvē.');
+    } catch {
+      notify('Tekstu neizdevās nokopēt. Iezīmē to un kopē manuāli.', 'error');
+    }
+  };
+
+  const templateControl = <T extends HTMLInputElement | HTMLTextAreaElement>(name: string): T => {
+    const control = templateForm.elements.namedItem(name);
+    if (!(control instanceof HTMLInputElement || control instanceof HTMLTextAreaElement)) {
+      throw new Error(`Missing template field: ${name}`);
+    }
+    return control as T;
+  };
+
+  const readVariantDrafts = (): TextTemplateVariant[] =>
+    Array.from(variantList.querySelectorAll<HTMLElement>('[data-variant]')).map((card) => ({
+      id: card.dataset.variantId ?? crypto.randomUUID(),
+      label: card.querySelector<HTMLInputElement>('[data-variant-label]')?.value.trim() ?? '',
+      content:
+        card.querySelector<HTMLTextAreaElement>('[data-variant-content]')?.value.trim() ?? '',
+    }));
+
+  const renderVariantFields = (variants: TextTemplateVariant[]) => {
+    const fragment = document.createDocumentFragment();
+    variants.forEach((variant, index) => {
+      const card = document.createElement('article');
+      card.className = 'portal-variant-card';
+      card.dataset.variant = '';
+      card.dataset.variantId = variant.id;
+
+      const header = document.createElement('header');
+      const label = document.createElement('label');
+      label.append(text('span', `Tona nosaukums ${index + 1}`));
+      const labelInput = document.createElement('input');
+      labelInput.required = true;
+      labelInput.maxLength = 80;
+      labelInput.value = variant.label;
+      labelInput.placeholder = 'Formāls, draudzīgs…';
+      labelInput.dataset.variantLabel = '';
+      label.append(labelInput);
+
+      const actions = document.createElement('div');
+      const copyButton = text('button', 'Kopēt') as HTMLButtonElement;
+      copyButton.type = 'button';
+      copyButton.className = 'portal-variant-copy';
+      copyButton.addEventListener('click', () => {
+        const content = card.querySelector<HTMLTextAreaElement>('[data-variant-content]');
+        if (content) void copyToClipboard(content.value);
+      });
+      const removeButton = text('button', 'Noņemt') as HTMLButtonElement;
+      removeButton.type = 'button';
+      removeButton.className = 'portal-variant-remove';
+      removeButton.disabled = variants.length === 1;
+      removeButton.addEventListener('click', () => {
+        const current = readVariantDrafts();
+        if (current.length === 1) return;
+        renderVariantFields(current.filter((item) => item.id !== variant.id));
+        setDirty(true);
+      });
+      actions.append(copyButton, removeButton);
+      header.append(label, actions);
+
+      const contentLabel = document.createElement('label');
+      contentLabel.append(text('span', 'Teksts'));
+      const content = document.createElement('textarea');
+      content.required = true;
+      content.maxLength = 12_000;
+      content.rows = 8;
+      content.value = variant.content;
+      content.placeholder = 'Raksti tekstu, ko pēc tam varēsi nokopēt…';
+      content.dataset.variantContent = '';
+      contentLabel.append(content);
+      card.append(header, contentLabel);
+      fragment.append(card);
+    });
+    variantList.replaceChildren(fragment);
+  };
+
+  const openTemplateEditor = (template: PortalTextTemplate | null) => {
+    setDirty(false);
+    activeTemplate = template;
+    templateForm.reset();
+    templateControl<HTMLInputElement>('title').value = template?.title ?? '';
+    templateControl<HTMLInputElement>('category').value = template?.category ?? '';
+    templateControl<HTMLTextAreaElement>('notes').value = template?.notes ?? '';
+    renderVariantFields(
+      template?.variants ?? [{ id: crypto.randomUUID(), label: 'Draudzīgs', content: '' }],
+    );
+    templateEditorTitle.textContent = template?.title ?? 'Jauna sagatave';
+    templateFormState.textContent = template
+      ? `Atjaunināta ${new Intl.DateTimeFormat('lv-LV', { dateStyle: 'medium' }).format(new Date(template.updated_at))}`
+      : 'Nav saglabāta';
+    templateFormState.dataset.state = template ? 'published' : 'draft';
+    templateDeleteButton.hidden = !template || !canDelete;
+    templateSaveStatus.textContent = '';
+    templateEmpty.hidden = true;
+    templateForm.hidden = false;
+    renderTemplateList();
+    window.setTimeout(() => templateControl<HTMLInputElement>('title').focus(), 120);
+  };
+
+  const renderTemplateCategories = () => {
+    const currentFilter = templateCategoryFilter.value;
+    const categories = [...new Set(templates.map((template) => template.category))].sort((a, b) =>
+      a.localeCompare(b, 'lv-LV'),
+    );
+    const filterOptions = [new Option('Visas kategorijas', '')];
+    const dataOptions: HTMLOptionElement[] = [];
+    categories.forEach((category) => {
+      filterOptions.push(new Option(category, category));
+      dataOptions.push(new Option(category));
+    });
+    templateCategoryFilter.replaceChildren(...filterOptions);
+    templateCategoryOptions.replaceChildren(...dataOptions);
+    if (categories.includes(currentFilter)) templateCategoryFilter.value = currentFilter;
+  };
+
+  const renderTemplateList = () => {
+    const query = templateSearch.value.trim().toLocaleLowerCase('lv-LV');
+    const category = templateCategoryFilter.value;
+    const filtered = templates.filter((template) => {
+      const matchesCategory = !category || template.category === category;
+      const haystack = [
+        template.title,
+        template.category,
+        template.notes,
+        ...template.variants.flatMap((variant) => [variant.label, variant.content]),
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLocaleLowerCase('lv-LV');
+      return matchesCategory && (!query || haystack.includes(query));
+    });
+
+    templateStatus.textContent = `${filtered.length} no ${templates.length} sagatavēm`;
+    if (filtered.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'portal-list-empty';
+      empty.append(
+        text('strong', templates.length ? 'Nekas netika atrasts.' : 'Bibliotēka vēl ir tukša.'),
+        text(
+          'p',
+          templates.length
+            ? 'Maini meklējumu vai kategorijas filtru.'
+            : 'Izveido pirmo kopīgo teksta sagatavi.',
+        ),
+      );
+      templateList.replaceChildren(empty);
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    filtered.forEach((template) => {
+      const row = document.createElement('article');
+      row.className = 'portal-template-list-item';
+      row.classList.toggle('is-selected', activeTemplate?.id === template.id);
+
+      const selectButton = document.createElement('button');
+      selectButton.type = 'button';
+      selectButton.className = 'portal-template-select';
+      const copy = document.createElement('span');
+      copy.append(
+        text('small', template.category),
+        text('strong', template.title),
+        text('em', template.variants.map((variant) => variant.label).join(' · ')),
+      );
+      selectButton.append(copy, text('b', String(template.variants.length)));
+      selectButton.addEventListener('click', () => {
+        void afterDiscard(() => openTemplateEditor(template));
+      });
+
+      const quickCopy = text('button', 'Kopēt pirmo variantu') as HTMLButtonElement;
+      quickCopy.type = 'button';
+      quickCopy.className = 'portal-template-quick-copy';
+      quickCopy.addEventListener(
+        'click',
+        () => void copyToClipboard(template.variants[0]?.content ?? ''),
+      );
+      row.append(selectButton, quickCopy);
+      fragment.append(row);
+    });
+    templateList.replaceChildren(fragment);
+  };
+
+  const showTemplates = async () => {
+    setDirty(false);
+    activeView = 'templates';
+    setNavState('templates');
+    hideWorkspaceViews();
+    templateGrid.hidden = false;
+    sectionTitle.textContent = 'Tekstu sagataves';
+    sectionDescription.textContent =
+      'Veido kopīgu uzrunu bibliotēku ar kategorijām un vairākiem teksta toņiem.';
+    createButton.hidden = false;
+    createButton.querySelector('span')?.replaceChildren(document.createTextNode('Jauna sagatave'));
+    templateStatus.textContent = 'Ielādē…';
+
+    try {
+      await loadTemplates();
+      renderTemplateCategories();
+      renderTemplateList();
+      if (!activeTemplate) {
+        templateForm.hidden = true;
+        templateEmpty.hidden = false;
+      }
+    } catch (error) {
+      templateStatus.textContent = 'Savienojuma kļūda';
+      const failure = document.createElement('div');
+      failure.className = 'portal-list-empty is-error';
+      failure.append(
+        text('strong', 'Sagataves nevar ielādēt.'),
+        text('p', error instanceof Error ? error.message : 'Mēģini vēlreiz.'),
+      );
+      const retry = text('button', 'Mēģināt vēlreiz') as HTMLButtonElement;
+      retry.type = 'button';
+      retry.addEventListener('click', () => void showTemplates());
+      failure.append(retry);
+      templateList.replaceChildren(failure);
+    }
+  };
+
+  const serializeTemplateForm = () => ({
+    title: templateControl<HTMLInputElement>('title').value.trim(),
+    category: templateControl<HTMLInputElement>('category').value.trim(),
+    notes: templateControl<HTMLTextAreaElement>('notes').value.trim() || null,
+    variants: readVariantDrafts(),
+  });
+
+  const renderDashboard = () => {
+    const openLeads = leads.filter(
+      (lead) => !['client', 'rejected', 'no_response'].includes(lead.status),
+    );
+    const dueLeads = leads.filter(isFollowUpDue);
+    const untouchedLeads = leads.filter((lead) => lead.status === 'not_contacted');
+    const taskCandidates = [
+      ...dueLeads,
+      ...untouchedLeads.filter((lead) => !dueLeads.includes(lead)),
+    ];
+    const tasks = taskCandidates.slice(0, 6);
+
+    $<HTMLElement>(root, '[data-home-metric="open-leads"]').textContent = String(openLeads.length);
+    $<HTMLElement>(root, '[data-home-metric="due-tasks"]').textContent = String(
+      taskCandidates.length,
+    );
+    $<HTMLElement>(root, '[data-home-metric="templates"]').textContent = String(templates.length);
+
+    if (tasks.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'portal-home-empty';
+      empty.append(
+        text('strong', 'Šodien nekas nedeg.'),
+        text('p', 'Jauni follow-up termiņi un neuzrunātie lead parādīsies šeit.'),
+      );
+      homeTaskList.replaceChildren(empty);
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    tasks.forEach((lead) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'portal-home-task';
+      const copy = document.createElement('span');
+      copy.append(
+        text('strong', lead.company_name),
+        text('small', `${lead.found_on}${lead.outreach_owner ? ` · ${lead.outreach_owner}` : ''}`),
+      );
+      const state = text(
+        'b',
+        isFollowUpDue(lead) ? `Follow-up ${formatDate(lead.follow_up_due_at)}` : 'Vēl nav uzrunāts',
+      );
+      state.dataset.state = isFollowUpDue(lead) ? 'due' : 'new';
+      button.append(copy, state);
+      button.addEventListener('click', () => {
+        void afterDiscard(async () => {
+          await showLeads();
+          openLeadEditor(lead);
+        });
+      });
+      fragment.append(button);
+    });
+    homeTaskList.replaceChildren(fragment);
+  };
+
+  const showDashboard = () => {
+    setDirty(false);
+    activeView = 'dashboard';
+    setNavState('dashboard');
+    hideWorkspaceViews();
+    homeView.hidden = false;
+    sectionTitle.textContent = 'Pārskats';
+    sectionDescription.textContent =
+      'Dienas uzdevumi, aktīvie kontakti un biežāk lietotās darbības vienuviet.';
+    createButton.hidden = true;
+    renderDashboard();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const updateLeadStatus = async (id: number, status: LeadStatus) => {
     const lead = leads.find((item) => item.id === id);
     if (!lead || lead.status === status) return;
+    if (status !== 'not_contacted' && !lead.outreach_owner) {
+      openLeadEditor(lead);
+      setLeadOutreachState(true);
+      leadControl<HTMLSelectElement>('status').value = status;
+      setDirty(true);
+      leadControl<HTMLInputElement>('outreach_owner').focus();
+      notify('Pirms statusa maiņas norādi, kurš uzrunāja lead.', 'error');
+      return;
+    }
     try {
       const response = await request<{ data: PortalLead }>('/api/portal/leads', {
         method: 'PATCH',
@@ -768,6 +1219,44 @@ export function initPortalDashboard(): void {
     }
   });
 
+  templateForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const submit = templateForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (!submit) return;
+    submit.disabled = true;
+    submit.textContent = 'Saglabā…';
+    templateSaveStatus.textContent = 'Pārbauda sagatavi';
+
+    try {
+      const data = serializeTemplateForm();
+      const response = await request<{ data: PortalTextTemplate }>('/api/portal/text-templates', {
+        method: activeTemplate ? 'PATCH' : 'POST',
+        body: JSON.stringify(activeTemplate ? { id: activeTemplate.id, data } : data),
+      });
+      setDirty(false);
+      if (activeTemplate) {
+        templates = templates.map((template) =>
+          template.id === activeTemplate?.id ? response.data : template,
+        );
+      } else {
+        templates = [response.data, ...templates];
+      }
+      templates.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+      activeTemplate = response.data;
+      updateCount('text_templates', templates.length);
+      renderTemplateCategories();
+      openTemplateEditor(response.data);
+      notify('Teksta sagatave ir saglabāta.');
+    } catch (error) {
+      templateSaveStatus.textContent =
+        error instanceof Error ? error.message : 'Sagatavi neizdevās saglabāt.';
+      notify(templateSaveStatus.textContent, 'error');
+    } finally {
+      submit.disabled = false;
+      submit.textContent = 'Saglabāt sagatavi';
+    }
+  });
+
   leadForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     const submit = leadForm.querySelector<HTMLButtonElement>('button[type="submit"]');
@@ -783,7 +1272,8 @@ export function initPortalDashboard(): void {
         body: JSON.stringify(activeLead ? { id: activeLead.id, data } : data),
       });
       setDirty(false);
-      if (activeLead) leads = leads.map((lead) => (lead.id === activeLead?.id ? response.data : lead));
+      if (activeLead)
+        leads = leads.map((lead) => (lead.id === activeLead?.id ? response.data : lead));
       else leads = [response.data, ...leads];
       updateCount('leads', leads.length);
       activeLead = response.data;
@@ -792,7 +1282,8 @@ export function initPortalDashboard(): void {
       notify('Lead ir saglabāts.');
       leadSaveStatus.textContent = '';
     } catch (error) {
-      leadSaveStatus.textContent = error instanceof Error ? error.message : 'Lead saglabāšana neizdevās.';
+      leadSaveStatus.textContent =
+        error instanceof Error ? error.message : 'Lead saglabāšana neizdevās.';
       notify(leadSaveStatus.textContent, 'error');
     } finally {
       submit.disabled = false;
@@ -802,16 +1293,44 @@ export function initPortalDashboard(): void {
 
   editorForm.addEventListener('input', () => setDirty(true));
   leadForm.addEventListener('input', () => setDirty(true));
+  templateForm.addEventListener('input', () => setDirty(true));
+  leadControl<HTMLInputElement>('is_contacted').addEventListener('change', (event) => {
+    const toggle = event.currentTarget;
+    if (!(toggle instanceof HTMLInputElement)) return;
+    setLeadOutreachState(toggle.checked, !toggle.checked);
+  });
   leadSearch.addEventListener('input', renderLeadBoard);
+  templateSearch.addEventListener('input', renderTemplateList);
+  templateCategoryFilter.addEventListener('change', renderTemplateList);
+  addVariantButton.addEventListener('click', () => {
+    const variants = readVariantDrafts();
+    if (variants.length >= 12) {
+      notify('Vienai sagatavei var būt ne vairāk kā 12 varianti.', 'error');
+      return;
+    }
+    variants.push({ id: crypto.randomUUID(), label: '', content: '' });
+    renderVariantFields(variants);
+    setDirty(true);
+    window.setTimeout(() => {
+      const labels = Array.from(
+        variantList.querySelectorAll<HTMLInputElement>('[data-variant-label]'),
+      );
+      labels.at(-1)?.focus();
+    }, 0);
+  });
 
   createButton.addEventListener('click', () => {
     void afterDiscard(() => {
       if (activeView === 'leads') openLeadEditor(null);
+      else if (activeView === 'templates') openTemplateEditor(null);
       else if (activeView !== 'audit') openEditor(null);
     });
   });
 
   leadResetButton.addEventListener('click', () => void afterDiscard(() => openLeadEditor(null)));
+  templateResetButton.addEventListener('click', () => {
+    void afterDiscard(() => openTemplateEditor(activeTemplate));
+  });
 
   deleteButton.addEventListener('click', () => {
     if (activeRecord && canDelete) {
@@ -823,6 +1342,13 @@ export function initPortalDashboard(): void {
   leadDeleteButton.addEventListener('click', () => {
     if (activeLead && canDelete) {
       deleteMode = 'lead';
+      dialog.showModal();
+    }
+  });
+
+  templateDeleteButton.addEventListener('click', () => {
+    if (activeTemplate && canDelete) {
+      deleteMode = 'template';
       dialog.showModal();
     }
   });
@@ -856,6 +1382,22 @@ export function initPortalDashboard(): void {
         activeRecord = null;
         notify('Ieraksts ir dzēsts.');
         await showResource(activeResource);
+      } else if (deleteMode === 'template' && activeTemplate) {
+        await request('/api/portal/text-templates', {
+          method: 'DELETE',
+          body: JSON.stringify({ id: activeTemplate.id }),
+        });
+        templates = templates.filter((template) => template.id !== activeTemplate?.id);
+        activeTemplate = null;
+        setDirty(false);
+        updateCount('text_templates', templates.length);
+        renderTemplateCategories();
+        renderTemplateList();
+        templateForm.hidden = true;
+        templateEmpty.hidden = false;
+        templateEditorTitle.textContent = 'Izvēlies sagatavi';
+        templateFormState.textContent = 'Nav izvēlēts';
+        notify('Teksta sagatave ir dzēsta.');
       }
     } catch (error) {
       notify(error instanceof Error ? error.message : 'Dzēšana neizdevās.', 'error');
@@ -878,6 +1420,68 @@ export function initPortalDashboard(): void {
     void afterDiscard(showLeads);
   });
 
+  root
+    .querySelector<HTMLButtonElement>('[data-section="templates"]')
+    ?.addEventListener('click', () => {
+      void afterDiscard(showTemplates);
+    });
+
+  root
+    .querySelector<HTMLButtonElement>('[data-section="dashboard"]')
+    ?.addEventListener('click', () => {
+      void afterDiscard(showDashboard);
+    });
+
+  $<HTMLButtonElement>(root, '[data-dashboard-brand]').addEventListener('click', () => {
+    void afterDiscard(showDashboard);
+  });
+
+  root.querySelectorAll<HTMLButtonElement>('[data-home-action]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const action = button.dataset.homeAction;
+      if (action === 'leads') void afterDiscard(showLeads);
+      else if (action === 'new-lead') {
+        void afterDiscard(async () => {
+          await showLeads();
+          openLeadEditor(null);
+        });
+      } else if (action === 'new-template') {
+        void afterDiscard(async () => {
+          await showTemplates();
+          openTemplateEditor(null);
+        });
+      } else if (action === 'projects') void afterDiscard(() => showResource('projects'));
+    });
+  });
+
+  const sidebarToggle = $<HTMLButtonElement>(root, '[data-sidebar-toggle]');
+  const setSidebarCollapsed = (collapsed: boolean) => {
+    root.classList.toggle('is-sidebar-collapsed', collapsed);
+    sidebarToggle.setAttribute('aria-expanded', String(!collapsed));
+    sidebarToggle.setAttribute(
+      'aria-label',
+      collapsed ? 'Izvērst sānu izvēlni' : 'Sakļaut sānu izvēlni',
+    );
+    const label = sidebarToggle.querySelector('span');
+    if (label) label.textContent = collapsed ? 'Izvērst izvēlni' : 'Sakļaut izvēlni';
+  };
+
+  try {
+    setSidebarCollapsed(localStorage.getItem('romadi_portal_sidebar_collapsed_v1') === 'true');
+  } catch {
+    setSidebarCollapsed(false);
+  }
+
+  sidebarToggle.addEventListener('click', () => {
+    const collapsed = !root.classList.contains('is-sidebar-collapsed');
+    setSidebarCollapsed(collapsed);
+    try {
+      localStorage.setItem('romadi_portal_sidebar_collapsed_v1', String(collapsed));
+    } catch {
+      // The navigation still works when storage is unavailable.
+    }
+  });
+
   $<HTMLButtonElement>(root, '[data-logout]').addEventListener('click', async () => {
     if (!(await confirmDiscard())) return;
     try {
@@ -898,6 +1502,7 @@ export function initPortalDashboard(): void {
 
   void Promise.allSettled([
     loadLeads(),
+    loadTemplates(),
     ...(Object.keys(definitions) as Resource[]).map((resource) => loadResource(resource)),
-  ]).then(() => void showLeads());
+  ]).then(() => showDashboard());
 }

@@ -27,9 +27,9 @@ test.describe('ROMADI portal security boundary', () => {
 
     const panel = page.locator('.portal-login-panel');
     await expect(panel).toBeVisible();
-    expect(await panel.evaluate((element) => element.getBoundingClientRect().width)).toBeLessThanOrEqual(
-      358,
-    );
+    expect(
+      await panel.evaluate((element) => element.getBoundingClientRect().width),
+    ).toBeLessThanOrEqual(358);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
   });
 
@@ -43,6 +43,17 @@ test.describe('ROMADI portal security boundary', () => {
     expect(read.status()).toBe(401);
 
     const write = await request.post('/api/portal/content/projects', {
+      headers: { origin: baseURL ?? 'http://127.0.0.1:4321' },
+      data: {},
+    });
+    expect(write.status()).toBe(401);
+  });
+
+  test('rejects unauthenticated shared template access', async ({ request, baseURL }) => {
+    const read = await request.get('/api/portal/text-templates');
+    expect(read.status()).toBe(401);
+
+    const write = await request.post('/api/portal/text-templates', {
       headers: { origin: baseURL ?? 'http://127.0.0.1:4321' },
       data: {},
     });

@@ -80,6 +80,11 @@ test.describe('Liepāja website development landing page', () => {
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     await expect(page.getByRole('link', { name: /pārrunāt mājaslapu/i })).toBeVisible();
     await expect(page.locator('.liepaja-hero__proof')).toBeVisible();
+
+    const selectedScope = page.locator('[data-scope-tab][aria-selected="true"]');
+    await expect(selectedScope).toHaveText('Landing lapa');
+    await page.waitForTimeout(5_400);
+    await expect(selectedScope).toHaveText('Landing lapa');
   });
 
   test('uses the compact hero, local region proof, and interactive scope switcher', async ({

@@ -16,7 +16,8 @@ export interface Database {
           old_data: Json | null;
           operation: 'INSERT' | 'UPDATE' | 'DELETE';
           record_id: number | null;
-          table_name: 'projects' | 'pricing_plans' | 'reviews' | 'portal_leads';
+          table_name:
+            'projects' | 'pricing_plans' | 'reviews' | 'portal_leads' | 'portal_text_templates';
         };
         Insert: {
           actor_id?: string | null;
@@ -27,7 +28,8 @@ export interface Database {
           old_data?: Json | null;
           operation: 'INSERT' | 'UPDATE' | 'DELETE';
           record_id?: number | null;
-          table_name: 'projects' | 'pricing_plans' | 'reviews' | 'portal_leads';
+          table_name:
+            'projects' | 'pricing_plans' | 'reviews' | 'portal_leads' | 'portal_text_templates';
         };
         Update: {
           actor_id?: string | null;
@@ -38,7 +40,8 @@ export interface Database {
           old_data?: Json | null;
           operation?: 'INSERT' | 'UPDATE' | 'DELETE';
           record_id?: number | null;
-          table_name?: 'projects' | 'pricing_plans' | 'reviews' | 'portal_leads';
+          table_name?:
+            'projects' | 'pricing_plans' | 'reviews' | 'portal_leads' | 'portal_text_templates';
         };
         Relationships: [];
       };
@@ -46,13 +49,7 @@ export interface Database {
         Row: {
           company_name: string;
           contact_channel:
-            | 'instagram'
-            | 'facebook'
-            | 'linkedin'
-            | 'tiktok'
-            | 'email'
-            | 'phone'
-            | 'other';
+            'instagram' | 'facebook' | 'linkedin' | 'tiktok' | 'email' | 'phone' | 'other';
           contacted_at: string | null;
           created_at: string;
           follow_up_due_at: string | null;
@@ -62,7 +59,7 @@ export interface Database {
           id: number;
           industry: string | null;
           notes: string | null;
-          outreach_owner: string;
+          outreach_owner: string | null;
           status:
             | 'not_contacted'
             | 'contacted'
@@ -79,13 +76,7 @@ export interface Database {
         Insert: {
           company_name: string;
           contact_channel?:
-            | 'instagram'
-            | 'facebook'
-            | 'linkedin'
-            | 'tiktok'
-            | 'email'
-            | 'phone'
-            | 'other';
+            'instagram' | 'facebook' | 'linkedin' | 'tiktok' | 'email' | 'phone' | 'other';
           contacted_at?: string | null;
           created_at?: string;
           follow_up_due_at?: never;
@@ -95,7 +86,7 @@ export interface Database {
           id?: never;
           industry?: string | null;
           notes?: string | null;
-          outreach_owner: string;
+          outreach_owner?: string | null;
           status?:
             | 'not_contacted'
             | 'contacted'
@@ -112,13 +103,7 @@ export interface Database {
         Update: {
           company_name?: string;
           contact_channel?:
-            | 'instagram'
-            | 'facebook'
-            | 'linkedin'
-            | 'tiktok'
-            | 'email'
-            | 'phone'
-            | 'other';
+            'instagram' | 'facebook' | 'linkedin' | 'tiktok' | 'email' | 'phone' | 'other';
           contacted_at?: string | null;
           created_at?: string;
           follow_up_due_at?: never;
@@ -128,7 +113,7 @@ export interface Database {
           id?: never;
           industry?: string | null;
           notes?: string | null;
-          outreach_owner?: string;
+          outreach_owner?: string | null;
           status?:
             | 'not_contacted'
             | 'contacted'
@@ -141,6 +126,36 @@ export interface Database {
             | 'no_response'
             | 'deferred';
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      portal_text_templates: {
+        Row: {
+          category: string;
+          created_at: string;
+          id: number;
+          notes: string | null;
+          title: string;
+          updated_at: string;
+          variants: Json;
+        };
+        Insert: {
+          category: string;
+          created_at?: string;
+          id?: never;
+          notes?: string | null;
+          title: string;
+          updated_at?: string;
+          variants: Json;
+        };
+        Update: {
+          category?: string;
+          created_at?: string;
+          id?: never;
+          notes?: string | null;
+          title?: string;
+          updated_at?: string;
+          variants?: Json;
         };
         Relationships: [];
       };
@@ -342,3 +357,4 @@ export type PricingPlan = Database['public']['Tables']['pricing_plans']['Row'];
 export type Review = Database['public']['Tables']['reviews']['Row'];
 export type CmsAuditLog = Database['public']['Tables']['cms_audit_log']['Row'];
 export type PortalLead = Database['public']['Tables']['portal_leads']['Row'];
+export type PortalTextTemplateRow = Database['public']['Tables']['portal_text_templates']['Row'];
