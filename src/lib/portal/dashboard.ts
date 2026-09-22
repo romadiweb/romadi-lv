@@ -55,6 +55,17 @@ const channelLabels: Record<PortalLead['contact_channel'], string> = {
   phone: 'Telefons',
 };
 
+const getContactChannelFromPlatform = (platform: string): PortalLead['contact_channel'] | null => {
+  const value = platform.trim().toLocaleLowerCase('lv-LV');
+  if (value.includes('instagram')) return 'instagram';
+  if (value.includes('facebook')) return 'facebook';
+  if (value.includes('linkedin')) return 'linkedin';
+  if (value.includes('tiktok') || value.includes('tik tok')) return 'tiktok';
+  if (value.includes('email') || value.includes('e-past')) return 'email';
+  if (value.includes('telefon') || value.includes('phone')) return 'phone';
+  return null;
+};
+
 const pricingCategoryLabels: Record<PricingCategory, string> = {
   addon: 'Papildinājumi',
   adjustment: 'Korekcijas',
@@ -713,6 +724,7 @@ export function initPortalDashboard(): void {
     const status = leadControl<HTMLSelectElement>('status');
     const owner = leadControl<HTMLInputElement>('outreach_owner');
     const contactedAt = leadControl<HTMLInputElement>('contacted_at');
+    const contactChannel = leadControl<HTMLSelectElement>('contact_channel');
     const followUp = leadControl<HTMLInputElement>('follow_up_enabled');
 
     toggle.checked = isContacted;
@@ -722,6 +734,12 @@ export function initPortalDashboard(): void {
 
     if (isContacted) {
       if (!status.value || status.value === 'not_contacted') status.value = 'contacted';
+      const platformChannel = getContactChannelFromPlatform(
+        leadControl<HTMLInputElement>('found_on').value,
+      );
+      if (platformChannel && (!activeLead || activeLead.status === 'not_contacted')) {
+        contactChannel.value = platformChannel;
+      }
       return;
     }
 
@@ -767,7 +785,10 @@ export function initPortalDashboard(): void {
     leadControl<HTMLInputElement>('follow_up_enabled').checked = lead.follow_up_enabled;
     leadControl<HTMLTextAreaElement>('notes').value = lead.notes ?? '';
     leadEditorTitle.textContent = lead.company_name;
-    leadEditorCopy.textContent = `${channelLabels[lead.contact_channel]} · ${lead.found_on}`;
+    leadEditorCopy.textContent =
+      lead.status === 'not_contacted'
+        ? `${lead.found_on}${lead.industry ? ` · ${lead.industry}` : ''}`
+        : `${channelLabels[lead.contact_channel]} · ${lead.found_on}`;
     leadFormState.textContent = lead.follow_up_due_at
       ? `Follow-up: ${formatDate(lead.follow_up_due_at)}`
       : 'Nav follow-up';
@@ -863,12 +884,20 @@ export function initPortalDashboard(): void {
 
         const meta = document.createElement('span');
         meta.append(
-          text('b', channelLabels[lead.contact_channel]),
+          text(
+            'b',
+            lead.status === 'not_contacted' ? lead.found_on : channelLabels[lead.contact_channel],
+          ),
           text('small', lead.has_website ? 'Ir mājaslapa' : 'Nav mājaslapas'),
         );
         card.append(
           text('strong', lead.company_name),
-          text('small', `${lead.found_on}${lead.industry ? ` · ${lead.industry}` : ''}`),
+          text(
+            'small',
+            lead.status === 'not_contacted'
+              ? (lead.industry ?? 'Nav nozares')
+              : `${lead.found_on}${lead.industry ? ` · ${lead.industry}` : ''}`,
+          ),
           meta,
           text(
             'em',
@@ -1328,13 +1357,12 @@ export function initPortalDashboard(): void {
         });
 
         const copy = document.createElement('span');
-        copy.append(
-          text('strong', item.name),
-          text(
-            'small',
-            `${formatCurrency(item.price_eur)} / ${pricingUnitLabels[item.unit]}${item.description ? ` · ${item.description}` : ''}`,
-          ),
+        const heading = document.createElement('strong');
+        heading.append(
+          text('span', item.name),
+          text('b', `${formatCurrency(item.price_eur)} / ${pricingUnitLabels[item.unit]}`),
         );
+        copy.append(heading, text('small', item.description ?? 'Bez apraksta'));
 
         const quantity = document.createElement('input');
         quantity.type = 'number';

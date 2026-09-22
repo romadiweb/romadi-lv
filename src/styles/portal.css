@@ -1356,6 +1356,26 @@
   white-space: nowrap;
 }
 
+.portal-calculator-option strong {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.45rem;
+  align-items: baseline;
+  white-space: normal;
+}
+
+.portal-calculator-option strong span {
+  min-width: 0;
+}
+
+.portal-calculator-option strong b {
+  flex: 0 0 auto;
+  color: #8e8e93;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 0.68rem;
+  font-weight: 650;
+}
+
 .portal-price-item small,
 .portal-calculator-option small,
 .portal-calculator-line small {
