@@ -97,6 +97,25 @@ if (!existingCsrf) {
           </button>
         </section>
 
+        <section class="portal-nav-group" aria-labelledby="portal-nav-marketing">
+          <h2 id="portal-nav-marketing">
+            <svg viewBox="0 0 24 24" aria-hidden="true"
+              ><path d="M4 13h3l9-6v12l-9-6H4zM19 10a4 4 0 0 1 0 6"></path></svg
+            >
+            <span>Mārketings</span>
+          </h2>
+          <button type="button" class="is-disabled" disabled>
+            <span class="portal-nav-signal"></span>
+            <span>Kampaņas</span>
+            <b>Drīz</b>
+          </button>
+          <button type="button" class="is-disabled" disabled>
+            <span class="portal-nav-signal"></span>
+            <span>Sociālie tīkli</span>
+            <b>Drīz</b>
+          </button>
+        </section>
+
         <section class="portal-nav-group" aria-labelledby="portal-nav-finance">
           <h2 id="portal-nav-finance">
             <svg viewBox="0 0 24 24" aria-hidden="true"
@@ -117,6 +136,40 @@ if (!existingCsrf) {
             </svg>
             <span>Cenu kalkulators</span>
             <b data-count="portal_pricing_items">—</b>
+          </button>
+        </section>
+
+        <section class="portal-nav-group" aria-labelledby="portal-nav-accounting">
+          <h2 id="portal-nav-accounting">
+            <svg viewBox="0 0 24 24" aria-hidden="true"
+              ><path d="M6 2h12v20l-3-2-3 2-3-2-3 2zM9 7h6M9 11h6M9 15h4"></path></svg
+            >
+            <span>Grāmatvedība</span>
+          </h2>
+          <button type="button" class="is-disabled" disabled>
+            <span class="portal-nav-signal"></span>
+            <span>Rēķini</span>
+            <b>Drīz</b>
+          </button>
+          <button type="button" class="is-disabled" disabled>
+            <span class="portal-nav-signal"></span>
+            <span>Izdevumi</span>
+            <b>Drīz</b>
+          </button>
+          <button type="button" class="is-disabled" disabled>
+            <span class="portal-nav-signal"></span>
+            <span>Maksājumi</span>
+            <b>Drīz</b>
+          </button>
+          <button type="button" class="is-disabled" disabled>
+            <span class="portal-nav-signal"></span>
+            <span>Dokumenti</span>
+            <b>Drīz</b>
+          </button>
+          <button type="button" class="is-disabled" disabled>
+            <span class="portal-nav-signal"></span>
+            <span>Eksports</span>
+            <b>Drīz</b>
           </button>
         </section>
 
@@ -168,6 +221,18 @@ if (!existingCsrf) {
             <span>Cenu plāni</span>
             <b data-count="pricing_plans">—</b>
           </button>
+        </section>
+
+        <section class="portal-nav-group" aria-labelledby="portal-nav-system">
+          <h2 id="portal-nav-system">
+            <svg viewBox="0 0 24 24" aria-hidden="true"
+              ><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
+              <path
+                d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 0 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1A2 2 0 0 1 4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1A2 2 0 0 1 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1A2 2 0 0 1 19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.1a2 2 0 0 1 0 4H21a1.7 1.7 0 0 0-1.6 1z"
+              ></path></svg
+            >
+            <span>Sistēma</span>
+          </h2>
           {
             identity.role === 'super-admin' && (
               <button type="button" data-resource="audit">
@@ -179,6 +244,26 @@ if (!existingCsrf) {
               </button>
             )
           }
+          <button type="button" class="is-disabled" disabled>
+            <span class="portal-nav-signal"></span>
+            <span>Iestatījumi</span>
+            <b>Drīz</b>
+          </button>
+          <button type="button" class="is-disabled" disabled>
+            <span class="portal-nav-signal"></span>
+            <span>Automācijas</span>
+            <b>Drīz</b>
+          </button>
+          <button type="button" class="is-disabled" disabled>
+            <span class="portal-nav-signal"></span>
+            <span>Knowledge Base</span>
+            <b>Drīz</b>
+          </button>
+          <button type="button" class="is-disabled" disabled>
+            <span class="portal-nav-signal"></span>
+            <span>Komanda</span>
+            <b>Drīz</b>
+          </button>
         </section>
 
         <section class="portal-nav-group" aria-labelledby="portal-nav-analytics">

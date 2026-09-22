@@ -1691,20 +1691,29 @@ export function initPortalDashboard(): void {
     leadSaveStatus.textContent = 'Pārbauda lead';
 
     try {
+      const editingLead = activeLead;
+      const isCreatingLead = !editingLead;
       const data = serializeLeadForm();
       const response = await request<{ data: PortalLead }>('/api/portal/leads', {
-        method: activeLead ? 'PATCH' : 'POST',
-        body: JSON.stringify(activeLead ? { id: activeLead.id, data } : data),
+        method: isCreatingLead ? 'POST' : 'PATCH',
+        body: JSON.stringify(isCreatingLead ? data : { id: editingLead.id, data }),
       });
       setDirty(false);
-      if (activeLead)
-        leads = leads.map((lead) => (lead.id === activeLead?.id ? response.data : lead));
-      else leads = [response.data, ...leads];
+      if (isCreatingLead) {
+        leads = [response.data, ...leads];
+      } else {
+        leads = leads.map((lead) => (lead.id === editingLead.id ? response.data : lead));
+      }
       updateCount('leads', leads.length);
-      activeLead = response.data;
-      openLeadEditor(response.data);
       renderLeadBoard();
-      notify('Lead ir saglabāts.');
+      if (isCreatingLead) {
+        openLeadEditor(null);
+        notify('Lead ir saglabāts. Forma ir notīrīta nākamajam lead.');
+      } else {
+        activeLead = response.data;
+        openLeadEditor(response.data);
+        notify('Lead ir saglabāts.');
+      }
       leadSaveStatus.textContent = '';
     } catch (error) {
       leadSaveStatus.textContent =
