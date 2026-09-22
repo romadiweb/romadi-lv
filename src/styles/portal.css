@@ -1232,6 +1232,324 @@
   opacity: 0.35;
 }
 
+.portal-calculator-grid {
+  display: grid;
+  grid-template-columns: minmax(17rem, 0.68fr) minmax(26rem, 1.05fr) minmax(23rem, 0.86fr);
+  gap: 1rem;
+  align-items: start;
+  animation: portal-grid-in 540ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.portal-price-catalog,
+.portal-calculator-panel,
+.portal-price-editor {
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 9%);
+  border-radius: 1rem;
+  background: #0a0a0a;
+  box-shadow: inset 0 1px rgb(255 255 255 / 3%);
+}
+
+.portal-price-catalog > header,
+.portal-calculator-panel > header,
+.portal-price-editor > header {
+  display: flex;
+  min-height: 4.5rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid rgb(255 255 255 / 8%);
+  padding: 1rem 1.25rem;
+}
+
+.portal-price-catalog h2,
+.portal-calculator-panel h2,
+.portal-price-editor h2 {
+  font-size: 0.95rem;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+}
+
+.portal-price-catalog header span,
+.portal-calculator-panel header p,
+.portal-price-editor header p {
+  margin-top: 0.25rem;
+  color: #8e8e93;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 0.64rem;
+}
+
+.portal-price-catalog header label {
+  width: min(100%, 14rem);
+}
+
+.portal-price-catalog header input {
+  width: 100%;
+  min-height: 2.5rem;
+  border: 1px solid rgb(255 255 255 / 11%);
+  border-radius: 999px;
+  padding: 0.55rem 0.8rem;
+  background: #111;
+  color: #d4d4d8;
+  font-size: 0.7rem;
+}
+
+.portal-price-list {
+  display: grid;
+  max-height: calc(100svh - 14rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 0.5rem;
+}
+
+.portal-price-group {
+  display: grid;
+  gap: 0.25rem;
+  padding-block: 0.35rem;
+}
+
+.portal-price-group h3,
+.portal-calculator-group h3 {
+  padding: 0.35rem 0.45rem;
+  color: #f18aa1;
+  font-size: 0.64rem;
+  font-weight: 800;
+}
+
+.portal-price-item {
+  display: grid;
+  min-height: 4.6rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: center;
+  border: 0;
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  background: transparent;
+  color: #d4d4d8;
+  text-align: left;
+}
+
+.portal-price-item:hover,
+.portal-price-item.is-selected {
+  background: rgb(255 255 255 / 6%);
+  color: #fff;
+}
+
+.portal-price-item.is-muted {
+  opacity: 0.52;
+}
+
+.portal-price-item span,
+.portal-price-item strong,
+.portal-price-item small {
+  display: block;
+  min-width: 0;
+}
+
+.portal-price-item strong,
+.portal-calculator-option strong,
+.portal-calculator-line strong {
+  overflow: hidden;
+  font-size: 0.8rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.portal-price-item small,
+.portal-calculator-option small,
+.portal-calculator-line small {
+  margin-top: 0.22rem;
+  color: #8e8e93;
+  font-size: 0.66rem;
+  line-height: 1.35;
+}
+
+.portal-price-item > span:last-child {
+  text-align: right;
+}
+
+.portal-price-item b,
+.portal-calculator-line b {
+  color: #fff;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 0.72rem;
+}
+
+.portal-calculator-builder {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+}
+
+.portal-calculator-group {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.portal-calculator-option {
+  display: grid;
+  min-height: 4.2rem;
+  grid-template-columns: auto minmax(0, 1fr) 5.2rem;
+  gap: 0.75rem;
+  align-items: center;
+  border: 1px solid rgb(255 255 255 / 8%);
+  border-radius: 0.85rem;
+  padding: 0.75rem;
+  background: #080808;
+}
+
+.portal-calculator-option:has(input:first-child:checked) {
+  border-color: rgb(247 95 127 / 28%);
+  background: rgb(98 11 34 / 16%);
+}
+
+.portal-calculator-option input[type='checkbox'],
+.portal-calculator-option input[type='radio'] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: #e0234e;
+}
+
+.portal-calculator-option input[type='number'] {
+  width: 100%;
+  min-height: 2.45rem;
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 0.65rem;
+  padding: 0.45rem 0.55rem;
+  background: #0f0f10;
+  color: #fff;
+  font-size: 0.78rem;
+  text-align: right;
+}
+
+.portal-calculator-option input[type='number']:disabled {
+  opacity: 0.4;
+}
+
+.portal-calculator-summary {
+  border-top: 1px solid rgb(255 255 255 / 8%);
+  padding: 1rem;
+}
+
+.portal-calculator-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 0.65rem;
+  border-bottom: 1px solid rgb(255 255 255 / 7%);
+}
+
+.portal-calculator-line > span {
+  min-width: 0;
+}
+
+.portal-discount-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 6rem;
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: 1rem;
+  border: 1px solid rgb(255 255 255 / 8%);
+  border-radius: 0.8rem;
+  padding: 0.65rem 0.75rem;
+  background: #080808;
+  color: #d4d4d8;
+  font-size: 0.75rem;
+  font-weight: 750;
+}
+
+.portal-discount-field input {
+  width: 100%;
+  min-height: 2.35rem;
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 0.65rem;
+  padding: 0.45rem 0.55rem;
+  background: #0f0f10;
+  color: #fff;
+  font-size: 0.78rem;
+  text-align: right;
+}
+
+.portal-calculator-summary dl {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 1rem;
+}
+
+.portal-calculator-summary dl > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.portal-calculator-summary dt {
+  color: #8e8e93;
+  font-size: 0.72rem;
+}
+
+.portal-calculator-summary dd {
+  color: #fff;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 0.85rem;
+  font-weight: 750;
+}
+
+.portal-calculator-summary dl > div:last-child {
+  margin-top: 0.35rem;
+  border-top: 1px solid rgb(255 255 255 / 9%);
+  padding-top: 0.85rem;
+}
+
+.portal-calculator-summary dl > div:last-child dd {
+  color: #f9a8b8;
+  font-size: 1.1rem;
+}
+
+.portal-calculator-summary .portal-secondary-action {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.portal-calculator-empty {
+  padding: 1rem 0;
+  color: #8e8e93;
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.portal-vat-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #d4d4d8;
+  font-size: 0.75rem;
+  font-weight: 750;
+}
+
+.portal-vat-toggle input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.portal-vat-toggle input:checked + .portal-checkbox-control {
+  background: #a91037;
+}
+
+.portal-vat-toggle input:checked + .portal-checkbox-control::after {
+  transform: translateX(1rem);
+  background: #fff;
+}
+
+.portal-price-form {
+  padding: 1.25rem;
+}
+
 .portal-lead-board-panel,
 .portal-lead-editor-panel {
   overflow: hidden;
@@ -2020,6 +2338,14 @@
     grid-template-columns: minmax(15rem, 0.8fr) minmax(24rem, 1.4fr);
   }
 
+  .portal-calculator-grid {
+    grid-template-columns: minmax(17rem, 0.75fr) minmax(24rem, 1.25fr);
+  }
+
+  .portal-price-editor {
+    grid-column: 1 / -1;
+  }
+
   .portal-lead-grid {
     grid-template-columns: 1fr;
   }
@@ -2129,6 +2455,33 @@
     grid-template-columns: 1fr;
   }
 
+  .portal-calculator-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-price-catalog > header,
+  .portal-calculator-panel > header,
+  .portal-price-editor > header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .portal-price-catalog header label {
+    width: 100%;
+  }
+
+  .portal-price-list {
+    max-height: 22rem;
+  }
+
+  .portal-calculator-option {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .portal-calculator-option input[type='number'] {
+    grid-column: 2;
+  }
+
   .portal-home-summary {
     grid-template-columns: 1fr;
   }
@@ -2232,6 +2585,7 @@
 @media (prefers-reduced-motion: reduce) {
   .portal-login-panel,
   .portal-work-grid,
+  .portal-calculator-grid,
   .portal-lead-grid,
   .portal-home,
   .portal-template-grid {

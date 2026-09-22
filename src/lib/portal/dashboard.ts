@@ -1,14 +1,15 @@
-import type { PortalLead, PortalTextTemplateRow } from '@/types/database';
+import type { PortalLead, PortalPricingItem, PortalTextTemplateRow } from '@/types/database';
 import type { TextTemplateVariant } from '@/lib/portal/text-templates';
 
 type Resource = 'projects' | 'reviews' | 'pricing_plans';
-type View = Resource | 'audit' | 'dashboard' | 'leads' | 'templates';
+type View = Resource | 'audit' | 'calculator' | 'dashboard' | 'leads' | 'templates';
 type PortalRecord = Record<string, unknown> & { id: number };
 type PortalTextTemplate = Omit<PortalTextTemplateRow, 'variants'> & {
   variants: TextTemplateVariant[];
 };
 type FieldType = 'text' | 'textarea' | 'url' | 'number' | 'date' | 'list' | 'checkbox';
 type LeadStatus = PortalLead['status'];
+type PricingCategory = PortalPricingItem['category'];
 
 interface FieldDefinition {
   key: string;
@@ -53,6 +54,31 @@ const channelLabels: Record<PortalLead['contact_channel'], string> = {
   other: 'Cits',
   phone: 'Telefons',
 };
+
+const pricingCategoryLabels: Record<PricingCategory, string> = {
+  addon: 'Papildinājumi',
+  adjustment: 'Korekcijas',
+  base: 'Pamata komplekti',
+  hourly: 'Stundu darbs',
+  integration: 'Integrācijas',
+  page: 'Lapas',
+};
+
+const pricingUnitLabels: Record<PortalPricingItem['unit'], string> = {
+  hour: 'st.',
+  item: 'gab.',
+  page: 'lapa',
+  project: 'projekts',
+};
+
+const pricingCategoryOrder: PricingCategory[] = [
+  'base',
+  'page',
+  'integration',
+  'addon',
+  'hourly',
+  'adjustment',
+];
 
 const definitions: Record<Resource, ResourceDefinition> = {
   projects: {
@@ -193,6 +219,13 @@ const text = (tag: string, value: string, className?: string) => {
   return element;
 };
 
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat('lv-LV', {
+    currency: 'EUR',
+    maximumFractionDigits: value % 1 === 0 ? 0 : 2,
+    style: 'currency',
+  }).format(value);
+
 const formatDate = (value: string | null) =>
   value
     ? new Intl.DateTimeFormat('lv-LV', { day: '2-digit', month: 'short' }).format(
@@ -261,9 +294,31 @@ export function initPortalDashboard(): void {
   const leadSaveStatus = $<HTMLElement>(root, '[data-lead-save-status]');
   const leadDeleteButton = $<HTMLButtonElement>(root, '[data-lead-delete]');
   const leadResetButton = $<HTMLButtonElement>(root, '[data-lead-reset]');
+  const calculatorGrid = $<HTMLElement>(root, '[data-calculator-grid]');
+  const priceStatus = $<HTMLElement>(root, '[data-price-status]');
+  const priceSearch = $<HTMLInputElement>(root, '[data-price-search]');
+  const priceList = $<HTMLElement>(root, '[data-price-list]');
+  const calculatorBuilder = $<HTMLElement>(root, '[data-calculator-builder]');
+  const calculatorLines = $<HTMLElement>(root, '[data-calculator-lines]');
+  const calculatorSubtotal = $<HTMLElement>(root, '[data-calculator-subtotal]');
+  const calculatorDiscount = $<HTMLElement>(root, '[data-calculator-discount]');
+  const calculatorVat = $<HTMLElement>(root, '[data-calculator-vat]');
+  const calculatorTotal = $<HTMLElement>(root, '[data-calculator-total]');
+  const discountPercent = $<HTMLInputElement>(root, '[data-discount-percent]');
+  const vatToggle = $<HTMLInputElement>(root, '[data-vat-toggle]');
+  const copyEstimateButton = $<HTMLButtonElement>(root, '[data-copy-estimate]');
+  const priceForm = $<HTMLFormElement>(root, '[data-price-form]');
+  const priceEditorTitle = $<HTMLElement>(root, '[data-price-editor-title]');
+  const priceFormState = $<HTMLElement>(root, '[data-price-form-state]');
+  const priceSaveStatus = $<HTMLElement>(root, '[data-price-save-status]');
+  const priceDeleteButton = $<HTMLButtonElement>(root, '[data-price-delete]');
+  const priceResetButton = $<HTMLButtonElement>(root, '[data-price-reset]');
 
   const cache = new Map<Resource, PortalRecord[]>();
   let leads: PortalLead[] = [];
+  let pricingItems: PortalPricingItem[] = [];
+  let selectedPricingItemIds = new Set<number>();
+  let activePricingItem: PortalPricingItem | null = null;
   let templates: PortalTextTemplate[] = [];
   let templatesLoaded = false;
   let activeResource: Resource = 'projects';
@@ -271,7 +326,7 @@ export function initPortalDashboard(): void {
   let activeRecord: PortalRecord | null = null;
   let activeLead: PortalLead | null = null;
   let activeTemplate: PortalTextTemplate | null = null;
-  let deleteMode: 'cms' | 'lead' | 'template' | null = null;
+  let deleteMode: 'cms' | 'lead' | 'pricing' | 'template' | null = null;
   let isDirty = false;
   let toastTimer = 0;
 
@@ -282,7 +337,9 @@ export function initPortalDashboard(): void {
         ? leadSaveStatus
         : activeView === 'templates'
           ? templateSaveStatus
-          : saveStatus;
+          : activeView === 'calculator'
+            ? priceSaveStatus
+            : saveStatus;
     if (dirty) target.textContent = 'Nesaglabātas izmaiņas';
     else if (target.textContent === 'Nesaglabātas izmaiņas') target.textContent = '';
   };
@@ -342,7 +399,10 @@ export function initPortalDashboard(): void {
     return payload;
   };
 
-  const updateCount = (view: Resource | 'leads' | 'text_templates', count: number) => {
+  const updateCount = (
+    view: Resource | 'leads' | 'portal_pricing_items' | 'text_templates',
+    count: number,
+  ) => {
     const counter = root.querySelector<HTMLElement>(`[data-count="${view}"]`);
     if (counter) counter.textContent = String(count);
   };
@@ -383,7 +443,16 @@ export function initPortalDashboard(): void {
     return templates;
   };
 
+  const loadPricingItems = async (force = false): Promise<PortalPricingItem[]> => {
+    if (!force && pricingItems.length > 0) return pricingItems;
+    const response = await request<{ data: PortalPricingItem[] }>('/api/portal/pricing-items');
+    pricingItems = response.data;
+    updateCount('portal_pricing_items', pricingItems.length);
+    return pricingItems;
+  };
+
   const hideWorkspaceViews = () => {
+    calculatorGrid.hidden = true;
     homeView.hidden = true;
     leadGrid.hidden = true;
     templateGrid.hidden = true;
@@ -1094,6 +1163,334 @@ export function initPortalDashboard(): void {
     variants: readVariantDrafts(),
   });
 
+  const priceControl = <T extends HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(
+    name: string,
+  ): T => {
+    const control = priceForm.elements.namedItem(name);
+    if (!(
+      control instanceof HTMLInputElement ||
+      control instanceof HTMLTextAreaElement ||
+      control instanceof HTMLSelectElement
+    )) {
+      throw new Error(`Missing pricing field: ${name}`);
+    }
+    return control as T;
+  };
+
+  const resetPriceForm = () => {
+    setDirty(false);
+    activePricingItem = null;
+    priceForm.reset();
+    priceControl<HTMLSelectElement>('category').value = 'integration';
+    priceControl<HTMLSelectElement>('unit').value = 'item';
+    priceControl<HTMLInputElement>('default_quantity').value = '1';
+    priceControl<HTMLInputElement>('sort_order').value = '100';
+    priceControl<HTMLInputElement>('is_active').checked = true;
+    priceEditorTitle.textContent = 'Jauna cena';
+    priceFormState.textContent = 'Nav saglabāta';
+    priceFormState.dataset.state = 'draft';
+    priceDeleteButton.hidden = true;
+    priceSaveStatus.textContent = '';
+  };
+
+  const openPriceEditor = (item: PortalPricingItem | null) => {
+    resetPriceForm();
+    activePricingItem = item;
+    if (!item) {
+      window.setTimeout(() => priceControl<HTMLInputElement>('name').focus(), 120);
+      return;
+    }
+
+    priceControl<HTMLInputElement>('name').value = item.name;
+    priceControl<HTMLInputElement>('item_key').value = item.item_key;
+    priceControl<HTMLSelectElement>('category').value = item.category;
+    priceControl<HTMLSelectElement>('unit').value = item.unit;
+    priceControl<HTMLInputElement>('price_eur').value = String(item.price_eur);
+    priceControl<HTMLInputElement>('default_quantity').value = String(item.default_quantity);
+    priceControl<HTMLInputElement>('sort_order').value = String(item.sort_order);
+    priceControl<HTMLInputElement>('is_active').checked = item.is_active;
+    priceControl<HTMLTextAreaElement>('description').value = item.description ?? '';
+    priceEditorTitle.textContent = item.name;
+    priceFormState.textContent = item.is_active ? 'Aktīva' : 'Paslēpta';
+    priceFormState.dataset.state = item.is_active ? 'published' : 'draft';
+    priceDeleteButton.hidden = !canDelete;
+  };
+
+  const serializePriceForm = () => ({
+    category: priceControl<HTMLSelectElement>('category').value,
+    default_quantity: Number(priceControl<HTMLInputElement>('default_quantity').value),
+    description: priceControl<HTMLTextAreaElement>('description').value.trim() || null,
+    is_active: priceControl<HTMLInputElement>('is_active').checked,
+    item_key: priceControl<HTMLInputElement>('item_key').value.trim(),
+    name: priceControl<HTMLInputElement>('name').value.trim(),
+    price_eur: Number(priceControl<HTMLInputElement>('price_eur').value),
+    sort_order: Number(priceControl<HTMLInputElement>('sort_order').value),
+    unit: priceControl<HTMLSelectElement>('unit').value,
+  });
+
+  const selectedPricingItems = () =>
+    pricingItems.filter((item) => item.is_active && selectedPricingItemIds.has(item.id));
+
+  const getLineQuantityInput = (item: PortalPricingItem) =>
+    calculatorBuilder.querySelector<HTMLInputElement>(`[data-price-quantity="${item.id}"]`);
+
+  const getLineQuantity = (item: PortalPricingItem) => {
+    const control = getLineQuantityInput(item);
+    const parsed = Number(control?.value ?? item.default_quantity);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : item.default_quantity;
+  };
+
+  const calculateItemTotal = (item: PortalPricingItem) => item.price_eur * getLineQuantity(item);
+
+  const getDiscountPercent = () => {
+    const parsed = Number(discountPercent.value);
+    if (!Number.isFinite(parsed) || parsed <= 0) return 0;
+    return Math.min(parsed, 100);
+  };
+
+  const updateCalculatorTotals = () => {
+    const selected = selectedPricingItems();
+    const subtotal = selected.reduce((sum, item) => sum + calculateItemTotal(item), 0);
+    const discount = subtotal * (getDiscountPercent() / 100);
+    const discountedSubtotal = Math.max(0, subtotal - discount);
+    const vat = vatToggle.checked ? discountedSubtotal * 0.21 : 0;
+
+    calculatorSubtotal.textContent = formatCurrency(subtotal);
+    calculatorDiscount.textContent = `-${formatCurrency(discount)}`;
+    calculatorVat.textContent = formatCurrency(vat);
+    calculatorTotal.textContent = formatCurrency(discountedSubtotal + vat);
+
+    if (selected.length === 0) {
+      const empty = document.createElement('p');
+      empty.className = 'portal-calculator-empty';
+      empty.textContent = 'Atzīmē cenu rindas katalogā, lai saliktu aprēķinu.';
+      calculatorLines.replaceChildren(empty);
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    selected.forEach((item) => {
+      const row = document.createElement('article');
+      row.className = 'portal-calculator-line';
+      const quantity = getLineQuantity(item);
+      const copy = document.createElement('span');
+      copy.append(
+        text('strong', item.name),
+        text(
+          'small',
+          `${quantity} ${pricingUnitLabels[item.unit]} × ${formatCurrency(item.price_eur)}`,
+        ),
+      );
+      row.append(copy, text('b', formatCurrency(item.price_eur * quantity)));
+      fragment.append(row);
+    });
+    calculatorLines.replaceChildren(fragment);
+  };
+
+  const renderCalculatorBuilder = () => {
+    const active = pricingItems.filter((item) => item.is_active);
+    if (active.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'portal-list-empty';
+      empty.append(
+        text('strong', 'Nav aktīvu cenu rindu.'),
+        text('p', 'Pievieno vai aktivizē cenu katalogā, lai kalkulators sāktu strādāt.'),
+      );
+      calculatorBuilder.replaceChildren(empty);
+      updateCalculatorTotals();
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    pricingCategoryOrder.forEach((category) => {
+      const items = active.filter((item) => item.category === category);
+      if (items.length === 0) return;
+
+      const section = document.createElement('section');
+      section.className = 'portal-calculator-group';
+      section.append(text('h3', pricingCategoryLabels[category]));
+      items.forEach((item) => {
+        const row = document.createElement('label');
+        row.className = 'portal-calculator-option';
+        const input = document.createElement('input');
+        input.type = item.category === 'base' ? 'radio' : 'checkbox';
+        input.name = item.category === 'base' ? 'calculator-base' : `calculator-${item.id}`;
+        input.checked = selectedPricingItemIds.has(item.id);
+        input.addEventListener('change', () => {
+          if (item.category === 'base') {
+            pricingItems
+              .filter((candidate) => candidate.category === 'base')
+              .forEach((candidate) => selectedPricingItemIds.delete(candidate.id));
+          }
+          if (input.checked) selectedPricingItemIds.add(item.id);
+          else selectedPricingItemIds.delete(item.id);
+          renderCalculatorBuilder();
+        });
+
+        const copy = document.createElement('span');
+        copy.append(
+          text('strong', item.name),
+          text(
+            'small',
+            `${formatCurrency(item.price_eur)} / ${pricingUnitLabels[item.unit]}${item.description ? ` · ${item.description}` : ''}`,
+          ),
+        );
+
+        const quantity = document.createElement('input');
+        quantity.type = 'number';
+        quantity.min = '0.01';
+        quantity.step = '0.01';
+        quantity.value = String(item.default_quantity);
+        quantity.dataset.priceQuantity = String(item.id);
+        quantity.disabled = !selectedPricingItemIds.has(item.id);
+        quantity.setAttribute('aria-label', `${item.name} daudzums`);
+        quantity.addEventListener('input', updateCalculatorTotals);
+
+        row.append(input, copy, quantity);
+        section.append(row);
+      });
+      fragment.append(section);
+    });
+    calculatorBuilder.replaceChildren(fragment);
+    updateCalculatorTotals();
+  };
+
+  const renderPriceList = () => {
+    const query = priceSearch.value.trim().toLocaleLowerCase('lv-LV');
+    const filtered = pricingItems.filter((item) => {
+      const haystack = [
+        item.name,
+        item.item_key,
+        item.description,
+        pricingCategoryLabels[item.category],
+        pricingUnitLabels[item.unit],
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLocaleLowerCase('lv-LV');
+      return !query || haystack.includes(query);
+    });
+
+    priceStatus.textContent = `${filtered.length} no ${pricingItems.length} cenām`;
+    if (filtered.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'portal-list-empty';
+      empty.append(
+        text('strong', pricingItems.length ? 'Nekas netika atrasts.' : 'Katalogs vēl ir tukšs.'),
+        text(
+          'p',
+          pricingItems.length ? 'Maini meklējumu vai pievieno jaunu cenu.' : 'Izveido pirmo cenu.',
+        ),
+      );
+      priceList.replaceChildren(empty);
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    pricingCategoryOrder.forEach((category) => {
+      const items = filtered.filter((item) => item.category === category);
+      if (items.length === 0) return;
+      const group = document.createElement('section');
+      group.className = 'portal-price-group';
+      group.append(text('h3', pricingCategoryLabels[category]));
+      items.forEach((item) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'portal-price-item';
+        button.classList.toggle('is-selected', activePricingItem?.id === item.id);
+        button.classList.toggle('is-muted', !item.is_active);
+        const copy = document.createElement('span');
+        copy.append(text('strong', item.name), text('small', item.description ?? item.item_key));
+        const meta = document.createElement('span');
+        meta.append(
+          text('b', formatCurrency(item.price_eur)),
+          text('small', pricingUnitLabels[item.unit]),
+        );
+        button.append(copy, meta);
+        button.addEventListener('click', () => {
+          void afterDiscard(() => {
+            openPriceEditor(item);
+            renderPriceList();
+          });
+        });
+        group.append(button);
+      });
+      fragment.append(group);
+    });
+    priceList.replaceChildren(fragment);
+  };
+
+  const showCalculator = async () => {
+    setDirty(false);
+    activeView = 'calculator';
+    setNavState('calculator');
+    hideWorkspaceViews();
+    calculatorGrid.hidden = false;
+    sectionTitle.textContent = 'Cenu kalkulators';
+    sectionDescription.textContent =
+      'Rediģē cenu katalogu un ātri saliec projekta provizorisko aprēķinu.';
+    createButton.hidden = false;
+    createButton.querySelector('span')?.replaceChildren(document.createTextNode('Jauna cena'));
+    priceStatus.textContent = 'Ielādē…';
+
+    try {
+      await loadPricingItems();
+      selectedPricingItemIds = new Set(
+        selectedPricingItemIds.size
+          ? [...selectedPricingItemIds].filter((id) =>
+              pricingItems.some((item) => item.id === id && item.is_active),
+            )
+          : pricingItems
+              .filter((item) => item.is_active && ['base', 'page'].includes(item.category))
+              .slice(0, 2)
+              .map((item) => item.id),
+      );
+      renderPriceList();
+      renderCalculatorBuilder();
+      if (!activePricingItem) resetPriceForm();
+    } catch (error) {
+      priceStatus.textContent = 'Savienojuma kļūda';
+      const failure = document.createElement('div');
+      failure.className = 'portal-list-empty is-error';
+      failure.append(
+        text('strong', 'Cenu katalogu nevar ielādēt.'),
+        text('p', error instanceof Error ? error.message : 'Mēģini vēlreiz.'),
+      );
+      const retry = text('button', 'Mēģināt vēlreiz') as HTMLButtonElement;
+      retry.type = 'button';
+      retry.addEventListener('click', () => void showCalculator());
+      failure.append(retry);
+      priceList.replaceChildren(failure);
+    }
+  };
+
+  const copyEstimate = async () => {
+    const selected = selectedPricingItems();
+    if (selected.length === 0) {
+      notify('Aprēķinā vēl nav nevienas rindas.', 'error');
+      return;
+    }
+    const subtotal = selected.reduce((sum, item) => sum + calculateItemTotal(item), 0);
+    const discountPercentValue = getDiscountPercent();
+    const discount = subtotal * (discountPercentValue / 100);
+    const discountedSubtotal = Math.max(0, subtotal - discount);
+    const vat = vatToggle.checked ? discountedSubtotal * 0.21 : 0;
+    const lines = selected.map((item) => {
+      const quantity = getLineQuantity(item);
+      return `- ${item.name}: ${quantity} ${pricingUnitLabels[item.unit]} × ${formatCurrency(item.price_eur)} = ${formatCurrency(item.price_eur * quantity)}`;
+    });
+    await copyToClipboard(
+      [
+        'ROMADI provizoriskais aprēķins',
+        ...lines,
+        `Starpsumma: ${formatCurrency(subtotal)}`,
+        `Atlaide (${discountPercentValue}%): -${formatCurrency(discount)}`,
+        `PVN: ${formatCurrency(vat)}`,
+        `Kopā: ${formatCurrency(discountedSubtotal + vat)}`,
+      ].join('\n'),
+    );
+  };
+
   const renderDashboard = () => {
     const openLeads = leads.filter(
       (lead) => !['client', 'rejected', 'no_response'].includes(lead.status),
@@ -1291,8 +1688,54 @@ export function initPortalDashboard(): void {
     }
   });
 
+  priceForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const submit = priceForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (!submit) return;
+    submit.disabled = true;
+    submit.textContent = 'Saglabā…';
+    priceSaveStatus.textContent = 'Pārbauda cenu';
+
+    try {
+      const data = serializePriceForm();
+      const response = await request<{ data: PortalPricingItem }>('/api/portal/pricing-items', {
+        method: activePricingItem ? 'PATCH' : 'POST',
+        body: JSON.stringify(activePricingItem ? { id: activePricingItem.id, data } : data),
+      });
+      setDirty(false);
+      if (activePricingItem) {
+        pricingItems = pricingItems.map((item) =>
+          item.id === activePricingItem?.id ? response.data : item,
+        );
+      } else {
+        pricingItems = [...pricingItems, response.data];
+      }
+      pricingItems.sort(
+        (a, b) =>
+          pricingCategoryOrder.indexOf(a.category) - pricingCategoryOrder.indexOf(b.category) ||
+          a.sort_order - b.sort_order ||
+          a.id - b.id,
+      );
+      activePricingItem = response.data;
+      if (!response.data.is_active) selectedPricingItemIds.delete(response.data.id);
+      updateCount('portal_pricing_items', pricingItems.length);
+      renderPriceList();
+      renderCalculatorBuilder();
+      openPriceEditor(response.data);
+      notify('Cena ir saglabāta.');
+    } catch (error) {
+      priceSaveStatus.textContent =
+        error instanceof Error ? error.message : 'Cenu neizdevās saglabāt.';
+      notify(priceSaveStatus.textContent, 'error');
+    } finally {
+      submit.disabled = false;
+      submit.textContent = 'Saglabāt cenu';
+    }
+  });
+
   editorForm.addEventListener('input', () => setDirty(true));
   leadForm.addEventListener('input', () => setDirty(true));
+  priceForm.addEventListener('input', () => setDirty(true));
   templateForm.addEventListener('input', () => setDirty(true));
   leadControl<HTMLInputElement>('is_contacted').addEventListener('change', (event) => {
     const toggle = event.currentTarget;
@@ -1300,6 +1743,10 @@ export function initPortalDashboard(): void {
     setLeadOutreachState(toggle.checked, !toggle.checked);
   });
   leadSearch.addEventListener('input', renderLeadBoard);
+  priceSearch.addEventListener('input', renderPriceList);
+  discountPercent.addEventListener('input', updateCalculatorTotals);
+  vatToggle.addEventListener('change', updateCalculatorTotals);
+  copyEstimateButton.addEventListener('click', () => void copyEstimate());
   templateSearch.addEventListener('input', renderTemplateList);
   templateCategoryFilter.addEventListener('change', renderTemplateList);
   addVariantButton.addEventListener('click', () => {
@@ -1322,12 +1769,14 @@ export function initPortalDashboard(): void {
   createButton.addEventListener('click', () => {
     void afterDiscard(() => {
       if (activeView === 'leads') openLeadEditor(null);
+      else if (activeView === 'calculator') openPriceEditor(null);
       else if (activeView === 'templates') openTemplateEditor(null);
       else if (activeView !== 'audit') openEditor(null);
     });
   });
 
   leadResetButton.addEventListener('click', () => void afterDiscard(() => openLeadEditor(null)));
+  priceResetButton.addEventListener('click', () => void afterDiscard(() => openPriceEditor(null)));
   templateResetButton.addEventListener('click', () => {
     void afterDiscard(() => openTemplateEditor(activeTemplate));
   });
@@ -1342,6 +1791,13 @@ export function initPortalDashboard(): void {
   leadDeleteButton.addEventListener('click', () => {
     if (activeLead && canDelete) {
       deleteMode = 'lead';
+      dialog.showModal();
+    }
+  });
+
+  priceDeleteButton.addEventListener('click', () => {
+    if (activePricingItem && canDelete) {
+      deleteMode = 'pricing';
       dialog.showModal();
     }
   });
@@ -1382,6 +1838,20 @@ export function initPortalDashboard(): void {
         activeRecord = null;
         notify('Ieraksts ir dzēsts.');
         await showResource(activeResource);
+      } else if (deleteMode === 'pricing' && activePricingItem) {
+        await request('/api/portal/pricing-items', {
+          method: 'DELETE',
+          body: JSON.stringify({ id: activePricingItem.id }),
+        });
+        pricingItems = pricingItems.filter((item) => item.id !== activePricingItem?.id);
+        selectedPricingItemIds.delete(activePricingItem.id);
+        activePricingItem = null;
+        setDirty(false);
+        updateCount('portal_pricing_items', pricingItems.length);
+        resetPriceForm();
+        renderPriceList();
+        renderCalculatorBuilder();
+        notify('Cena ir dzēsta.');
       } else if (deleteMode === 'template' && activeTemplate) {
         await request('/api/portal/text-templates', {
           method: 'DELETE',
@@ -1419,6 +1889,12 @@ export function initPortalDashboard(): void {
   root.querySelector<HTMLButtonElement>('[data-section="leads"]')?.addEventListener('click', () => {
     void afterDiscard(showLeads);
   });
+
+  root
+    .querySelector<HTMLButtonElement>('[data-section="calculator"]')
+    ?.addEventListener('click', () => {
+      void afterDiscard(showCalculator);
+    });
 
   root
     .querySelector<HTMLButtonElement>('[data-section="templates"]')
@@ -1502,6 +1978,7 @@ export function initPortalDashboard(): void {
 
   void Promise.allSettled([
     loadLeads(),
+    loadPricingItems(),
     loadTemplates(),
     ...(Object.keys(definitions) as Resource[]).map((resource) => loadResource(resource)),
   ]).then(() => showDashboard());

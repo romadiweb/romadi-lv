@@ -17,7 +17,12 @@ export interface Database {
           operation: 'INSERT' | 'UPDATE' | 'DELETE';
           record_id: number | null;
           table_name:
-            'projects' | 'pricing_plans' | 'reviews' | 'portal_leads' | 'portal_text_templates';
+            | 'projects'
+            | 'pricing_plans'
+            | 'reviews'
+            | 'portal_leads'
+            | 'portal_text_templates'
+            | 'portal_pricing_items';
         };
         Insert: {
           actor_id?: string | null;
@@ -29,7 +34,12 @@ export interface Database {
           operation: 'INSERT' | 'UPDATE' | 'DELETE';
           record_id?: number | null;
           table_name:
-            'projects' | 'pricing_plans' | 'reviews' | 'portal_leads' | 'portal_text_templates';
+            | 'projects'
+            | 'pricing_plans'
+            | 'reviews'
+            | 'portal_leads'
+            | 'portal_text_templates'
+            | 'portal_pricing_items';
         };
         Update: {
           actor_id?: string | null;
@@ -41,7 +51,12 @@ export interface Database {
           operation?: 'INSERT' | 'UPDATE' | 'DELETE';
           record_id?: number | null;
           table_name?:
-            'projects' | 'pricing_plans' | 'reviews' | 'portal_leads' | 'portal_text_templates';
+            | 'projects'
+            | 'pricing_plans'
+            | 'reviews'
+            | 'portal_leads'
+            | 'portal_text_templates'
+            | 'portal_pricing_items';
         };
         Relationships: [];
       };
@@ -125,6 +140,51 @@ export interface Database {
             | 'rejected'
             | 'no_response'
             | 'deferred';
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      portal_pricing_items: {
+        Row: {
+          category: 'base' | 'page' | 'integration' | 'addon' | 'hourly' | 'adjustment';
+          created_at: string;
+          default_quantity: number;
+          description: string | null;
+          id: number;
+          is_active: boolean;
+          item_key: string;
+          name: string;
+          price_eur: number;
+          sort_order: number;
+          unit: 'project' | 'page' | 'item' | 'hour';
+          updated_at: string;
+        };
+        Insert: {
+          category: 'base' | 'page' | 'integration' | 'addon' | 'hourly' | 'adjustment';
+          created_at?: string;
+          default_quantity?: number;
+          description?: string | null;
+          id?: never;
+          is_active?: boolean;
+          item_key: string;
+          name: string;
+          price_eur: number;
+          sort_order?: number;
+          unit: 'project' | 'page' | 'item' | 'hour';
+          updated_at?: string;
+        };
+        Update: {
+          category?: 'base' | 'page' | 'integration' | 'addon' | 'hourly' | 'adjustment';
+          created_at?: string;
+          default_quantity?: number;
+          description?: string | null;
+          id?: never;
+          is_active?: boolean;
+          item_key?: string;
+          name?: string;
+          price_eur?: number;
+          sort_order?: number;
+          unit?: 'project' | 'page' | 'item' | 'hour';
           updated_at?: string;
         };
         Relationships: [];
@@ -357,4 +417,5 @@ export type PricingPlan = Database['public']['Tables']['pricing_plans']['Row'];
 export type Review = Database['public']['Tables']['reviews']['Row'];
 export type CmsAuditLog = Database['public']['Tables']['cms_audit_log']['Row'];
 export type PortalLead = Database['public']['Tables']['portal_leads']['Row'];
+export type PortalPricingItem = Database['public']['Tables']['portal_pricing_items']['Row'];
 export type PortalTextTemplateRow = Database['public']['Tables']['portal_text_templates']['Row'];

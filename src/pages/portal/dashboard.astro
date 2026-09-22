@@ -109,10 +109,14 @@ if (!existingCsrf) {
             <span>Ieņēmumi</span>
             <b>Drīz</b>
           </button>
-          <button type="button" class="is-disabled" disabled>
+          <button type="button" data-section="calculator">
             <span class="portal-nav-signal"></span>
+            <svg class="portal-nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="4" y="3" width="16" height="18" rx="2"></rect>
+              <path d="M8 7h8M8 11h2M14 11h2M8 15h2M14 15h2"></path>
+            </svg>
             <span>Cenu kalkulators</span>
-            <b>Drīz</b>
+            <b data-count="portal_pricing_items">—</b>
           </button>
         </section>
 
@@ -535,6 +539,140 @@ if (!existingCsrf) {
                 >Atiestatīt</button
               >
               <button type="submit" class="portal-primary-action">Saglabāt sagatavi</button>
+            </div>
+          </form>
+        </section>
+      </div>
+
+      <div class="portal-calculator-grid" data-calculator-grid hidden>
+        <section class="portal-price-catalog" aria-labelledby="price-catalog-title">
+          <header>
+            <div>
+              <h2 id="price-catalog-title">Cenu katalogs</h2>
+              <span data-price-status>Ielādē…</span>
+            </div>
+            <label>
+              <span class="portal-visually-hidden">Meklēt cenu</span>
+              <input type="search" data-price-search placeholder="Meklēt cenu vai integrāciju" />
+            </label>
+          </header>
+          <div class="portal-price-list" data-price-list aria-live="polite"></div>
+        </section>
+
+        <section class="portal-calculator-panel" aria-labelledby="calculator-title">
+          <header>
+            <div>
+              <h2 id="calculator-title">Kalkulators</h2>
+              <p>Saliec projekta apjomu no aktīvajām cenu rindām.</p>
+            </div>
+            <label class="portal-vat-toggle">
+              <input type="checkbox" data-vat-toggle checked />
+              <span class="portal-checkbox-control"></span>
+              <span>PVN 21%</span>
+            </label>
+          </header>
+
+          <div class="portal-calculator-builder" data-calculator-builder></div>
+          <div class="portal-calculator-summary">
+            <div data-calculator-lines></div>
+            <label class="portal-discount-field">
+              <span>Atlaide %</span>
+              <input type="number" data-discount-percent min="0" max="100" step="0.01" value="0" />
+            </label>
+            <dl>
+              <div>
+                <dt>Starpsumma</dt>
+                <dd data-calculator-subtotal>0 €</dd>
+              </div>
+              <div>
+                <dt>Atlaide</dt>
+                <dd data-calculator-discount>0 €</dd>
+              </div>
+              <div>
+                <dt>PVN</dt>
+                <dd data-calculator-vat>0 €</dd>
+              </div>
+              <div>
+                <dt>Kopā</dt>
+                <dd data-calculator-total>0 €</dd>
+              </div>
+            </dl>
+            <button type="button" class="portal-secondary-action" data-copy-estimate>
+              Kopēt aprēķinu
+            </button>
+          </div>
+        </section>
+
+        <section class="portal-price-editor" aria-labelledby="price-editor-title">
+          <header>
+            <div>
+              <h2 id="price-editor-title" data-price-editor-title>Jauna cena</h2>
+              <p>Cenas glabājas Supabase un uzreiz parādās kalkulatorā.</p>
+            </div>
+            <span class="portal-draft-state" data-price-form-state>Nav saglabāta</span>
+          </header>
+
+          <form class="portal-price-form" data-price-form>
+            <div class="portal-form-fields">
+              <label class="portal-field is-wide">
+                <span>Nosaukums</span>
+                <input name="name" required maxlength="160" />
+              </label>
+              <label class="portal-field">
+                <span>Atslēga</span>
+                <input name="item_key" required maxlength="100" placeholder="epasta-forma" />
+              </label>
+              <label class="portal-field">
+                <span>Kategorija</span>
+                <select name="category" required>
+                  <option value="base">Pamata komplekts</option>
+                  <option value="page">Lapas</option>
+                  <option value="integration">Integrācijas</option>
+                  <option value="addon">Papildinājumi</option>
+                  <option value="hourly">Stundu darbs</option>
+                  <option value="adjustment">Korekcijas</option>
+                </select>
+              </label>
+              <label class="portal-field">
+                <span>Vienība</span>
+                <select name="unit" required>
+                  <option value="project">projekts</option>
+                  <option value="page">lapa</option>
+                  <option value="item">gab.</option>
+                  <option value="hour">stunda</option>
+                </select>
+              </label>
+              <label class="portal-field">
+                <span>Cena EUR</span>
+                <input name="price_eur" type="number" required min="0" step="0.01" />
+              </label>
+              <label class="portal-field">
+                <span>Noklusētais daudzums</span>
+                <input name="default_quantity" type="number" required min="0.01" step="0.01" />
+              </label>
+              <label class="portal-field">
+                <span>Secība</span>
+                <input name="sort_order" type="number" required min="0" step="1" />
+              </label>
+              <label class="portal-checkbox-field">
+                <input type="checkbox" name="is_active" checked />
+                <span class="portal-checkbox-control"></span>
+                <span>Aktīva kalkulatorā</span>
+              </label>
+              <label class="portal-field is-wide">
+                <span>Apraksts</span>
+                <textarea name="description" maxlength="1000" rows="4"></textarea>
+              </label>
+            </div>
+            <div class="portal-editor-actions">
+              <button type="button" class="portal-delete-action" data-price-delete hidden
+                >Dzēst</button
+              >
+              <span class="portal-save-status" data-price-save-status aria-live="polite"></span>
+              <button type="button" class="portal-secondary-action" data-price-reset
+                >Jauna cena</button
+              >
+              <button type="submit" class="portal-primary-action">Saglabāt cenu</button>
             </div>
           </form>
         </section>
