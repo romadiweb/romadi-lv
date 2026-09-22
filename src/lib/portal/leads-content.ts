@@ -37,6 +37,7 @@ const leadFields = z
     follow_up_enabled: z.boolean(),
     found_on: cleanText(180, 1),
     has_website: z.boolean(),
+    high_priority: z.boolean(),
     industry: nullableText(120),
     notes: nullableText(4_000),
     outreach_owner: nullableText(120),

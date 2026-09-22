@@ -1961,6 +1961,15 @@
   background: linear-gradient(180deg, rgb(224 35 78 / 13%), #101012 54%);
 }
 
+.portal-lead-card.is-priority {
+  border-color: rgb(247 95 127 / 36%);
+  background: linear-gradient(180deg, rgb(224 35 78 / 11%), #101012 48%);
+}
+
+.portal-lead-card.is-priority:hover {
+  border-color: rgb(247 95 127 / 48%);
+}
+
 .portal-lead-card strong,
 .portal-lead-card small,
 .portal-lead-card em {
@@ -1998,6 +2007,11 @@
   background: rgb(255 255 255 / 7%);
   color: #d4d4d8;
   font-size: 0.62rem;
+}
+
+.portal-lead-card.is-priority b:first-child {
+  background: rgb(224 35 78 / 18%);
+  color: #f9a8b8;
 }
 
 .portal-lead-form {

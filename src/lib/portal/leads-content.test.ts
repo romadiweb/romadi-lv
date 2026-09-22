@@ -8,6 +8,7 @@ const lead = {
   follow_up_enabled: false,
   found_on: 'Instagram',
   has_website: false,
+  high_priority: false,
   industry: null,
   notes: null,
   outreach_owner: null,

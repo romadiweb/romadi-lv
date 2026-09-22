@@ -40,13 +40,15 @@ const errorResponse = (error: unknown) => {
   if (
     errorCode === '42P01' ||
     errorCode === 'PGRST205' ||
+    errorCode === '42703' ||
+    errorMessage.includes('high_priority') ||
     errorMessage.includes('portal_leads')
   ) {
     console.error('Portal leads table is not available', error);
     return jsonResponse(
       {
         error:
-          'Leads tabula vēl nav izveidota Supabase. Palaid migrāciju 20260921142000_create_portal_leads.sql un pārlādē portālu.',
+          'Leads tabula nav atjaunota Supabase. Palaid migrācijas līdz 20260922120705_add_lead_high_priority.sql un pārlādē portālu.',
       },
       503,
     );
@@ -64,6 +66,8 @@ export const GET: APIRoute = async ({ locals }) => {
     const result = await locals.supabase
       .from('portal_leads')
       .select('*')
+      .order('high_priority', { ascending: false })
+      .order('follow_up_due_at', { ascending: true, nullsFirst: false })
       .order('created_at', { ascending: false })
       .order('id', { ascending: false });
 
@@ -113,9 +117,11 @@ export const PATCH: APIRoute = async (context) => {
     if (!context.locals.supabase) return jsonResponse({ error: 'Not found' }, 404);
 
     const payload = await readJsonBody(context.request);
-    if (!payload || typeof payload !== 'object') throw new PortalRequestError('Invalid request body');
+    if (!payload || typeof payload !== 'object')
+      throw new PortalRequestError('Invalid request body');
     const { id, data } = payload as { id?: unknown; data?: unknown };
-    if (!Number.isSafeInteger(id) || Number(id) < 1) throw new PortalRequestError('Invalid lead ID');
+    if (!Number.isSafeInteger(id) || Number(id) < 1)
+      throw new PortalRequestError('Invalid lead ID');
 
     const parsed = parseLeadContent(data, true);
     if (!parsed.success) {
@@ -154,7 +160,8 @@ export const DELETE: APIRoute = async (context) => {
 
     const payload = await readJsonBody(context.request);
     const id = payload && typeof payload === 'object' ? (payload as { id?: unknown }).id : null;
-    if (!Number.isSafeInteger(id) || Number(id) < 1) throw new PortalRequestError('Invalid lead ID');
+    if (!Number.isSafeInteger(id) || Number(id) < 1)
+      throw new PortalRequestError('Invalid lead ID');
 
     const result = await context.locals.supabase.from('portal_leads').delete().eq('id', Number(id));
     if (result.error) throw result.error;

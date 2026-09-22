@@ -318,6 +318,11 @@ const isFollowUpDue = (lead: PortalLead) => {
   return new Date(`${lead.follow_up_due_at}T12:00:00`) <= today;
 };
 
+const sortLeadsByAttention = (a: PortalLead, b: PortalLead) =>
+  Number(b.high_priority) - Number(a.high_priority) ||
+  Number(isFollowUpDue(b)) - Number(isFollowUpDue(a)) ||
+  new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+
 export function initPortalDashboard(): void {
   const root = document.querySelector<HTMLElement>('[data-portal-dashboard]');
   if (!root || root.dataset.initialized === 'true') return;
@@ -904,6 +909,7 @@ export function initPortalDashboard(): void {
     leadControl<HTMLSelectElement>('contact_channel').value = lead.contact_channel;
     leadControl<HTMLSelectElement>('status').value = lead.status;
     leadControl<HTMLInputElement>('has_website').checked = lead.has_website;
+    leadControl<HTMLInputElement>('high_priority').checked = lead.high_priority;
     leadControl<HTMLInputElement>('follow_up_enabled').checked = lead.follow_up_enabled;
     leadControl<HTMLTextAreaElement>('notes').value = lead.notes ?? '';
     leadEditorTitle.textContent = lead.company_name;
@@ -930,6 +936,7 @@ export function initPortalDashboard(): void {
       follow_up_enabled: isContacted && leadControl<HTMLInputElement>('follow_up_enabled').checked,
       found_on: leadControl<HTMLInputElement>('found_on').value.trim(),
       has_website: leadControl<HTMLInputElement>('has_website').checked,
+      high_priority: leadControl<HTMLInputElement>('high_priority').checked,
       industry: leadControl<HTMLInputElement>('industry').value.trim() || null,
       notes: leadControl<HTMLTextAreaElement>('notes').value.trim() || null,
       outreach_owner: isContacted
@@ -971,7 +978,9 @@ export function initPortalDashboard(): void {
 
     const fragment = document.createDocumentFragment();
     for (const column of leadColumns) {
-      const columnLeads = filtered.filter((lead) => lead.status === column.status);
+      const columnLeads = filtered
+        .filter((lead) => lead.status === column.status)
+        .sort(sortLeadsByAttention);
       const section = document.createElement('section');
       section.className = `portal-kanban-column${column.group === 'parked' ? ' is-parked' : ''}`;
       section.dataset.status = column.status;
@@ -998,6 +1007,7 @@ export function initPortalDashboard(): void {
         card.draggable = true;
         card.className = 'portal-lead-card';
         card.classList.toggle('is-due', isFollowUpDue(lead));
+        card.classList.toggle('is-priority', lead.high_priority);
         card.addEventListener('dragstart', (event) => {
           event.dataTransfer?.setData('text/plain', String(lead.id));
           event.dataTransfer?.setData('application/x-lead-id', String(lead.id));
@@ -1006,6 +1016,7 @@ export function initPortalDashboard(): void {
 
         const meta = document.createElement('span');
         meta.append(
+          ...(lead.high_priority ? [text('b', 'Svarīgs')] : []),
           text(
             'b',
             lead.status === 'not_contacted' ? lead.found_on : channelLabels[lead.contact_channel],
@@ -1989,7 +2000,7 @@ export function initPortalDashboard(): void {
     const leadTaskCandidates = [
       ...dueLeads,
       ...untouchedLeads.filter((lead) => !dueLeads.includes(lead)),
-    ];
+    ].sort(sortLeadsByAttention);
     const dashboardTasks = sortedOpenTasks().slice(0, 5);
 
     $<HTMLElement>(root, '[data-home-metric="open-leads"]').textContent = String(openLeads.length);
@@ -2091,9 +2102,13 @@ export function initPortalDashboard(): void {
       );
       const state = text(
         'b',
-        isFollowUpDue(lead) ? `Follow-up ${formatDate(lead.follow_up_due_at)}` : 'Vēl nav uzrunāts',
+        isFollowUpDue(lead)
+          ? `Follow-up ${formatDate(lead.follow_up_due_at)}`
+          : lead.high_priority
+            ? 'Svarīgs lead'
+            : 'Vēl nav uzrunāts',
       );
-      state.dataset.state = isFollowUpDue(lead) ? 'due' : 'new';
+      state.dataset.state = isFollowUpDue(lead) || lead.high_priority ? 'due' : 'new';
       button.append(copy, state);
       button.addEventListener('click', () => {
         void afterDiscard(async () => {

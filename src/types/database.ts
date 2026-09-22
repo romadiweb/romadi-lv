@@ -77,6 +77,7 @@ export interface Database {
           follow_up_enabled: boolean;
           found_on: string;
           has_website: boolean;
+          high_priority: boolean;
           id: number;
           industry: string | null;
           notes: string | null;
@@ -104,6 +105,7 @@ export interface Database {
           follow_up_enabled?: boolean;
           found_on: string;
           has_website?: boolean;
+          high_priority?: boolean;
           id?: never;
           industry?: string | null;
           notes?: string | null;
@@ -131,6 +133,7 @@ export interface Database {
           follow_up_enabled?: boolean;
           found_on?: string;
           has_website?: boolean;
+          high_priority?: boolean;
           id?: never;
           industry?: string | null;
           notes?: string | null;
