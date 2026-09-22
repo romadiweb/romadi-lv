@@ -237,12 +237,47 @@ export interface Database {
         };
         Relationships: [];
       };
+      portal_users: {
+        Row: {
+          created_at: string;
+          display_name: string | null;
+          email: string;
+          id: string;
+          is_active: boolean;
+          last_seen_at: string | null;
+          role: 'admin' | 'super-admin';
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          display_name?: string | null;
+          email: string;
+          id: string;
+          is_active?: boolean;
+          last_seen_at?: string | null;
+          role?: 'admin' | 'super-admin';
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          display_name?: string | null;
+          email?: string;
+          id?: never;
+          is_active?: boolean;
+          last_seen_at?: string | null;
+          role?: 'admin' | 'super-admin';
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       portal_tasks: {
         Row: {
           assigned_to: string | null;
+          assigned_to_user_id: string | null;
           completed_at: string | null;
           created_at: string;
           created_by: string | null;
+          created_by_user_id: string | null;
           description: string | null;
           due_date: string | null;
           id: number;
@@ -256,9 +291,11 @@ export interface Database {
         };
         Insert: {
           assigned_to?: string | null;
+          assigned_to_user_id?: string | null;
           completed_at?: string | null;
           created_at?: string;
           created_by?: string | null;
+          created_by_user_id?: string | null;
           description?: string | null;
           due_date?: string | null;
           id?: never;
@@ -272,9 +309,11 @@ export interface Database {
         };
         Update: {
           assigned_to?: string | null;
+          assigned_to_user_id?: string | null;
           completed_at?: string | null;
           created_at?: string;
           created_by?: string | null;
+          created_by_user_id?: string | null;
           description?: string | null;
           due_date?: string | null;
           id?: never;
@@ -286,7 +325,22 @@ export interface Database {
           title?: string;
           updated_at?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'portal_tasks_assigned_to_user_id_fkey';
+            columns: ['assigned_to_user_id'];
+            isOneToOne: false;
+            referencedRelation: 'portal_users';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'portal_tasks_created_by_user_id_fkey';
+            columns: ['created_by_user_id'];
+            isOneToOne: false;
+            referencedRelation: 'portal_users';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       portal_text_templates: {
         Row: {
@@ -518,5 +572,6 @@ export type CmsAuditLog = Database['public']['Tables']['cms_audit_log']['Row'];
 export type PortalLead = Database['public']['Tables']['portal_leads']['Row'];
 export type PortalPricingItem = Database['public']['Tables']['portal_pricing_items']['Row'];
 export type PortalQuotaTarget = Database['public']['Tables']['portal_quota_targets']['Row'];
+export type PortalUser = Database['public']['Tables']['portal_users']['Row'];
 export type PortalTask = Database['public']['Tables']['portal_tasks']['Row'];
 export type PortalTextTemplateRow = Database['public']['Tables']['portal_text_templates']['Row'];

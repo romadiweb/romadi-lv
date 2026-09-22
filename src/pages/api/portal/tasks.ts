@@ -1,7 +1,8 @@
 import type { APIRoute } from 'astro';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database';
 import { parsePortalTask } from '@/lib/portal/tasks';
-import { PortalAuthError, requirePortalIdentity } from '@/lib/portal/auth';
+import { PortalAuthError, type PortalIdentity, requirePortalIdentity } from '@/lib/portal/auth';
 import {
   assertCsrf,
   assertSameOrigin,
@@ -13,8 +14,10 @@ export const prerender = false;
 
 type TaskInsert = Database['public']['Tables']['portal_tasks']['Insert'];
 type TaskUpdate = Database['public']['Tables']['portal_tasks']['Update'];
+type PortalSupabase = SupabaseClient<Database>;
 
-const migrationName = '20260922105558_create_portal_quotas_and_tasks.sql';
+const migrationName =
+  '20260922105558_create_portal_quotas_and_tasks.sql un 20260922125453_create_portal_users_and_task_assignments.sql';
 
 const readJsonBody = async (request: Request): Promise<unknown> => {
   const declaredLength = Number(request.headers.get('content-length') ?? 0);
@@ -39,7 +42,13 @@ const errorResponse = (error: unknown) => {
   const code = typeof supabaseError.code === 'string' ? supabaseError.code : '';
   const message = typeof supabaseError.message === 'string' ? supabaseError.message : '';
 
-  if (code === '42P01' || code === 'PGRST205' || message.includes('portal_tasks')) {
+  if (
+    code === '42P01' ||
+    code === '42703' ||
+    code === 'PGRST205' ||
+    message.includes('portal_tasks') ||
+    message.includes('portal_users')
+  ) {
     console.error('Portal tasks table is not available', error);
     return jsonResponse(
       {
@@ -51,6 +60,42 @@ const errorResponse = (error: unknown) => {
 
   console.error('Portal tasks endpoint failed', error);
   return jsonResponse({ error: 'The task request could not be completed.' }, 500);
+};
+
+const ensureCurrentPortalUser = async (supabase: PortalSupabase, identity: PortalIdentity) => {
+  const result = await supabase.from('portal_users').upsert(
+    {
+      email: identity.email,
+      id: identity.id,
+      is_active: true,
+      last_seen_at: new Date().toISOString(),
+      role: identity.role,
+    },
+    { onConflict: 'id' },
+  );
+  if (result.error) throw result.error;
+};
+
+const resolveAssignee = async (
+  supabase: PortalSupabase,
+  assignedToUserId: string | null | undefined,
+) => {
+  if (!assignedToUserId) return { assigned_to: null, assigned_to_user_id: null };
+
+  const result = await supabase
+    .from('portal_users')
+    .select('id,email,display_name,is_active')
+    .eq('id', assignedToUserId)
+    .eq('is_active', true)
+    .maybeSingle();
+
+  if (result.error) throw result.error;
+  if (!result.data) throw new PortalRequestError('Izvēlētais lietotājs nav atrasts.', 422);
+
+  return {
+    assigned_to: result.data.display_name || result.data.email,
+    assigned_to_user_id: result.data.id,
+  };
 };
 
 export const GET: APIRoute = async ({ locals }) => {
@@ -90,10 +135,18 @@ export const POST: APIRoute = async (context) => {
       );
     }
 
+    await ensureCurrentPortalUser(context.locals.supabase, identity);
+    const assignment = await resolveAssignee(
+      context.locals.supabase,
+      parsed.data.assigned_to_user_id,
+    );
+
     const payload: TaskInsert = {
       ...(parsed.data as TaskInsert),
+      ...assignment,
       completed_at: parsed.data.status === 'done' ? new Date().toISOString() : null,
       created_by: identity.email,
+      created_by_user_id: identity.id,
     };
 
     const result = await context.locals.supabase
@@ -111,7 +164,7 @@ export const POST: APIRoute = async (context) => {
 
 export const PATCH: APIRoute = async (context) => {
   try {
-    await requirePortalIdentity(context.locals.supabase);
+    const identity = await requirePortalIdentity(context.locals.supabase);
     assertSameOrigin(context.request);
     assertCsrf(context);
     if (!context.locals.supabase) return jsonResponse({ error: 'Not found' }, 404);
@@ -135,8 +188,15 @@ export const PATCH: APIRoute = async (context) => {
       );
     }
 
+    await ensureCurrentPortalUser(context.locals.supabase, identity);
+    const assignment =
+      'assigned_to_user_id' in parsed.data
+        ? await resolveAssignee(context.locals.supabase, parsed.data.assigned_to_user_id)
+        : {};
+
     const updatePayload: TaskUpdate = {
       ...(parsed.data as TaskUpdate),
+      ...assignment,
       ...(parsed.data.status
         ? { completed_at: parsed.data.status === 'done' ? new Date().toISOString() : null }
         : {}),

@@ -1321,10 +1321,14 @@
 .portal-quota-grid,
 .portal-task-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(24rem, 0.75fr);
+  grid-template-columns: minmax(0, 1.05fr) minmax(15rem, 0.5fr) minmax(23rem, 0.72fr);
   gap: 1rem;
   align-items: start;
   animation: portal-grid-in 540ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.portal-quota-grid {
+  grid-template-columns: minmax(0, 1.25fr) minmax(24rem, 0.75fr);
 }
 
 .portal-price-catalog,
@@ -1333,6 +1337,7 @@
 .portal-quota-board,
 .portal-quota-editor,
 .portal-task-board,
+.portal-user-directory,
 .portal-task-editor {
   overflow: hidden;
   border: 1px solid rgb(255 255 255 / 9%);
@@ -1347,6 +1352,7 @@
 .portal-quota-board > header,
 .portal-quota-editor > header,
 .portal-task-board > header,
+.portal-user-directory > header,
 .portal-task-editor > header {
   display: flex;
   min-height: 4.5rem;
@@ -1363,6 +1369,7 @@
 .portal-quota-board h2,
 .portal-quota-editor h2,
 .portal-task-board h2,
+.portal-user-directory h2,
 .portal-task-editor h2 {
   font-size: 0.95rem;
   font-weight: 750;
@@ -1375,6 +1382,7 @@
 .portal-quota-board header span,
 .portal-quota-editor header p,
 .portal-task-board header span,
+.portal-user-directory header span,
 .portal-task-editor header p {
   margin-top: 0.25rem;
   color: #8e8e93;
@@ -1387,6 +1395,7 @@
 }
 
 .portal-price-catalog header input,
+.portal-task-scope select,
 .portal-week-picker input {
   width: 100%;
   min-height: 2.5rem;
@@ -1407,6 +1416,10 @@
   font-weight: 750;
 }
 
+.portal-task-scope {
+  width: min(100%, 11rem);
+}
+
 .portal-price-list {
   display: grid;
   max-height: calc(100svh - 14rem);
@@ -1424,7 +1437,8 @@
 }
 
 .portal-quota-list,
-.portal-task-list {
+.portal-task-list,
+.portal-user-list {
   display: grid;
   max-height: calc(100svh - 15rem);
   overflow: auto;
@@ -1433,7 +1447,8 @@
 }
 
 .portal-quota-item,
-.portal-task-item {
+.portal-task-item,
+.portal-user-item {
   display: grid;
   min-height: 4.6rem;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -1450,7 +1465,9 @@
 .portal-quota-item:hover,
 .portal-quota-item.is-selected,
 .portal-task-item:hover,
-.portal-task-item.is-selected {
+.portal-task-item.is-selected,
+.portal-user-item:hover,
+.portal-user-item.is-selected {
   border-color: rgb(255 255 255 / 8%);
   background: rgb(255 255 255 / 6%);
   color: #fff;
@@ -1461,18 +1478,26 @@
   opacity: 0.52;
 }
 
+.portal-task-item.is-mine {
+  border-color: rgb(224 35 78 / 28%);
+  background: linear-gradient(135deg, rgb(224 35 78 / 12%), rgb(255 255 255 / 4%));
+}
+
 .portal-quota-item strong,
 .portal-quota-item small,
 .portal-quota-item b,
 .portal-task-item strong,
 .portal-task-item small,
-.portal-task-item b {
+.portal-task-item b,
+.portal-user-item strong,
+.portal-user-item small {
   display: block;
   min-width: 0;
 }
 
 .portal-quota-item strong,
-.portal-task-item strong {
+.portal-task-item strong,
+.portal-user-item strong {
   overflow: hidden;
   font-size: 0.82rem;
   text-overflow: ellipsis;
@@ -1480,10 +1505,48 @@
 }
 
 .portal-quota-item small,
-.portal-task-item small {
+.portal-task-item small,
+.portal-user-item small {
   margin-top: 0.22rem;
   color: #8e8e93;
   font-size: 0.66rem;
+}
+
+.portal-user-item {
+  min-height: 3.75rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.portal-user-profile {
+  display: grid;
+  gap: 0.45rem;
+  border-top: 1px solid rgb(255 255 255 / 8%);
+  padding: 1rem;
+  background: linear-gradient(180deg, rgb(255 255 255 / 4%), transparent);
+}
+
+.portal-user-profile span {
+  width: max-content;
+  border-radius: 999px;
+  padding: 0.28rem 0.5rem;
+  background: rgb(224 35 78 / 14%);
+  color: #f9a8b8;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+.portal-user-profile strong {
+  overflow-wrap: anywhere;
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.portal-user-profile p,
+.portal-user-profile small {
+  margin: 0;
+  color: #8e8e93;
+  font-size: 0.68rem;
 }
 
 .portal-quota-item b,
@@ -2728,19 +2791,22 @@
   .portal-quota-board > header,
   .portal-quota-editor > header,
   .portal-task-board > header,
+  .portal-user-directory > header,
   .portal-task-editor > header {
     align-items: flex-start;
     flex-direction: column;
   }
 
   .portal-price-catalog header label,
+  .portal-task-scope,
   .portal-week-picker {
     width: 100%;
   }
 
   .portal-price-list,
   .portal-quota-list,
-  .portal-task-list {
+  .portal-task-list,
+  .portal-user-list {
     max-height: 22rem;
   }
 

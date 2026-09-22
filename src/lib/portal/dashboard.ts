@@ -4,6 +4,7 @@ import type {
   PortalQuotaTarget,
   PortalTask,
   PortalTextTemplateRow,
+  PortalUser,
 } from '@/types/database';
 import type { TextTemplateVariant } from '@/lib/portal/text-templates';
 
@@ -330,6 +331,8 @@ export function initPortalDashboard(): void {
 
   const csrf = root.dataset.csrf ?? '';
   const role = root.dataset.role;
+  const currentUserId = root.dataset.userId ?? '';
+  const currentUserEmail = root.dataset.userEmail ?? '';
   const canDelete = role === 'super-admin';
   const sectionTitle = $<HTMLElement>(root, '[data-section-title]');
   const sectionDescription = $<HTMLElement>(root, '[data-section-description]');
@@ -355,13 +358,18 @@ export function initPortalDashboard(): void {
   const taskGrid = $<HTMLElement>(root, '[data-task-grid]');
   const taskStatus = $<HTMLElement>(root, '[data-task-status]');
   const taskSearch = $<HTMLInputElement>(root, '[data-task-search]');
+  const taskScope = $<HTMLSelectElement>(root, '[data-task-scope]');
   const taskList = $<HTMLElement>(root, '[data-task-list]');
   const taskForm = $<HTMLFormElement>(root, '[data-task-form]');
+  const taskAssignee = $<HTMLSelectElement>(root, '[data-task-assignee]');
   const taskEditorTitle = $<HTMLElement>(root, '[data-task-editor-title]');
   const taskFormState = $<HTMLElement>(root, '[data-task-form-state]');
   const taskSaveStatus = $<HTMLElement>(root, '[data-task-save-status]');
   const taskDeleteButton = $<HTMLButtonElement>(root, '[data-task-delete]');
   const taskResetButton = $<HTMLButtonElement>(root, '[data-task-reset]');
+  const userStatus = $<HTMLElement>(root, '[data-user-status]');
+  const userList = $<HTMLElement>(root, '[data-user-list]');
+  const userProfile = $<HTMLElement>(root, '[data-user-profile]');
   const templateGrid = $<HTMLElement>(root, '[data-template-grid]');
   const templateStatus = $<HTMLElement>(root, '[data-template-status]');
   const templateSearch = $<HTMLInputElement>(root, '[data-template-search]');
@@ -425,10 +433,12 @@ export function initPortalDashboard(): void {
   let pricingItems: PortalPricingItem[] = [];
   let quotaTargets: PortalQuotaTarget[] = [];
   let portalTasks: PortalTask[] = [];
+  let portalUsers: PortalUser[] = [];
   let selectedPricingItemIds = new Set<number>();
   let activePricingItem: PortalPricingItem | null = null;
   let activeQuotaTarget: PortalQuotaTarget | null = null;
   let activeTask: PortalTask | null = null;
+  let activeProfileUser: PortalUser | null = null;
   let templates: PortalTextTemplate[] = [];
   let templatesLoaded = false;
   let activeResource: Resource = 'projects';
@@ -585,6 +595,13 @@ export function initPortalDashboard(): void {
     portalTasks = response.data;
     updateCount('portal_tasks', portalTasks.filter((task) => !isTaskClosed(task)).length);
     return portalTasks;
+  };
+
+  const loadPortalUsers = async (force = false): Promise<PortalUser[]> => {
+    if (!force && portalUsers.length > 0) return portalUsers;
+    const response = await request<{ data: PortalUser[] }>('/api/portal/users');
+    portalUsers = response.data;
+    return portalUsers;
   };
 
   const hideWorkspaceViews = () => {
@@ -1654,6 +1671,30 @@ export function initPortalDashboard(): void {
 
   const isTaskClosed = (task: PortalTask) => task.status === 'done' || task.status === 'cant_do';
 
+  const getUserById = (id: string | null | undefined) =>
+    id ? portalUsers.find((user) => user.id === id) : undefined;
+
+  const getUserLabel = (user: PortalUser | undefined, fallback: string | null | undefined) =>
+    user?.display_name || user?.email || fallback || 'Nav piešķirts';
+
+  const getTaskAssigneeLabel = (task: PortalTask) =>
+    getUserLabel(getUserById(task.assigned_to_user_id), task.assigned_to);
+
+  const getTaskCreatorLabel = (task: PortalTask) =>
+    getUserLabel(getUserById(task.created_by_user_id), task.created_by);
+
+  const isTaskAssignedToCurrentUser = (task: PortalTask) =>
+    (currentUserId && task.assigned_to_user_id === currentUserId) ||
+    (!task.assigned_to_user_id &&
+      Boolean(currentUserEmail) &&
+      task.assigned_to?.toLowerCase() === currentUserEmail.toLowerCase());
+
+  const isTaskCreatedByCurrentUser = (task: PortalTask) =>
+    (currentUserId && task.created_by_user_id === currentUserId) ||
+    (!task.created_by_user_id &&
+      Boolean(currentUserEmail) &&
+      task.created_by?.toLowerCase() === currentUserEmail.toLowerCase());
+
   const taskPriorityRank: Record<TaskPriority, number> = {
     critical: 0,
     max: 1,
@@ -1667,6 +1708,7 @@ export function initPortalDashboard(): void {
       .filter((task) => !isTaskClosed(task))
       .sort(
         (a, b) =>
+          Number(isTaskAssignedToCurrentUser(b)) - Number(isTaskAssignedToCurrentUser(a)) ||
           taskPriorityRank[a.priority] - taskPriorityRank[b.priority] ||
           (a.due_date ?? '9999-12-31').localeCompare(b.due_date ?? '9999-12-31') ||
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
@@ -1856,10 +1898,104 @@ export function initPortalDashboard(): void {
     }
   };
 
+  const renderTaskAssigneeOptions = () => {
+    const currentValue = taskAssignee.value || activeTask?.assigned_to_user_id || '';
+    const options = [
+      new Option('Nav piešķirts', ''),
+      ...portalUsers.map((user) => new Option(user.display_name || user.email, user.id)),
+    ];
+    taskAssignee.replaceChildren(...options);
+    taskAssignee.value =
+      currentValue && portalUsers.some((user) => user.id === currentValue) ? currentValue : '';
+  };
+
+  const openUserProfile = (user: PortalUser | null) => {
+    activeProfileUser = user;
+    userList
+      .querySelectorAll<HTMLButtonElement>('.portal-user-item')
+      .forEach((button) =>
+        button.classList.toggle('is-selected', button.dataset.userId === user?.id),
+      );
+
+    if (!user) {
+      userProfile.replaceChildren(
+        text('span', 'Profils'),
+        text('strong', 'Izvēlies lietotāju'),
+        text('p', 'Atver profilu, lai redzētu viņa aktīvos un piešķirtos uzdevumus.'),
+      );
+      return;
+    }
+
+    const assignedOpen = portalTasks.filter(
+      (task) => task.assigned_to_user_id === user.id && !isTaskClosed(task),
+    ).length;
+    const createdOpen = portalTasks.filter(
+      (task) => task.created_by_user_id === user.id && !isTaskClosed(task),
+    ).length;
+    const completed = portalTasks.filter(
+      (task) => task.assigned_to_user_id === user.id && isTaskClosed(task),
+    ).length;
+
+    userProfile.replaceChildren(
+      text('span', user.role === 'super-admin' ? 'Super-admin' : 'Admin'),
+      text('strong', user.display_name || user.email),
+      text('p', user.email),
+      text('small', `Aktīvi piešķirti: ${assignedOpen}`),
+      text('small', `Viņš/viņa piešķīra: ${createdOpen}`),
+      text('small', `Pabeigti/nevar izdarīt: ${completed}`),
+    );
+  };
+
+  const renderUserDirectory = () => {
+    userStatus.textContent =
+      portalUsers.length === 1 ? '1 lietotājs' : `${portalUsers.length} lietotāji`;
+    renderTaskAssigneeOptions();
+
+    if (portalUsers.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'portal-list-empty';
+      empty.append(
+        text('strong', 'Komanda vēl nav sinhronizēta.'),
+        text('p', 'Pārlādē sadaļu pēc lietotāju migrācijas palaišanas.'),
+      );
+      userList.replaceChildren(empty);
+      openUserProfile(null);
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    portalUsers.forEach((user) => {
+      const assignedOpen = portalTasks.filter(
+        (task) => task.assigned_to_user_id === user.id && !isTaskClosed(task),
+      ).length;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'portal-user-item';
+      button.dataset.userId = user.id;
+      button.classList.toggle('is-selected', activeProfileUser?.id === user.id);
+      button.append(
+        text('strong', user.display_name || user.email),
+        text('small', `${user.role} · ${assignedOpen} aktīvi`),
+      );
+      button.addEventListener('click', () => openUserProfile(user));
+      fragment.append(button);
+    });
+    userList.replaceChildren(fragment);
+
+    if (activeProfileUser) {
+      openUserProfile(portalUsers.find((user) => user.id === activeProfileUser?.id) ?? null);
+    } else {
+      openUserProfile(
+        portalUsers.find((user) => user.id === currentUserId) ?? portalUsers[0] ?? null,
+      );
+    }
+  };
+
   const resetTaskForm = () => {
     setDirty(false);
     activeTask = null;
     taskForm.reset();
+    renderTaskAssigneeOptions();
     taskControl<HTMLSelectElement>('task_type').value = 'manual';
     taskControl<HTMLSelectElement>('priority').value = 'normal';
     taskControl<HTMLSelectElement>('status').value = 'todo';
@@ -1878,7 +2014,7 @@ export function initPortalDashboard(): void {
       return;
     }
     taskControl<HTMLInputElement>('title').value = task.title;
-    taskControl<HTMLInputElement>('assigned_to').value = task.assigned_to ?? '';
+    taskControl<HTMLSelectElement>('assigned_to_user_id').value = task.assigned_to_user_id ?? '';
     taskControl<HTMLInputElement>('due_date').value = task.due_date ?? '';
     taskControl<HTMLSelectElement>('task_type').value = task.task_type;
     taskControl<HTMLSelectElement>('priority').value = task.priority;
@@ -1891,7 +2027,7 @@ export function initPortalDashboard(): void {
   };
 
   const serializeTaskForm = () => ({
-    assigned_to: taskControl<HTMLInputElement>('assigned_to').value.trim() || null,
+    assigned_to_user_id: taskControl<HTMLSelectElement>('assigned_to_user_id').value || null,
     description: taskControl<HTMLTextAreaElement>('description').value.trim() || null,
     due_date: taskControl<HTMLInputElement>('due_date').value || null,
     priority: taskControl<HTMLSelectElement>('priority').value,
@@ -1911,13 +2047,24 @@ export function initPortalDashboard(): void {
 
   const renderTaskList = () => {
     const query = taskSearch.value.trim().toLowerCase();
+    const scoped = portalTasks.filter((task) => {
+      if (taskScope.value === 'assigned-to-me') return isTaskAssignedToCurrentUser(task);
+      if (taskScope.value === 'assigned-by-me') return isTaskCreatedByCurrentUser(task);
+      return true;
+    });
     const filtered = query
-      ? portalTasks.filter((task) =>
-          [task.title, task.assigned_to, task.description, taskTypeLabels[task.task_type]]
+      ? scoped.filter((task) =>
+          [
+            task.title,
+            getTaskAssigneeLabel(task),
+            getTaskCreatorLabel(task),
+            task.description,
+            taskTypeLabels[task.task_type],
+          ]
             .filter(Boolean)
             .some((value) => String(value).toLowerCase().includes(query)),
         )
-      : portalTasks;
+      : scoped;
     taskStatus.textContent = `${filtered.length} no ${portalTasks.length} uzdevumiem`;
 
     if (portalTasks.length === 0) {
@@ -1926,6 +2073,17 @@ export function initPortalDashboard(): void {
       empty.append(
         text('strong', 'Uzdevumu vēl nav.'),
         text('p', 'Izveido uzdevumu, piešķir cilvēku un prioritāti.'),
+      );
+      taskList.replaceChildren(empty);
+      return;
+    }
+
+    if (filtered.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'portal-list-empty';
+      empty.append(
+        text('strong', 'Šim skatam nav uzdevumu.'),
+        text('p', 'Pārslēdz filtru vai izveido jaunu uzdevumu komandai.'),
       );
       taskList.replaceChildren(empty);
       return;
@@ -1944,14 +2102,16 @@ export function initPortalDashboard(): void {
         button.type = 'button';
         button.className = 'portal-task-item';
         button.dataset.priority = task.priority;
+        button.classList.toggle('is-mine', isTaskAssignedToCurrentUser(task));
         button.classList.toggle('is-selected', activeTask?.id === task.id);
         button.classList.toggle('is-done', isTaskClosed(task));
         button.append(
           text('strong', task.title),
           text(
             'small',
-            `${task.assigned_to || 'Nav piešķirts'} · ${taskStatusLabels[task.status]}${task.due_date ? ` · ${formatDate(task.due_date)}` : ''}`,
+            `${getTaskAssigneeLabel(task)} · ${taskStatusLabels[task.status]}${task.due_date ? ` · ${formatDate(task.due_date)}` : ''}`,
           ),
+          text('small', `Piešķīra: ${getTaskCreatorLabel(task)}`),
           text('b', taskPriorityLabels[task.priority]),
         );
         button.addEventListener('click', () => openTaskEditor(task));
@@ -1972,13 +2132,16 @@ export function initPortalDashboard(): void {
     createButton.hidden = false;
     createButton.querySelector('span')?.replaceChildren(document.createTextNode('Jauns uzdevums'));
     taskStatus.textContent = 'Ielādē…';
+    userStatus.textContent = 'Ielādē…';
 
     try {
-      await loadPortalTasks();
+      await Promise.all([loadPortalUsers(), loadPortalTasks()]);
+      renderUserDirectory();
       renderTaskList();
       if (!activeTask) resetTaskForm();
     } catch (error) {
       taskStatus.textContent = 'Savienojuma kļūda';
+      userStatus.textContent = 'Savienojuma kļūda';
       const failure = document.createElement('div');
       failure.className = 'portal-list-empty is-error';
       failure.append(
@@ -1986,6 +2149,7 @@ export function initPortalDashboard(): void {
         text('p', error instanceof Error ? error.message : 'Mēģini vēlreiz.'),
       );
       taskList.replaceChildren(failure);
+      userList.replaceChildren(failure.cloneNode(true));
     }
   };
 
@@ -2001,7 +2165,12 @@ export function initPortalDashboard(): void {
       ...dueLeads,
       ...untouchedLeads.filter((lead) => !dueLeads.includes(lead)),
     ].sort(sortLeadsByAttention);
-    const dashboardTasks = sortedOpenTasks().slice(0, 5);
+    const openTasks = sortedOpenTasks();
+    const myOpenTasks = openTasks.filter(isTaskAssignedToCurrentUser);
+    const dashboardTasks = [
+      ...myOpenTasks,
+      ...openTasks.filter((task) => !myOpenTasks.includes(task)),
+    ].slice(0, 5);
 
     $<HTMLElement>(root, '[data-home-metric="open-leads"]').textContent = String(openLeads.length);
     $<HTMLElement>(root, '[data-home-metric="due-tasks"]').textContent = String(
@@ -2009,7 +2178,7 @@ export function initPortalDashboard(): void {
     );
     $<HTMLElement>(root, '[data-home-metric="templates"]').textContent = String(templates.length);
     $<HTMLElement>(root, '[data-home-metric="open-tasks"]').textContent = String(
-      sortedOpenTasks().length,
+      myOpenTasks.length,
     );
 
     const currentTargets = quotaTargets.filter(
@@ -2078,7 +2247,10 @@ export function initPortalDashboard(): void {
       const copy = document.createElement('span');
       copy.append(
         text('strong', task.title),
-        text('small', `${task.assigned_to || 'Nav piešķirts'} · ${taskTypeLabels[task.task_type]}`),
+        text(
+          'small',
+          `${getTaskAssigneeLabel(task)} · ${taskTypeLabels[task.task_type]} · piešķīra ${getTaskCreatorLabel(task)}`,
+        ),
       );
       const state = text('b', taskPriorityLabels[task.priority]);
       state.dataset.state = ['critical', 'max'].includes(task.priority) ? 'due' : 'new';
@@ -2379,6 +2551,7 @@ export function initPortalDashboard(): void {
       }
       activeTask = response.data;
       updateCount('portal_tasks', portalTasks.filter((task) => !isTaskClosed(task)).length);
+      renderUserDirectory();
       renderTaskList();
       openTaskEditor(response.data);
       notify('Uzdevums ir saglabāts.');
@@ -2410,6 +2583,8 @@ export function initPortalDashboard(): void {
     if (!activeQuotaTarget) resetQuotaForm();
   });
   taskSearch.addEventListener('input', renderTaskList);
+  taskScope.addEventListener('change', renderTaskList);
+  taskAssignee.addEventListener('change', () => setDirty(true));
   taskControl<HTMLSelectElement>('task_type').addEventListener('change', () => {
     syncPriorityForTaskType();
     setDirty(true);
@@ -2562,6 +2737,7 @@ export function initPortalDashboard(): void {
         setDirty(false);
         updateCount('portal_tasks', portalTasks.filter((task) => !isTaskClosed(task)).length);
         resetTaskForm();
+        renderUserDirectory();
         renderTaskList();
         notify('Uzdevums ir dzēsts.');
       } else if (deleteMode === 'template' && activeTemplate) {
@@ -2653,6 +2829,8 @@ export function initPortalDashboard(): void {
           await showTasks();
           openTaskEditor(null);
         });
+      } else if (action === 'tasks') {
+        void afterDiscard(showTasks);
       } else if (action === 'quotas') {
         void afterDiscard(showQuotas);
       } else if (action === 'projects') void afterDiscard(() => showResource('projects'));
@@ -2709,6 +2887,7 @@ export function initPortalDashboard(): void {
     loadLeads(),
     loadPricingItems(),
     loadQuotaTargets(),
+    loadPortalUsers(),
     loadPortalTasks(),
     loadTemplates(),
     ...(Object.keys(definitions) as Resource[]).map((resource) => loadResource(resource)),

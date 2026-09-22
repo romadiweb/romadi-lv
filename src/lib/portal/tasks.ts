@@ -9,11 +9,13 @@ const cleanText = (max: number, min = 0) =>
   z.string().trim().min(min).max(max).refine(withoutMarkup, 'HTML markup is not allowed');
 const nullableText = (max: number) => z.union([cleanText(max), z.null()]);
 const nullableDate = z.union([z.string().regex(/^\d{4}-\d{2}-\d{2}$/), z.null()]);
+const nullableUuid = z.union([z.uuid(), z.null()]);
 const sourceModule = z.union([cleanText(80, 1).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/), z.null()]);
 
 const taskFields = z
   .object({
-    assigned_to: nullableText(160),
+    assigned_to: nullableText(160).optional(),
+    assigned_to_user_id: nullableUuid,
     description: nullableText(4_000),
     due_date: nullableDate,
     priority: z.enum(portalTaskPriorities),

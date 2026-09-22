@@ -28,6 +28,8 @@ if (!existingCsrf) {
     class="portal-dashboard"
     data-portal-dashboard
     data-role={identity.role}
+    data-user-id={identity.id}
+    data-user-email={identity.email}
     data-csrf={csrfToken}
   >
     <aside class="portal-sidebar">
@@ -366,7 +368,7 @@ if (!existingCsrf) {
           </article>
           <article>
             <span data-home-metric="open-tasks">—</span>
-            <p>Atvērti uzdevumi</p>
+            <p>Man piešķirtie uzdevumi</p>
           </article>
         </section>
 
@@ -386,9 +388,9 @@ if (!existingCsrf) {
             <header>
               <div>
                 <h2 id="home-tasks-title">Šodienas uzdevumi</h2>
-                <p>Follow-up termiņi un vēl neuzrunātie kontakti.</p>
+                <p>Tev piešķirtie darbi, termiņi un svarīgākie follow-up.</p>
               </div>
-              <button type="button" data-home-action="leads">Atvērt visus</button>
+              <button type="button" data-home-action="tasks">Atvērt uzdevumus</button>
             </header>
             <div class="portal-home-task-list" data-home-task-list aria-live="polite"></div>
           </section>
@@ -660,9 +662,32 @@ if (!existingCsrf) {
               <span class="portal-visually-hidden">Meklēt uzdevumu</span>
               <input type="search" data-task-search placeholder="Meklēt uzdevumu vai cilvēku" />
             </label>
+            <label class="portal-task-scope">
+              <span class="portal-visually-hidden">Filtrēt uzdevumus</span>
+              <select data-task-scope>
+                <option value="all">Visi uzdevumi</option>
+                <option value="assigned-to-me">Man piešķirtie</option>
+                <option value="assigned-by-me">Es piešķīru</option>
+              </select>
+            </label>
           </header>
           <div class="portal-task-list" data-task-list aria-live="polite"></div>
         </section>
+
+        <aside class="portal-user-directory" aria-labelledby="user-directory-title">
+          <header>
+            <div>
+              <h2 id="user-directory-title">Komanda</h2>
+              <span data-user-status>Ielādē…</span>
+            </div>
+          </header>
+          <div class="portal-user-list" data-user-list aria-live="polite"></div>
+          <article class="portal-user-profile" data-user-profile>
+            <span>Profils</span>
+            <strong>Izvēlies lietotāju</strong>
+            <p>Atver profilu, lai redzētu viņa aktīvos un piešķirtos uzdevumus.</p>
+          </article>
+        </aside>
 
         <section class="portal-task-editor" aria-labelledby="task-editor-title">
           <header>
@@ -681,7 +706,9 @@ if (!existingCsrf) {
               </label>
               <label class="portal-field">
                 <span>Kam piešķirts</span>
-                <input name="assigned_to" maxlength="160" autocomplete="name" />
+                <select name="assigned_to_user_id" data-task-assignee>
+                  <option value="">Nav piešķirts</option>
+                </select>
               </label>
               <label class="portal-field">
                 <span>Termiņš</span>
