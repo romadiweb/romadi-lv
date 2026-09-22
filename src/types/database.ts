@@ -22,7 +22,9 @@ export interface Database {
             | 'reviews'
             | 'portal_leads'
             | 'portal_text_templates'
-            | 'portal_pricing_items';
+            | 'portal_pricing_items'
+            | 'portal_quota_targets'
+            | 'portal_tasks';
         };
         Insert: {
           actor_id?: string | null;
@@ -39,7 +41,9 @@ export interface Database {
             | 'reviews'
             | 'portal_leads'
             | 'portal_text_templates'
-            | 'portal_pricing_items';
+            | 'portal_pricing_items'
+            | 'portal_quota_targets'
+            | 'portal_tasks';
         };
         Update: {
           actor_id?: string | null;
@@ -56,7 +60,9 @@ export interface Database {
             | 'reviews'
             | 'portal_leads'
             | 'portal_text_templates'
-            | 'portal_pricing_items';
+            | 'portal_pricing_items'
+            | 'portal_quota_targets'
+            | 'portal_tasks';
         };
         Relationships: [];
       };
@@ -185,6 +191,96 @@ export interface Database {
           price_eur?: number;
           sort_order?: number;
           unit?: 'project' | 'page' | 'item' | 'hour';
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      portal_quota_targets: {
+        Row: {
+          created_at: string;
+          id: number;
+          is_active: boolean;
+          label: string;
+          metric_key: string;
+          module: string;
+          sort_order: number;
+          target_value: number;
+          updated_at: string;
+          week_start: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: never;
+          is_active?: boolean;
+          label: string;
+          metric_key: string;
+          module: string;
+          sort_order?: number;
+          target_value: number;
+          updated_at?: string;
+          week_start: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: never;
+          is_active?: boolean;
+          label?: string;
+          metric_key?: string;
+          module?: string;
+          sort_order?: number;
+          target_value?: number;
+          updated_at?: string;
+          week_start?: string;
+        };
+        Relationships: [];
+      };
+      portal_tasks: {
+        Row: {
+          assigned_to: string | null;
+          completed_at: string | null;
+          created_at: string;
+          created_by: string | null;
+          description: string | null;
+          due_date: string | null;
+          id: number;
+          priority: 'low' | 'normal' | 'high' | 'max' | 'critical';
+          source_module: string | null;
+          source_record_id: number | null;
+          status: 'todo' | 'in_progress' | 'done' | 'blocked' | 'cant_do';
+          task_type: 'manual' | 'new_client' | 'bug' | 'lead_followup' | 'quota';
+          title: string;
+          updated_at: string;
+        };
+        Insert: {
+          assigned_to?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          description?: string | null;
+          due_date?: string | null;
+          id?: never;
+          priority?: 'low' | 'normal' | 'high' | 'max' | 'critical';
+          source_module?: string | null;
+          source_record_id?: number | null;
+          status?: 'todo' | 'in_progress' | 'done' | 'blocked' | 'cant_do';
+          task_type?: 'manual' | 'new_client' | 'bug' | 'lead_followup' | 'quota';
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          assigned_to?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          description?: string | null;
+          due_date?: string | null;
+          id?: never;
+          priority?: 'low' | 'normal' | 'high' | 'max' | 'critical';
+          source_module?: string | null;
+          source_record_id?: number | null;
+          status?: 'todo' | 'in_progress' | 'done' | 'blocked' | 'cant_do';
+          task_type?: 'manual' | 'new_client' | 'bug' | 'lead_followup' | 'quota';
+          title?: string;
           updated_at?: string;
         };
         Relationships: [];
@@ -418,4 +514,6 @@ export type Review = Database['public']['Tables']['reviews']['Row'];
 export type CmsAuditLog = Database['public']['Tables']['cms_audit_log']['Row'];
 export type PortalLead = Database['public']['Tables']['portal_leads']['Row'];
 export type PortalPricingItem = Database['public']['Tables']['portal_pricing_items']['Row'];
+export type PortalQuotaTarget = Database['public']['Tables']['portal_quota_targets']['Row'];
+export type PortalTask = Database['public']['Tables']['portal_tasks']['Row'];
 export type PortalTextTemplateRow = Database['public']['Tables']['portal_text_templates']['Row'];

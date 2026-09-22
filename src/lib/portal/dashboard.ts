@@ -1,8 +1,15 @@
-import type { PortalLead, PortalPricingItem, PortalTextTemplateRow } from '@/types/database';
+import type {
+  PortalLead,
+  PortalPricingItem,
+  PortalQuotaTarget,
+  PortalTask,
+  PortalTextTemplateRow,
+} from '@/types/database';
 import type { TextTemplateVariant } from '@/lib/portal/text-templates';
 
 type Resource = 'projects' | 'reviews' | 'pricing_plans';
-type View = Resource | 'audit' | 'calculator' | 'dashboard' | 'leads' | 'templates';
+type View =
+  Resource | 'audit' | 'calculator' | 'dashboard' | 'leads' | 'quotas' | 'tasks' | 'templates';
 type PortalRecord = Record<string, unknown> & { id: number };
 type PortalTextTemplate = Omit<PortalTextTemplateRow, 'variants'> & {
   variants: TextTemplateVariant[];
@@ -10,6 +17,9 @@ type PortalTextTemplate = Omit<PortalTextTemplateRow, 'variants'> & {
 type FieldType = 'text' | 'textarea' | 'url' | 'number' | 'date' | 'list' | 'checkbox';
 type LeadStatus = PortalLead['status'];
 type PricingCategory = PortalPricingItem['category'];
+type TaskPriority = PortalTask['priority'];
+type TaskStatus = PortalTask['status'];
+type TaskType = PortalTask['task_type'];
 
 interface FieldDefinition {
   key: string;
@@ -90,6 +100,38 @@ const pricingCategoryOrder: PricingCategory[] = [
   'hourly',
   'adjustment',
 ];
+
+const taskStatusLabels: Record<TaskStatus, string> = {
+  blocked: 'Bloķēts',
+  cant_do: 'Nevar izdarīt',
+  done: 'Pabeigts',
+  in_progress: 'Procesā',
+  todo: 'Jāizdara',
+};
+
+const taskPriorityLabels: Record<TaskPriority, string> = {
+  critical: 'Critical',
+  high: 'Augsta',
+  low: 'Zema',
+  max: 'Max',
+  normal: 'Normāla',
+};
+
+const taskTypeLabels: Record<TaskType, string> = {
+  bug: 'Liela kļūda',
+  lead_followup: 'Lead follow-up',
+  manual: 'Manuāls',
+  new_client: 'Jauns klients',
+  quota: 'Kvotas darbs',
+};
+
+const quotaMetricLabels: Record<string, string> = {
+  'completed-tasks': 'Pabeigti uzdevumi',
+  custom: 'Custom / manuāla',
+  'followups-due': 'Follow-up termiņi',
+  'max-priority-tasks': 'Max prioritātes uzdevumi',
+  'new-leads': 'Jauni lead',
+};
 
 const definitions: Record<Resource, ResourceDefinition> = {
   projects: {
@@ -244,6 +286,31 @@ const formatDate = (value: string | null) =>
       )
     : 'Nav datuma';
 
+const toDateInputValue = (date: Date) => {
+  const copy = new Date(date);
+  copy.setHours(12, 0, 0, 0);
+  return copy.toISOString().slice(0, 10);
+};
+
+const getWeekStart = (date = new Date()) => {
+  const copy = new Date(date);
+  copy.setHours(12, 0, 0, 0);
+  const day = copy.getDay() || 7;
+  copy.setDate(copy.getDate() - day + 1);
+  return toDateInputValue(copy);
+};
+
+const addDays = (value: string, days: number) => {
+  const date = new Date(`${value}T12:00:00`);
+  date.setDate(date.getDate() + days);
+  return toDateInputValue(date);
+};
+
+const isDateInWeek = (value: string | null, weekStart: string) => {
+  if (!value) return false;
+  return value >= weekStart && value <= addDays(weekStart, 6);
+};
+
 const isFollowUpDue = (lead: PortalLead) => {
   if (!lead.follow_up_due_at) return false;
   const today = new Date();
@@ -267,6 +334,29 @@ export function initPortalDashboard(): void {
   const leadGrid = $<HTMLElement>(root, '[data-lead-grid]');
   const homeView = $<HTMLElement>(root, '[data-dashboard-home-view]');
   const homeTaskList = $<HTMLElement>(root, '[data-home-task-list]');
+  const homeQuotaStatus = $<HTMLElement>(root, '[data-home-quota-status]');
+  const homeQuotaList = $<HTMLElement>(root, '[data-home-quota-list]');
+  const quotaGrid = $<HTMLElement>(root, '[data-quota-grid]');
+  const quotaStatus = $<HTMLElement>(root, '[data-quota-status]');
+  const quotaWeek = $<HTMLInputElement>(root, '[data-quota-week]');
+  const quotaProgress = $<HTMLElement>(root, '[data-quota-progress]');
+  const quotaList = $<HTMLElement>(root, '[data-quota-list]');
+  const quotaForm = $<HTMLFormElement>(root, '[data-quota-form]');
+  const quotaEditorTitle = $<HTMLElement>(root, '[data-quota-editor-title]');
+  const quotaFormState = $<HTMLElement>(root, '[data-quota-form-state]');
+  const quotaSaveStatus = $<HTMLElement>(root, '[data-quota-save-status]');
+  const quotaDeleteButton = $<HTMLButtonElement>(root, '[data-quota-delete]');
+  const quotaResetButton = $<HTMLButtonElement>(root, '[data-quota-reset]');
+  const taskGrid = $<HTMLElement>(root, '[data-task-grid]');
+  const taskStatus = $<HTMLElement>(root, '[data-task-status]');
+  const taskSearch = $<HTMLInputElement>(root, '[data-task-search]');
+  const taskList = $<HTMLElement>(root, '[data-task-list]');
+  const taskForm = $<HTMLFormElement>(root, '[data-task-form]');
+  const taskEditorTitle = $<HTMLElement>(root, '[data-task-editor-title]');
+  const taskFormState = $<HTMLElement>(root, '[data-task-form-state]');
+  const taskSaveStatus = $<HTMLElement>(root, '[data-task-save-status]');
+  const taskDeleteButton = $<HTMLButtonElement>(root, '[data-task-delete]');
+  const taskResetButton = $<HTMLButtonElement>(root, '[data-task-reset]');
   const templateGrid = $<HTMLElement>(root, '[data-template-grid]');
   const templateStatus = $<HTMLElement>(root, '[data-template-status]');
   const templateSearch = $<HTMLInputElement>(root, '[data-template-search]');
@@ -328,8 +418,12 @@ export function initPortalDashboard(): void {
   const cache = new Map<Resource, PortalRecord[]>();
   let leads: PortalLead[] = [];
   let pricingItems: PortalPricingItem[] = [];
+  let quotaTargets: PortalQuotaTarget[] = [];
+  let portalTasks: PortalTask[] = [];
   let selectedPricingItemIds = new Set<number>();
   let activePricingItem: PortalPricingItem | null = null;
+  let activeQuotaTarget: PortalQuotaTarget | null = null;
+  let activeTask: PortalTask | null = null;
   let templates: PortalTextTemplate[] = [];
   let templatesLoaded = false;
   let activeResource: Resource = 'projects';
@@ -337,7 +431,7 @@ export function initPortalDashboard(): void {
   let activeRecord: PortalRecord | null = null;
   let activeLead: PortalLead | null = null;
   let activeTemplate: PortalTextTemplate | null = null;
-  let deleteMode: 'cms' | 'lead' | 'pricing' | 'template' | null = null;
+  let deleteMode: 'cms' | 'lead' | 'pricing' | 'quota' | 'task' | 'template' | null = null;
   let isDirty = false;
   let toastTimer = 0;
 
@@ -346,11 +440,15 @@ export function initPortalDashboard(): void {
     const target =
       activeView === 'leads'
         ? leadSaveStatus
-        : activeView === 'templates'
-          ? templateSaveStatus
-          : activeView === 'calculator'
-            ? priceSaveStatus
-            : saveStatus;
+        : activeView === 'quotas'
+          ? quotaSaveStatus
+          : activeView === 'tasks'
+            ? taskSaveStatus
+            : activeView === 'templates'
+              ? templateSaveStatus
+              : activeView === 'calculator'
+                ? priceSaveStatus
+                : saveStatus;
     if (dirty) target.textContent = 'Nesaglabātas izmaiņas';
     else if (target.textContent === 'Nesaglabātas izmaiņas') target.textContent = '';
   };
@@ -411,7 +509,13 @@ export function initPortalDashboard(): void {
   };
 
   const updateCount = (
-    view: Resource | 'leads' | 'portal_pricing_items' | 'text_templates',
+    view:
+      | Resource
+      | 'leads'
+      | 'portal_pricing_items'
+      | 'portal_quota_targets'
+      | 'portal_tasks'
+      | 'text_templates',
     count: number,
   ) => {
     const counter = root.querySelector<HTMLElement>(`[data-count="${view}"]`);
@@ -462,10 +566,28 @@ export function initPortalDashboard(): void {
     return pricingItems;
   };
 
+  const loadQuotaTargets = async (force = false): Promise<PortalQuotaTarget[]> => {
+    if (!force && quotaTargets.length > 0) return quotaTargets;
+    const response = await request<{ data: PortalQuotaTarget[] }>('/api/portal/quota-targets');
+    quotaTargets = response.data;
+    updateCount('portal_quota_targets', quotaTargets.length);
+    return quotaTargets;
+  };
+
+  const loadPortalTasks = async (force = false): Promise<PortalTask[]> => {
+    if (!force && portalTasks.length > 0) return portalTasks;
+    const response = await request<{ data: PortalTask[] }>('/api/portal/tasks');
+    portalTasks = response.data;
+    updateCount('portal_tasks', portalTasks.filter((task) => !isTaskClosed(task)).length);
+    return portalTasks;
+  };
+
   const hideWorkspaceViews = () => {
     calculatorGrid.hidden = true;
     homeView.hidden = true;
     leadGrid.hidden = true;
+    quotaGrid.hidden = true;
+    taskGrid.hidden = true;
     templateGrid.hidden = true;
     workGrid.hidden = true;
   };
@@ -1519,37 +1641,446 @@ export function initPortalDashboard(): void {
     );
   };
 
+  const isTaskClosed = (task: PortalTask) => task.status === 'done' || task.status === 'cant_do';
+
+  const taskPriorityRank: Record<TaskPriority, number> = {
+    critical: 0,
+    max: 1,
+    high: 2,
+    normal: 3,
+    low: 4,
+  };
+
+  const sortedOpenTasks = () =>
+    [...portalTasks]
+      .filter((task) => !isTaskClosed(task))
+      .sort(
+        (a, b) =>
+          taskPriorityRank[a.priority] - taskPriorityRank[b.priority] ||
+          (a.due_date ?? '9999-12-31').localeCompare(b.due_date ?? '9999-12-31') ||
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      );
+
+  const quotaControl = <T extends HTMLInputElement | HTMLSelectElement>(name: string): T => {
+    const control = quotaForm.elements.namedItem(name);
+    if (!(control instanceof HTMLInputElement || control instanceof HTMLSelectElement)) {
+      throw new Error(`Missing quota field: ${name}`);
+    }
+    return control as T;
+  };
+
+  const taskControl = <T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+    name: string,
+  ): T => {
+    const control = taskForm.elements.namedItem(name);
+    if (!(
+      control instanceof HTMLInputElement ||
+      control instanceof HTMLSelectElement ||
+      control instanceof HTMLTextAreaElement
+    )) {
+      throw new Error(`Missing task field: ${name}`);
+    }
+    return control as T;
+  };
+
+  const getQuotaProgress = (target: PortalQuotaTarget) => {
+    switch (target.metric_key) {
+      case 'new-leads':
+        return leads.filter((lead) => isDateInWeek(lead.created_at.slice(0, 10), target.week_start))
+          .length;
+      case 'followups-due':
+        return leads.filter((lead) => isDateInWeek(lead.follow_up_due_at, target.week_start))
+          .length;
+      case 'completed-tasks':
+        return portalTasks.filter((task) =>
+          isDateInWeek(task.completed_at?.slice(0, 10) ?? null, target.week_start),
+        ).length;
+      case 'max-priority-tasks':
+        return portalTasks.filter(
+          (task) => !isTaskClosed(task) && ['max', 'critical'].includes(task.priority),
+        ).length;
+      default:
+        return 0;
+    }
+  };
+
+  const resetQuotaForm = () => {
+    setDirty(false);
+    activeQuotaTarget = null;
+    quotaForm.reset();
+    quotaControl<HTMLInputElement>('week_start').value = quotaWeek.value || getWeekStart();
+    quotaControl<HTMLInputElement>('module').value = 'leads';
+    quotaControl<HTMLSelectElement>('metric_key').value = 'new-leads';
+    quotaControl<HTMLInputElement>('label').value = 'Jauni lead';
+    quotaControl<HTMLInputElement>('target_value').value = '10';
+    quotaControl<HTMLInputElement>('sort_order').value = '10';
+    quotaControl<HTMLInputElement>('is_active').checked = true;
+    quotaEditorTitle.textContent = 'Jauna kvota';
+    quotaFormState.textContent = 'Nav saglabāta';
+    quotaFormState.dataset.state = 'draft';
+    quotaDeleteButton.hidden = true;
+    quotaSaveStatus.textContent = '';
+  };
+
+  const openQuotaEditor = (target: PortalQuotaTarget | null) => {
+    resetQuotaForm();
+    activeQuotaTarget = target;
+    if (!target) {
+      window.setTimeout(() => quotaControl<HTMLInputElement>('label').focus(), 120);
+      return;
+    }
+    quotaControl<HTMLInputElement>('week_start').value = target.week_start;
+    quotaControl<HTMLInputElement>('module').value = target.module;
+    quotaControl<HTMLSelectElement>('metric_key').value = target.metric_key;
+    quotaControl<HTMLInputElement>('label').value = target.label;
+    quotaControl<HTMLInputElement>('target_value').value = String(target.target_value);
+    quotaControl<HTMLInputElement>('sort_order').value = String(target.sort_order);
+    quotaControl<HTMLInputElement>('is_active').checked = target.is_active;
+    quotaEditorTitle.textContent = target.label;
+    quotaFormState.textContent = target.is_active ? 'Aktīva' : 'Neaktīva';
+    quotaFormState.dataset.state = target.is_active ? 'published' : 'draft';
+    quotaDeleteButton.hidden = !canDelete;
+  };
+
+  const serializeQuotaForm = () => ({
+    is_active: quotaControl<HTMLInputElement>('is_active').checked,
+    label: quotaControl<HTMLInputElement>('label').value.trim(),
+    metric_key: quotaControl<HTMLSelectElement>('metric_key').value,
+    module: quotaControl<HTMLInputElement>('module').value.trim(),
+    sort_order: Number(quotaControl<HTMLInputElement>('sort_order').value || 0),
+    target_value: Number(quotaControl<HTMLInputElement>('target_value').value || 0),
+    week_start: getWeekStart(
+      new Date(`${quotaControl<HTMLInputElement>('week_start').value}T12:00:00`),
+    ),
+  });
+
+  const renderQuotaBoard = () => {
+    const selectedWeek = quotaWeek.value || getWeekStart();
+    const weekTargets = quotaTargets
+      .filter((target) => target.week_start === selectedWeek)
+      .sort((a, b) => a.sort_order - b.sort_order || a.id - b.id);
+    quotaStatus.textContent = `${weekTargets.length} kvotas šai nedēļai`;
+
+    if (weekTargets.length === 0) {
+      quotaProgress.replaceChildren();
+      const empty = document.createElement('div');
+      empty.className = 'portal-list-empty';
+      empty.append(
+        text('strong', 'Šai nedēļai kvotas vēl nav iestatītas.'),
+        text('p', 'Izveido mērķus pēc kalendāra nedēļas, lai pārskats var sekot statusam.'),
+      );
+      quotaList.replaceChildren(empty);
+      return;
+    }
+
+    const progressFragment = document.createDocumentFragment();
+    weekTargets
+      .filter((target) => target.is_active)
+      .forEach((target) => {
+        const value = getQuotaProgress(target);
+        const percent = Math.min(100, Math.round((value / target.target_value) * 100));
+        const card = document.createElement('article');
+        card.className = 'portal-quota-progress-card';
+        card.append(
+          text('strong', target.label),
+          text('span', `${value} / ${target.target_value}`),
+          text(
+            'small',
+            `${quotaMetricLabels[target.metric_key] ?? target.metric_key} · ${percent}%`,
+          ),
+        );
+        card.style.setProperty('--quota-progress', `${percent}%`);
+        progressFragment.append(card);
+      });
+    quotaProgress.replaceChildren(progressFragment);
+
+    const listFragment = document.createDocumentFragment();
+    weekTargets.forEach((target) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'portal-quota-item';
+      button.classList.toggle('is-selected', activeQuotaTarget?.id === target.id);
+      button.classList.toggle('is-muted', !target.is_active);
+      button.append(
+        text('strong', target.label),
+        text(
+          'small',
+          `${target.module} · ${quotaMetricLabels[target.metric_key] ?? target.metric_key}`,
+        ),
+        text('b', String(target.target_value)),
+      );
+      button.addEventListener('click', () => openQuotaEditor(target));
+      listFragment.append(button);
+    });
+    quotaList.replaceChildren(listFragment);
+  };
+
+  const showQuotas = async () => {
+    setDirty(false);
+    activeView = 'quotas';
+    setNavState('quotas');
+    hideWorkspaceViews();
+    quotaGrid.hidden = false;
+    sectionTitle.textContent = 'Kvotas';
+    sectionDescription.textContent =
+      'Kalendāra nedēļas mērķi, kurus vēlāk var pieslēgt jebkurai portāla sadaļai.';
+    createButton.hidden = false;
+    createButton.querySelector('span')?.replaceChildren(document.createTextNode('Jauna kvota'));
+    quotaWeek.value ||= getWeekStart();
+    quotaStatus.textContent = 'Ielādē…';
+
+    try {
+      await Promise.all([loadQuotaTargets(), loadLeads(), loadPortalTasks()]);
+      renderQuotaBoard();
+      if (!activeQuotaTarget) resetQuotaForm();
+    } catch (error) {
+      quotaStatus.textContent = 'Savienojuma kļūda';
+      const failure = document.createElement('div');
+      failure.className = 'portal-list-empty is-error';
+      failure.append(
+        text('strong', 'Kvotas nevar ielādēt.'),
+        text('p', error instanceof Error ? error.message : 'Mēģini vēlreiz.'),
+      );
+      quotaList.replaceChildren(failure);
+    }
+  };
+
+  const resetTaskForm = () => {
+    setDirty(false);
+    activeTask = null;
+    taskForm.reset();
+    taskControl<HTMLSelectElement>('task_type').value = 'manual';
+    taskControl<HTMLSelectElement>('priority').value = 'normal';
+    taskControl<HTMLSelectElement>('status').value = 'todo';
+    taskEditorTitle.textContent = 'Jauns uzdevums';
+    taskFormState.textContent = 'Nav saglabāts';
+    taskFormState.dataset.state = 'draft';
+    taskDeleteButton.hidden = true;
+    taskSaveStatus.textContent = '';
+  };
+
+  const openTaskEditor = (task: PortalTask | null) => {
+    resetTaskForm();
+    activeTask = task;
+    if (!task) {
+      window.setTimeout(() => taskControl<HTMLInputElement>('title').focus(), 120);
+      return;
+    }
+    taskControl<HTMLInputElement>('title').value = task.title;
+    taskControl<HTMLInputElement>('assigned_to').value = task.assigned_to ?? '';
+    taskControl<HTMLInputElement>('due_date').value = task.due_date ?? '';
+    taskControl<HTMLSelectElement>('task_type').value = task.task_type;
+    taskControl<HTMLSelectElement>('priority').value = task.priority;
+    taskControl<HTMLSelectElement>('status').value = task.status;
+    taskControl<HTMLTextAreaElement>('description').value = task.description ?? '';
+    taskEditorTitle.textContent = task.title;
+    taskFormState.textContent = `${taskPriorityLabels[task.priority]} · ${taskStatusLabels[task.status]}`;
+    taskFormState.dataset.state = isTaskClosed(task) ? 'published' : 'draft';
+    taskDeleteButton.hidden = !canDelete;
+  };
+
+  const serializeTaskForm = () => ({
+    assigned_to: taskControl<HTMLInputElement>('assigned_to').value.trim() || null,
+    description: taskControl<HTMLTextAreaElement>('description').value.trim() || null,
+    due_date: taskControl<HTMLInputElement>('due_date').value || null,
+    priority: taskControl<HTMLSelectElement>('priority').value,
+    source_module: null,
+    source_record_id: null,
+    status: taskControl<HTMLSelectElement>('status').value,
+    task_type: taskControl<HTMLSelectElement>('task_type').value,
+    title: taskControl<HTMLInputElement>('title').value.trim(),
+  });
+
+  const syncPriorityForTaskType = () => {
+    const type = taskControl<HTMLSelectElement>('task_type').value;
+    const priority = taskControl<HTMLSelectElement>('priority');
+    if (type === 'bug') priority.value = 'critical';
+    if (type === 'new_client') priority.value = 'max';
+  };
+
+  const renderTaskList = () => {
+    const query = taskSearch.value.trim().toLowerCase();
+    const filtered = query
+      ? portalTasks.filter((task) =>
+          [task.title, task.assigned_to, task.description, taskTypeLabels[task.task_type]]
+            .filter(Boolean)
+            .some((value) => String(value).toLowerCase().includes(query)),
+        )
+      : portalTasks;
+    taskStatus.textContent = `${filtered.length} no ${portalTasks.length} uzdevumiem`;
+
+    if (portalTasks.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'portal-list-empty';
+      empty.append(
+        text('strong', 'Uzdevumu vēl nav.'),
+        text('p', 'Izveido uzdevumu, piešķir cilvēku un prioritāti.'),
+      );
+      taskList.replaceChildren(empty);
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    filtered
+      .sort(
+        (a, b) =>
+          Number(isTaskClosed(a)) - Number(isTaskClosed(b)) ||
+          taskPriorityRank[a.priority] - taskPriorityRank[b.priority] ||
+          (a.due_date ?? '9999-12-31').localeCompare(b.due_date ?? '9999-12-31'),
+      )
+      .forEach((task) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'portal-task-item';
+        button.dataset.priority = task.priority;
+        button.classList.toggle('is-selected', activeTask?.id === task.id);
+        button.classList.toggle('is-done', isTaskClosed(task));
+        button.append(
+          text('strong', task.title),
+          text(
+            'small',
+            `${task.assigned_to || 'Nav piešķirts'} · ${taskStatusLabels[task.status]}${task.due_date ? ` · ${formatDate(task.due_date)}` : ''}`,
+          ),
+          text('b', taskPriorityLabels[task.priority]),
+        );
+        button.addEventListener('click', () => openTaskEditor(task));
+        fragment.append(button);
+      });
+    taskList.replaceChildren(fragment);
+  };
+
+  const showTasks = async () => {
+    setDirty(false);
+    activeView = 'tasks';
+    setNavState('tasks');
+    hideWorkspaceViews();
+    taskGrid.hidden = false;
+    sectionTitle.textContent = 'Uzdevumi';
+    sectionDescription.textContent =
+      'Izveido jebkuru darbu, piešķir atbildīgo, statusu un prioritāti.';
+    createButton.hidden = false;
+    createButton.querySelector('span')?.replaceChildren(document.createTextNode('Jauns uzdevums'));
+    taskStatus.textContent = 'Ielādē…';
+
+    try {
+      await loadPortalTasks();
+      renderTaskList();
+      if (!activeTask) resetTaskForm();
+    } catch (error) {
+      taskStatus.textContent = 'Savienojuma kļūda';
+      const failure = document.createElement('div');
+      failure.className = 'portal-list-empty is-error';
+      failure.append(
+        text('strong', 'Uzdevumus nevar ielādēt.'),
+        text('p', error instanceof Error ? error.message : 'Mēģini vēlreiz.'),
+      );
+      taskList.replaceChildren(failure);
+    }
+  };
+
   const renderDashboard = () => {
+    const currentWeek = getWeekStart();
+    const nextWeek = addDays(currentWeek, 7);
     const openLeads = leads.filter(
       (lead) => !['client', 'rejected', 'no_response'].includes(lead.status),
     );
     const dueLeads = leads.filter(isFollowUpDue);
     const untouchedLeads = leads.filter((lead) => lead.status === 'not_contacted');
-    const taskCandidates = [
+    const leadTaskCandidates = [
       ...dueLeads,
       ...untouchedLeads.filter((lead) => !dueLeads.includes(lead)),
     ];
-    const tasks = taskCandidates.slice(0, 6);
+    const dashboardTasks = sortedOpenTasks().slice(0, 5);
 
     $<HTMLElement>(root, '[data-home-metric="open-leads"]').textContent = String(openLeads.length);
     $<HTMLElement>(root, '[data-home-metric="due-tasks"]').textContent = String(
-      taskCandidates.length,
+      leadTaskCandidates.length,
     );
     $<HTMLElement>(root, '[data-home-metric="templates"]').textContent = String(templates.length);
+    $<HTMLElement>(root, '[data-home-metric="open-tasks"]').textContent = String(
+      sortedOpenTasks().length,
+    );
 
-    if (tasks.length === 0) {
+    const currentTargets = quotaTargets.filter(
+      (target) => target.week_start === currentWeek && target.is_active,
+    );
+    const nextTargets = quotaTargets.filter(
+      (target) => target.week_start === nextWeek && target.is_active,
+    );
+    const currentKeys = new Set(
+      currentTargets.map((target) => `${target.module}:${target.metric_key}`),
+    );
+    const nextKeys = new Set(nextTargets.map((target) => `${target.module}:${target.metric_key}`));
+    const missingNext = [...currentKeys].filter((key) => !nextKeys.has(key));
+    homeQuotaStatus.textContent =
+      currentTargets.length === 0
+        ? 'Šai nedēļai kvotas vēl nav iestatītas.'
+        : missingNext.length === 0
+          ? 'Nākamā nedēļa ir sagatavota visām aktīvajām kvotām.'
+          : `Nākamajai nedēļai trūkst ${missingNext.length} kvota(s).`;
+
+    if (currentTargets.length === 0) {
+      const emptyQuota = document.createElement('div');
+      emptyQuota.className = 'portal-home-empty';
+      emptyQuota.append(
+        text('strong', 'Kvotas gaida iestatīšanu.'),
+        text('p', 'Pievieno šīs nedēļas mērķus, lai dashboard rāda progresu.'),
+      );
+      homeQuotaList.replaceChildren(emptyQuota);
+    } else {
+      const quotaFragment = document.createDocumentFragment();
+      currentTargets.slice(0, 4).forEach((target) => {
+        const value = getQuotaProgress(target);
+        const percent = Math.min(100, Math.round((value / target.target_value) * 100));
+        const item = document.createElement('article');
+        item.className = 'portal-home-quota-item';
+        item.style.setProperty('--quota-progress', `${percent}%`);
+        item.append(
+          text('strong', target.label),
+          text('span', `${value}/${target.target_value}`),
+          text(
+            'small',
+            `${quotaMetricLabels[target.metric_key] ?? target.metric_key} · ${percent}%`,
+          ),
+        );
+        quotaFragment.append(item);
+      });
+      homeQuotaList.replaceChildren(quotaFragment);
+    }
+
+    if (dashboardTasks.length === 0 && leadTaskCandidates.length === 0) {
       const empty = document.createElement('div');
       empty.className = 'portal-home-empty';
       empty.append(
         text('strong', 'Šodien nekas nedeg.'),
-        text('p', 'Jauni follow-up termiņi un neuzrunātie lead parādīsies šeit.'),
+        text('p', 'Aktīvie uzdevumi, follow-up termiņi un neuzrunātie lead parādīsies šeit.'),
       );
       homeTaskList.replaceChildren(empty);
       return;
     }
 
     const fragment = document.createDocumentFragment();
-    tasks.forEach((lead) => {
+    dashboardTasks.forEach((task) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'portal-home-task';
+      const copy = document.createElement('span');
+      copy.append(
+        text('strong', task.title),
+        text('small', `${task.assigned_to || 'Nav piešķirts'} · ${taskTypeLabels[task.task_type]}`),
+      );
+      const state = text('b', taskPriorityLabels[task.priority]);
+      state.dataset.state = ['critical', 'max'].includes(task.priority) ? 'due' : 'new';
+      button.append(copy, state);
+      button.addEventListener('click', () => {
+        void afterDiscard(async () => {
+          await showTasks();
+          openTaskEditor(task);
+        });
+      });
+      fragment.append(button);
+    });
+    leadTaskCandidates.slice(0, Math.max(0, 6 - dashboardTasks.length)).forEach((lead) => {
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'portal-home-task';
@@ -1770,9 +2301,87 @@ export function initPortalDashboard(): void {
     }
   });
 
+  quotaForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const submit = quotaForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (!submit) return;
+    submit.disabled = true;
+    submit.textContent = 'Saglabā…';
+    quotaSaveStatus.textContent = 'Pārbauda kvotu';
+
+    try {
+      const data = serializeQuotaForm();
+      const response = await request<{ data: PortalQuotaTarget }>('/api/portal/quota-targets', {
+        method: activeQuotaTarget ? 'PATCH' : 'POST',
+        body: JSON.stringify(activeQuotaTarget ? { id: activeQuotaTarget.id, data } : data),
+      });
+      setDirty(false);
+      if (activeQuotaTarget) {
+        quotaTargets = quotaTargets.map((target) =>
+          target.id === activeQuotaTarget?.id ? response.data : target,
+        );
+      } else {
+        quotaTargets = [response.data, ...quotaTargets];
+      }
+      activeQuotaTarget = response.data;
+      updateCount('portal_quota_targets', quotaTargets.length);
+      quotaWeek.value = response.data.week_start;
+      renderQuotaBoard();
+      openQuotaEditor(response.data);
+      notify('Kvota ir saglabāta.');
+    } catch (error) {
+      quotaSaveStatus.textContent =
+        error instanceof Error ? error.message : 'Kvotu neizdevās saglabāt.';
+      notify(quotaSaveStatus.textContent, 'error');
+    } finally {
+      submit.disabled = false;
+      submit.textContent = 'Saglabāt kvotu';
+    }
+  });
+
+  taskForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const submit = taskForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (!submit) return;
+    submit.disabled = true;
+    submit.textContent = 'Saglabā…';
+    taskSaveStatus.textContent = 'Pārbauda uzdevumu';
+
+    try {
+      syncPriorityForTaskType();
+      const data = serializeTaskForm();
+      const response = await request<{ data: PortalTask }>('/api/portal/tasks', {
+        method: activeTask ? 'PATCH' : 'POST',
+        body: JSON.stringify(activeTask ? { id: activeTask.id, data } : data),
+      });
+      setDirty(false);
+      if (activeTask) {
+        portalTasks = portalTasks.map((task) =>
+          task.id === activeTask?.id ? response.data : task,
+        );
+      } else {
+        portalTasks = [response.data, ...portalTasks];
+      }
+      activeTask = response.data;
+      updateCount('portal_tasks', portalTasks.filter((task) => !isTaskClosed(task)).length);
+      renderTaskList();
+      openTaskEditor(response.data);
+      notify('Uzdevums ir saglabāts.');
+    } catch (error) {
+      taskSaveStatus.textContent =
+        error instanceof Error ? error.message : 'Uzdevumu neizdevās saglabāt.';
+      notify(taskSaveStatus.textContent, 'error');
+    } finally {
+      submit.disabled = false;
+      submit.textContent = 'Saglabāt uzdevumu';
+    }
+  });
+
   editorForm.addEventListener('input', () => setDirty(true));
   leadForm.addEventListener('input', () => setDirty(true));
   priceForm.addEventListener('input', () => setDirty(true));
+  quotaForm.addEventListener('input', () => setDirty(true));
+  taskForm.addEventListener('input', () => setDirty(true));
   templateForm.addEventListener('input', () => setDirty(true));
   leadControl<HTMLInputElement>('is_contacted').addEventListener('change', (event) => {
     const toggle = event.currentTarget;
@@ -1781,6 +2390,15 @@ export function initPortalDashboard(): void {
   });
   leadSearch.addEventListener('input', renderLeadBoard);
   priceSearch.addEventListener('input', renderPriceList);
+  quotaWeek.addEventListener('change', () => {
+    renderQuotaBoard();
+    if (!activeQuotaTarget) resetQuotaForm();
+  });
+  taskSearch.addEventListener('input', renderTaskList);
+  taskControl<HTMLSelectElement>('task_type').addEventListener('change', () => {
+    syncPriorityForTaskType();
+    setDirty(true);
+  });
   discountPercent.addEventListener('input', updateCalculatorTotals);
   vatToggle.addEventListener('change', updateCalculatorTotals);
   copyEstimateButton.addEventListener('click', () => void copyEstimate());
@@ -1807,6 +2425,8 @@ export function initPortalDashboard(): void {
     void afterDiscard(() => {
       if (activeView === 'leads') openLeadEditor(null);
       else if (activeView === 'calculator') openPriceEditor(null);
+      else if (activeView === 'quotas') openQuotaEditor(null);
+      else if (activeView === 'tasks') openTaskEditor(null);
       else if (activeView === 'templates') openTemplateEditor(null);
       else if (activeView !== 'audit') openEditor(null);
     });
@@ -1814,6 +2434,8 @@ export function initPortalDashboard(): void {
 
   leadResetButton.addEventListener('click', () => void afterDiscard(() => openLeadEditor(null)));
   priceResetButton.addEventListener('click', () => void afterDiscard(() => openPriceEditor(null)));
+  quotaResetButton.addEventListener('click', () => void afterDiscard(() => openQuotaEditor(null)));
+  taskResetButton.addEventListener('click', () => void afterDiscard(() => openTaskEditor(null)));
   templateResetButton.addEventListener('click', () => {
     void afterDiscard(() => openTemplateEditor(activeTemplate));
   });
@@ -1835,6 +2457,20 @@ export function initPortalDashboard(): void {
   priceDeleteButton.addEventListener('click', () => {
     if (activePricingItem && canDelete) {
       deleteMode = 'pricing';
+      dialog.showModal();
+    }
+  });
+
+  quotaDeleteButton.addEventListener('click', () => {
+    if (activeQuotaTarget && canDelete) {
+      deleteMode = 'quota';
+      dialog.showModal();
+    }
+  });
+
+  taskDeleteButton.addEventListener('click', () => {
+    if (activeTask && canDelete) {
+      deleteMode = 'task';
       dialog.showModal();
     }
   });
@@ -1889,6 +2525,30 @@ export function initPortalDashboard(): void {
         renderPriceList();
         renderCalculatorBuilder();
         notify('Cena ir dzēsta.');
+      } else if (deleteMode === 'quota' && activeQuotaTarget) {
+        await request('/api/portal/quota-targets', {
+          method: 'DELETE',
+          body: JSON.stringify({ id: activeQuotaTarget.id }),
+        });
+        quotaTargets = quotaTargets.filter((target) => target.id !== activeQuotaTarget?.id);
+        activeQuotaTarget = null;
+        setDirty(false);
+        updateCount('portal_quota_targets', quotaTargets.length);
+        resetQuotaForm();
+        renderQuotaBoard();
+        notify('Kvota ir dzēsta.');
+      } else if (deleteMode === 'task' && activeTask) {
+        await request('/api/portal/tasks', {
+          method: 'DELETE',
+          body: JSON.stringify({ id: activeTask.id }),
+        });
+        portalTasks = portalTasks.filter((task) => task.id !== activeTask?.id);
+        activeTask = null;
+        setDirty(false);
+        updateCount('portal_tasks', portalTasks.filter((task) => !isTaskClosed(task)).length);
+        resetTaskForm();
+        renderTaskList();
+        notify('Uzdevums ir dzēsts.');
       } else if (deleteMode === 'template' && activeTemplate) {
         await request('/api/portal/text-templates', {
           method: 'DELETE',
@@ -1928,6 +2588,16 @@ export function initPortalDashboard(): void {
   });
 
   root
+    .querySelector<HTMLButtonElement>('[data-section="quotas"]')
+    ?.addEventListener('click', () => {
+      void afterDiscard(showQuotas);
+    });
+
+  root.querySelector<HTMLButtonElement>('[data-section="tasks"]')?.addEventListener('click', () => {
+    void afterDiscard(showTasks);
+  });
+
+  root
     .querySelector<HTMLButtonElement>('[data-section="calculator"]')
     ?.addEventListener('click', () => {
       void afterDiscard(showCalculator);
@@ -1963,6 +2633,13 @@ export function initPortalDashboard(): void {
           await showTemplates();
           openTemplateEditor(null);
         });
+      } else if (action === 'new-task') {
+        void afterDiscard(async () => {
+          await showTasks();
+          openTaskEditor(null);
+        });
+      } else if (action === 'quotas') {
+        void afterDiscard(showQuotas);
       } else if (action === 'projects') void afterDiscard(() => showResource('projects'));
     });
   });
@@ -2016,6 +2693,8 @@ export function initPortalDashboard(): void {
   void Promise.allSettled([
     loadLeads(),
     loadPricingItems(),
+    loadQuotaTargets(),
+    loadPortalTasks(),
     loadTemplates(),
     ...(Object.keys(definitions) as Resource[]).map((resource) => loadResource(resource)),
   ]).then(() => showDashboard());

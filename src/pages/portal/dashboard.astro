@@ -90,10 +90,21 @@ if (!existingCsrf) {
             >
             <span>Uzdevumi</span>
           </h2>
-          <button type="button" class="is-disabled" disabled>
+          <button type="button" data-section="quotas">
             <span class="portal-nav-signal"></span>
+            <svg class="portal-nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 19V5M4 19h16M8 16v-5M13 16V8M18 16v-8"></path>
+            </svg>
             <span>Kvotas</span>
-            <b>Drīz</b>
+            <b data-count="portal_quota_targets">—</b>
+          </button>
+          <button type="button" data-section="tasks">
+            <span class="portal-nav-signal"></span>
+            <svg class="portal-nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M9 11l2 2 4-5M5 4h14v16H5zM8 17h8"></path>
+            </svg>
+            <span>Uzdevumi</span>
+            <b data-count="portal_tasks">—</b>
           </button>
         </section>
 
@@ -353,6 +364,21 @@ if (!existingCsrf) {
             <span data-home-metric="templates">—</span>
             <p>Kopīgas teksta sagataves</p>
           </article>
+          <article>
+            <span data-home-metric="open-tasks">—</span>
+            <p>Atvērti uzdevumi</p>
+          </article>
+        </section>
+
+        <section class="portal-home-quota" aria-labelledby="home-quota-title">
+          <header>
+            <div>
+              <h2 id="home-quota-title">Šīs nedēļas kvotas</h2>
+              <p data-home-quota-status>Pārbauda kalendāra nedēļu…</p>
+            </div>
+            <button type="button" data-home-action="quotas">Atvērt kvotas</button>
+          </header>
+          <div class="portal-home-quota-list" data-home-quota-list aria-live="polite"></div>
         </section>
 
         <div class="portal-home-columns">
@@ -381,6 +407,10 @@ if (!existingCsrf) {
                 ><strong>Jauna sagatave</strong><small>Pievieno tekstu ar vairākiem toņiem</small
                 ></span
               >
+            </button>
+            <button type="button" data-home-action="new-task">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+              <span><strong>Jauns uzdevums</strong><small>Piešķir darbu komandai</small></span>
             </button>
             <button type="button" data-home-action="projects">
               <svg viewBox="0 0 24 24" aria-hidden="true"
@@ -531,6 +561,171 @@ if (!existingCsrf) {
               <span class="portal-save-status" data-lead-save-status aria-live="polite"></span>
               <button type="button" class="portal-secondary-action" data-lead-reset>Notīrīt</button>
               <button type="submit" class="portal-primary-action">Saglabāt lead</button>
+            </div>
+          </form>
+        </section>
+      </div>
+
+      <div class="portal-quota-grid" data-quota-grid hidden>
+        <section class="portal-quota-board" aria-labelledby="quota-board-title">
+          <header>
+            <div>
+              <h2 id="quota-board-title">Nedēļas kvotas</h2>
+              <span data-quota-status>Ielādē…</span>
+            </div>
+            <label class="portal-week-picker">
+              <span>Nedēļa</span>
+              <input type="date" data-quota-week />
+            </label>
+          </header>
+          <div class="portal-quota-progress" data-quota-progress aria-live="polite"></div>
+          <div class="portal-quota-list" data-quota-list aria-live="polite"></div>
+        </section>
+
+        <section class="portal-quota-editor" aria-labelledby="quota-editor-title">
+          <header>
+            <div>
+              <h2 id="quota-editor-title" data-quota-editor-title>Jauna kvota</h2>
+              <p>Glabā nedēļas mērķus pēc kalendāra, ar nākotnei gatavu moduli un metriku.</p>
+            </div>
+            <span class="portal-draft-state" data-quota-form-state>Nav saglabāta</span>
+          </header>
+
+          <form class="portal-quota-form" data-quota-form>
+            <div class="portal-form-fields">
+              <label class="portal-field">
+                <span>Nedēļas sākums</span>
+                <input name="week_start" type="date" required />
+                <small>Vienmēr pirmdiena.</small>
+              </label>
+              <label class="portal-field">
+                <span>Modulis</span>
+                <input name="module" required maxlength="80" placeholder="leads" />
+              </label>
+              <label class="portal-field">
+                <span>Metrika</span>
+                <select name="metric_key" required>
+                  <option value="new-leads">Jauni lead</option>
+                  <option value="followups-due">Follow-up termiņi</option>
+                  <option value="completed-tasks">Pabeigti uzdevumi</option>
+                  <option value="max-priority-tasks">Max prioritātes uzdevumi</option>
+                  <option value="custom">Custom / manuāla</option>
+                </select>
+              </label>
+              <label class="portal-field">
+                <span>Mērķis</span>
+                <input name="target_value" type="number" required min="1" step="1" />
+              </label>
+              <label class="portal-field is-wide">
+                <span>Nosaukums</span>
+                <input name="label" required maxlength="160" placeholder="Piemēram, Jauni lead" />
+              </label>
+              <label class="portal-field">
+                <span>Secība</span>
+                <input name="sort_order" type="number" required min="0" step="1" />
+              </label>
+              <label class="portal-checkbox-field">
+                <input type="checkbox" name="is_active" checked />
+                <span class="portal-checkbox-control"></span>
+                <span>Aktīva</span>
+              </label>
+            </div>
+            <div class="portal-editor-actions">
+              <button type="button" class="portal-delete-action" data-quota-delete hidden
+                >Dzēst</button
+              >
+              <span class="portal-save-status" data-quota-save-status aria-live="polite"></span>
+              <button type="button" class="portal-secondary-action" data-quota-reset
+                >Jauna kvota</button
+              >
+              <button type="submit" class="portal-primary-action">Saglabāt kvotu</button>
+            </div>
+          </form>
+        </section>
+      </div>
+
+      <div class="portal-task-grid" data-task-grid hidden>
+        <section class="portal-task-board" aria-labelledby="task-board-title">
+          <header>
+            <div>
+              <h2 id="task-board-title">Uzdevumi</h2>
+              <span data-task-status>Ielādē…</span>
+            </div>
+            <label class="portal-lead-search">
+              <span class="portal-visually-hidden">Meklēt uzdevumu</span>
+              <input type="search" data-task-search placeholder="Meklēt uzdevumu vai cilvēku" />
+            </label>
+          </header>
+          <div class="portal-task-list" data-task-list aria-live="polite"></div>
+        </section>
+
+        <section class="portal-task-editor" aria-labelledby="task-editor-title">
+          <header>
+            <div>
+              <h2 id="task-editor-title" data-task-editor-title>Jauns uzdevums</h2>
+              <p>Piešķir darbu komandai, nosaki statusu un prioritāti.</p>
+            </div>
+            <span class="portal-draft-state" data-task-form-state>Nav saglabāts</span>
+          </header>
+
+          <form class="portal-task-form" data-task-form>
+            <div class="portal-form-fields">
+              <label class="portal-field is-wide">
+                <span>Nosaukums</span>
+                <input name="title" required maxlength="180" />
+              </label>
+              <label class="portal-field">
+                <span>Kam piešķirts</span>
+                <input name="assigned_to" maxlength="160" autocomplete="name" />
+              </label>
+              <label class="portal-field">
+                <span>Termiņš</span>
+                <input name="due_date" type="date" />
+              </label>
+              <label class="portal-field">
+                <span>Tips</span>
+                <select name="task_type" required>
+                  <option value="manual">Manuāls</option>
+                  <option value="new_client">Jauns klients</option>
+                  <option value="bug">Liela kļūda</option>
+                  <option value="lead_followup">Lead follow-up</option>
+                  <option value="quota">Kvotas darbs</option>
+                </select>
+              </label>
+              <label class="portal-field">
+                <span>Prioritāte</span>
+                <select name="priority" required>
+                  <option value="low">Zema</option>
+                  <option value="normal">Normāla</option>
+                  <option value="high">Augsta</option>
+                  <option value="max">Max</option>
+                  <option value="critical">Critical</option>
+                </select>
+              </label>
+              <label class="portal-field">
+                <span>Statuss</span>
+                <select name="status" required>
+                  <option value="todo">Jāizdara</option>
+                  <option value="in_progress">Procesā</option>
+                  <option value="done">Pabeigts</option>
+                  <option value="blocked">Bloķēts</option>
+                  <option value="cant_do">Nevar izdarīt</option>
+                </select>
+              </label>
+              <label class="portal-field is-wide">
+                <span>Apraksts</span>
+                <textarea name="description" maxlength="4000" rows="5"></textarea>
+              </label>
+            </div>
+            <div class="portal-editor-actions">
+              <button type="button" class="portal-delete-action" data-task-delete hidden
+                >Dzēst</button
+              >
+              <span class="portal-save-status" data-task-save-status aria-live="polite"></span>
+              <button type="button" class="portal-secondary-action" data-task-reset
+                >Jauns uzdevums</button
+              >
+              <button type="submit" class="portal-primary-action">Saglabāt uzdevumu</button>
             </div>
           </form>
         </section>
