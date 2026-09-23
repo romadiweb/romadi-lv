@@ -593,7 +593,7 @@ if (!existingCsrf) {
           <header>
             <div>
               <h2 id="quota-editor-title" data-quota-editor-title>Jauna kvota</h2>
-              <p>Glabā nedēļas mērķus pēc kalendāra, ar nākotnei gatavu moduli un metriku.</p>
+              <p>Izvēlies jomu un rādītāju no datubāzē uzturēta kvotu kataloga.</p>
             </div>
             <span class="portal-draft-state" data-quota-form-state>Nav saglabāta</span>
           </header>
@@ -606,27 +606,19 @@ if (!existingCsrf) {
                 <small>Vienmēr pirmdiena.</small>
               </label>
               <label class="portal-field">
-                <span>Modulis</span>
-                <input name="module" required maxlength="80" placeholder="leads" />
+                <span>Joma</span>
+                <select name="module" data-quota-area required></select>
               </label>
-              <label class="portal-field">
-                <span>Metrika</span>
-                <select name="metric_key" required>
-                  <option value="new-leads">Jauni lead</option>
-                  <option value="followups-due">Follow-up termiņi</option>
-                  <option value="completed-tasks">Pabeigti uzdevumi</option>
-                  <option value="max-priority-tasks">Max prioritātes uzdevumi</option>
-                  <option value="custom">Custom / manuāla</option>
-                </select>
+              <label class="portal-field is-wide">
+                <span>Rādītājs</span>
+                <select name="metric_key" data-quota-metric required></select>
+                <small data-quota-metric-preview>Izvēlies jomu, lai redzētu tās rādītājus.</small>
               </label>
               <label class="portal-field">
                 <span>Mērķis</span>
                 <input name="target_value" type="number" required min="1" step="1" />
               </label>
-              <label class="portal-field is-wide">
-                <span>Nosaukums</span>
-                <input name="label" required maxlength="160" placeholder="Piemēram, Jauni lead" />
-              </label>
+              <input name="label" type="hidden" />
               <label class="portal-field">
                 <span>Secība</span>
                 <input name="sort_order" type="number" required min="0" step="1" />

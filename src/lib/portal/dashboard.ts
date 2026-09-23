@@ -1,6 +1,7 @@
 import type {
   PortalLead,
   PortalPricingItem,
+  PortalQuotaMetric,
   PortalQuotaTarget,
   PortalTask,
   PortalTextTemplateRow,
@@ -124,14 +125,6 @@ const taskTypeLabels: Record<TaskType, string> = {
   manual: 'Manuāls',
   new_client: 'Jauns klients',
   quota: 'Kvotas darbs',
-};
-
-const quotaMetricLabels: Record<string, string> = {
-  'completed-tasks': 'Pabeigti uzdevumi',
-  custom: 'Custom / manuāla',
-  'followups-due': 'Follow-up termiņi',
-  'max-priority-tasks': 'Max prioritātes uzdevumi',
-  'new-leads': 'Jauni lead',
 };
 
 const definitions: Record<Resource, ResourceDefinition> = {
@@ -350,6 +343,9 @@ export function initPortalDashboard(): void {
   const quotaProgress = $<HTMLElement>(root, '[data-quota-progress]');
   const quotaList = $<HTMLElement>(root, '[data-quota-list]');
   const quotaForm = $<HTMLFormElement>(root, '[data-quota-form]');
+  const quotaArea = $<HTMLSelectElement>(root, '[data-quota-area]');
+  const quotaMetric = $<HTMLSelectElement>(root, '[data-quota-metric]');
+  const quotaMetricPreview = $<HTMLElement>(root, '[data-quota-metric-preview]');
   const quotaEditorTitle = $<HTMLElement>(root, '[data-quota-editor-title]');
   const quotaFormState = $<HTMLElement>(root, '[data-quota-form-state]');
   const quotaSaveStatus = $<HTMLElement>(root, '[data-quota-save-status]');
@@ -431,6 +427,7 @@ export function initPortalDashboard(): void {
   const cache = new Map<Resource, PortalRecord[]>();
   let leads: PortalLead[] = [];
   let pricingItems: PortalPricingItem[] = [];
+  let quotaMetrics: PortalQuotaMetric[] = [];
   let quotaTargets: PortalQuotaTarget[] = [];
   let portalTasks: PortalTask[] = [];
   let portalUsers: PortalUser[] = [];
@@ -587,6 +584,13 @@ export function initPortalDashboard(): void {
     quotaTargets = response.data;
     updateCount('portal_quota_targets', quotaTargets.length);
     return quotaTargets;
+  };
+
+  const loadQuotaMetrics = async (force = false): Promise<PortalQuotaMetric[]> => {
+    if (!force && quotaMetrics.length > 0) return quotaMetrics;
+    const response = await request<{ data: PortalQuotaMetric[] }>('/api/portal/quota-metrics');
+    quotaMetrics = response.data;
+    return quotaMetrics;
   };
 
   const loadPortalTasks = async (force = false): Promise<PortalTask[]> => {
@@ -1736,14 +1740,74 @@ export function initPortalDashboard(): void {
     return control as T;
   };
 
+  const getQuotaMetric = (target: Pick<PortalQuotaTarget, 'metric_key' | 'module'>) =>
+    quotaMetrics.find(
+      (metric) => metric.area_key === target.module && metric.metric_key === target.metric_key,
+    );
+
+  const getQuotaMetricLabel = (
+    target: Pick<PortalQuotaTarget, 'label' | 'metric_key' | 'module'>,
+  ) => getQuotaMetric(target)?.metric_label ?? target.label ?? target.metric_key;
+
+  const getQuotaAreaLabel = (areaKey: string) =>
+    quotaMetrics.find((metric) => metric.area_key === areaKey)?.area_label ?? areaKey;
+
+  const renderQuotaMetricControls = (selectedArea?: string, selectedMetric?: string) => {
+    const areas = [...new Map(quotaMetrics.map((metric) => [metric.area_key, metric])).values()];
+    quotaArea.replaceChildren(
+      ...areas.map((metric) => new Option(metric.area_label, metric.area_key)),
+    );
+
+    const areaValue =
+      selectedArea && areas.some((metric) => metric.area_key === selectedArea)
+        ? selectedArea
+        : (areas[0]?.area_key ?? '');
+    quotaArea.value = areaValue;
+
+    const metrics = quotaMetrics.filter((metric) => metric.area_key === areaValue);
+    quotaMetric.replaceChildren(
+      ...metrics.map((metric) => new Option(metric.metric_label, metric.metric_key)),
+    );
+
+    const metricValue =
+      selectedMetric && metrics.some((metric) => metric.metric_key === selectedMetric)
+        ? selectedMetric
+        : (metrics[0]?.metric_key ?? '');
+    quotaMetric.value = metricValue;
+
+    const metric = metrics.find((item) => item.metric_key === metricValue);
+    quotaControl<HTMLInputElement>('label').value = metric?.metric_label ?? '';
+    quotaMetricPreview.textContent =
+      metric?.description ??
+      (metric ? `${metric.area_label} · ${metric.metric_label}` : 'Nav pieejamu rādītāju.');
+  };
+
   const getQuotaProgress = (target: PortalQuotaTarget) => {
-    switch (target.metric_key) {
+    const calculationKey = getQuotaMetric(target)?.calculation_key ?? target.metric_key;
+
+    switch (calculationKey) {
       case 'new-leads':
         return leads.filter((lead) => isDateInWeek(lead.created_at.slice(0, 10), target.week_start))
           .length;
+      case 'contacted-leads':
+        return leads.filter((lead) =>
+          isDateInWeek(lead.contacted_at?.slice(0, 10) ?? null, target.week_start),
+        ).length;
       case 'followups-due':
         return leads.filter((lead) => isDateInWeek(lead.follow_up_due_at, target.week_start))
           .length;
+      case 'offers-sent':
+        return leads.filter(
+          (lead) =>
+            lead.status === 'offer_sent' &&
+            isDateInWeek(lead.updated_at.slice(0, 10), target.week_start),
+        ).length;
+      case 'new-clients':
+        return leads.filter(
+          (lead) =>
+            lead.status === 'client' &&
+            isDateInWeek(lead.updated_at.slice(0, 10), target.week_start),
+        ).length;
       case 'completed-tasks':
         return portalTasks.filter((task) =>
           isDateInWeek(task.completed_at?.slice(0, 10) ?? null, target.week_start),
@@ -1762,9 +1826,7 @@ export function initPortalDashboard(): void {
     activeQuotaTarget = null;
     quotaForm.reset();
     quotaControl<HTMLInputElement>('week_start').value = quotaWeek.value || getWeekStart();
-    quotaControl<HTMLInputElement>('module').value = 'leads';
-    quotaControl<HTMLSelectElement>('metric_key').value = 'new-leads';
-    quotaControl<HTMLInputElement>('label').value = 'Jauni lead';
+    renderQuotaMetricControls('leads', 'new-leads');
     quotaControl<HTMLInputElement>('target_value').value = '10';
     quotaControl<HTMLInputElement>('sort_order').value = '10';
     quotaControl<HTMLInputElement>('is_active').checked = true;
@@ -1779,12 +1841,11 @@ export function initPortalDashboard(): void {
     resetQuotaForm();
     activeQuotaTarget = target;
     if (!target) {
-      window.setTimeout(() => quotaControl<HTMLInputElement>('label').focus(), 120);
+      window.setTimeout(() => quotaArea.focus(), 120);
       return;
     }
     quotaControl<HTMLInputElement>('week_start').value = target.week_start;
-    quotaControl<HTMLInputElement>('module').value = target.module;
-    quotaControl<HTMLSelectElement>('metric_key').value = target.metric_key;
+    renderQuotaMetricControls(target.module, target.metric_key);
     quotaControl<HTMLInputElement>('label').value = target.label;
     quotaControl<HTMLInputElement>('target_value').value = String(target.target_value);
     quotaControl<HTMLInputElement>('sort_order').value = String(target.sort_order);
@@ -1799,7 +1860,7 @@ export function initPortalDashboard(): void {
     is_active: quotaControl<HTMLInputElement>('is_active').checked,
     label: quotaControl<HTMLInputElement>('label').value.trim(),
     metric_key: quotaControl<HTMLSelectElement>('metric_key').value,
-    module: quotaControl<HTMLInputElement>('module').value.trim(),
+    module: quotaControl<HTMLSelectElement>('module').value,
     sort_order: Number(quotaControl<HTMLInputElement>('sort_order').value || 0),
     target_value: Number(quotaControl<HTMLInputElement>('target_value').value || 0),
     week_start: getWeekStart(
@@ -1839,7 +1900,7 @@ export function initPortalDashboard(): void {
           text('span', `${value} / ${target.target_value}`),
           text(
             'small',
-            `${quotaMetricLabels[target.metric_key] ?? target.metric_key} · ${percent}%`,
+            `${getQuotaAreaLabel(target.module)} · ${getQuotaMetricLabel(target)} · ${percent}%`,
           ),
         );
         card.style.setProperty('--quota-progress', `${percent}%`);
@@ -1856,10 +1917,7 @@ export function initPortalDashboard(): void {
       button.classList.toggle('is-muted', !target.is_active);
       button.append(
         text('strong', target.label),
-        text(
-          'small',
-          `${target.module} · ${quotaMetricLabels[target.metric_key] ?? target.metric_key}`,
-        ),
+        text('small', `${getQuotaAreaLabel(target.module)} · ${getQuotaMetricLabel(target)}`),
         text('b', String(target.target_value)),
       );
       button.addEventListener('click', () => openQuotaEditor(target));
@@ -1883,7 +1941,7 @@ export function initPortalDashboard(): void {
     quotaStatus.textContent = 'Ielādē…';
 
     try {
-      await Promise.all([loadQuotaTargets(), loadLeads(), loadPortalTasks()]);
+      await Promise.all([loadQuotaMetrics(), loadQuotaTargets(), loadLeads(), loadPortalTasks()]);
       renderQuotaBoard();
       if (!activeQuotaTarget) resetQuotaForm();
     } catch (error) {
@@ -2220,7 +2278,7 @@ export function initPortalDashboard(): void {
           text('span', `${value}/${target.target_value}`),
           text(
             'small',
-            `${quotaMetricLabels[target.metric_key] ?? target.metric_key} · ${percent}%`,
+            `${getQuotaAreaLabel(target.module)} · ${getQuotaMetricLabel(target)} · ${percent}%`,
           ),
         );
         quotaFragment.append(item);
@@ -2582,6 +2640,14 @@ export function initPortalDashboard(): void {
     renderQuotaBoard();
     if (!activeQuotaTarget) resetQuotaForm();
   });
+  quotaArea.addEventListener('change', () => {
+    renderQuotaMetricControls(quotaArea.value);
+    setDirty(true);
+  });
+  quotaMetric.addEventListener('change', () => {
+    renderQuotaMetricControls(quotaArea.value, quotaMetric.value);
+    setDirty(true);
+  });
   taskSearch.addEventListener('input', renderTaskList);
   taskScope.addEventListener('change', renderTaskList);
   taskAssignee.addEventListener('change', () => setDirty(true));
@@ -2886,6 +2952,7 @@ export function initPortalDashboard(): void {
   void Promise.allSettled([
     loadLeads(),
     loadPricingItems(),
+    loadQuotaMetrics(),
     loadQuotaTargets(),
     loadPortalUsers(),
     loadPortalTasks(),

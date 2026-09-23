@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database';
 import { parseQuotaTarget } from '@/lib/portal/quotas';
 import { PortalAuthError, requirePortalIdentity } from '@/lib/portal/auth';
@@ -13,6 +14,7 @@ export const prerender = false;
 
 type QuotaTargetInsert = Database['public']['Tables']['portal_quota_targets']['Insert'];
 type QuotaTargetUpdate = Database['public']['Tables']['portal_quota_targets']['Update'];
+type PortalSupabase = SupabaseClient<Database>;
 
 const migrationName = '20260922105558_create_portal_quotas_and_tasks.sql';
 
@@ -39,11 +41,16 @@ const errorResponse = (error: unknown) => {
   const code = typeof supabaseError.code === 'string' ? supabaseError.code : '';
   const message = typeof supabaseError.message === 'string' ? supabaseError.message : '';
 
-  if (code === '42P01' || code === 'PGRST205' || message.includes('portal_quota_targets')) {
+  if (
+    code === '42P01' ||
+    code === 'PGRST205' ||
+    message.includes('portal_quota_targets') ||
+    message.includes('portal_quota_metrics')
+  ) {
     console.error('Portal quota targets table is not available', error);
     return jsonResponse(
       {
-        error: `Kvotu tabula vēl nav izveidota Supabase. Palaid migrāciju ${migrationName} un pārlādē portālu.`,
+        error: `Kvotu tabulas vēl nav izveidotas Supabase. Palaid migrāciju ${migrationName} un 20260923070703_create_portal_quota_metrics.sql, tad pārlādē portālu.`,
       },
       503,
     );
@@ -51,6 +58,20 @@ const errorResponse = (error: unknown) => {
 
   console.error('Portal quota targets endpoint failed', error);
   return jsonResponse({ error: 'The quota request could not be completed.' }, 500);
+};
+
+const resolveQuotaMetric = async (supabase: PortalSupabase, areaKey: string, metricKey: string) => {
+  const result = await supabase
+    .from('portal_quota_metrics')
+    .select('area_key,metric_key,metric_label,is_active')
+    .eq('area_key', areaKey)
+    .eq('metric_key', metricKey)
+    .eq('is_active', true)
+    .maybeSingle();
+
+  if (result.error) throw result.error;
+  if (!result.data) throw new PortalRequestError('Izvēlētais kvotas rādītājs nav atrasts.', 422);
+  return result.data;
 };
 
 export const GET: APIRoute = async ({ locals, url }) => {
@@ -94,9 +115,20 @@ export const POST: APIRoute = async (context) => {
       );
     }
 
+    const quotaData = parsed.data as QuotaTargetInsert;
+    const metric = await resolveQuotaMetric(
+      context.locals.supabase,
+      quotaData.module,
+      quotaData.metric_key,
+    );
+    const payload: QuotaTargetInsert = {
+      ...quotaData,
+      label: metric.metric_label,
+    };
+
     const result = await context.locals.supabase
       .from('portal_quota_targets')
-      .insert(parsed.data as QuotaTargetInsert)
+      .insert(payload)
       .select()
       .single();
 
@@ -114,10 +146,10 @@ export const PATCH: APIRoute = async (context) => {
     assertCsrf(context);
     if (!context.locals.supabase) return jsonResponse({ error: 'Not found' }, 404);
 
-    const payload = await readJsonBody(context.request);
-    if (!payload || typeof payload !== 'object')
+    const requestPayload = await readJsonBody(context.request);
+    if (!requestPayload || typeof requestPayload !== 'object')
       throw new PortalRequestError('Invalid request body');
-    const { id, data } = payload as { id?: unknown; data?: unknown };
+    const { id, data } = requestPayload as { id?: unknown; data?: unknown };
     if (!Number.isSafeInteger(id) || Number(id) < 1) {
       throw new PortalRequestError('Invalid quota target ID');
     }
@@ -133,9 +165,23 @@ export const PATCH: APIRoute = async (context) => {
       );
     }
 
+    const quotaUpdate = parsed.data as QuotaTargetUpdate;
+    const metric =
+      quotaUpdate.module && quotaUpdate.metric_key
+        ? await resolveQuotaMetric(
+            context.locals.supabase,
+            quotaUpdate.module,
+            quotaUpdate.metric_key,
+          )
+        : null;
+    const updatePayload: QuotaTargetUpdate = {
+      ...quotaUpdate,
+      ...(metric ? { label: metric.metric_label } : {}),
+    };
+
     const result = await context.locals.supabase
       .from('portal_quota_targets')
-      .update(parsed.data as QuotaTargetUpdate)
+      .update(updatePayload)
       .eq('id', Number(id))
       .select()
       .single();

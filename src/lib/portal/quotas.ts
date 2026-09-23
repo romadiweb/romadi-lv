@@ -9,19 +9,11 @@ const mondayDate = z
   .regex(/^\d{4}-\d{2}-\d{2}$/)
   .refine((value) => new Date(`${value}T12:00:00`).getDay() === 1, 'Week must start on Monday');
 
-export const quotaMetricKeys = [
-  'new-leads',
-  'followups-due',
-  'completed-tasks',
-  'max-priority-tasks',
-  'custom',
-] as const;
-
 const quotaTargetSchema = z
   .object({
     is_active: z.boolean(),
     label: cleanText(160, 1),
-    metric_key: z.union([z.enum(quotaMetricKeys), slugKey]),
+    metric_key: slugKey,
     module: slugKey,
     sort_order: z.number().int().min(0).max(1_000_000),
     target_value: z.number().int().min(1).max(1_000_000),

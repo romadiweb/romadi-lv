@@ -24,6 +24,7 @@ export interface Database {
             | 'portal_text_templates'
             | 'portal_pricing_items'
             | 'portal_quota_targets'
+            | 'portal_quota_metrics'
             | 'portal_tasks';
         };
         Insert: {
@@ -43,6 +44,7 @@ export interface Database {
             | 'portal_text_templates'
             | 'portal_pricing_items'
             | 'portal_quota_targets'
+            | 'portal_quota_metrics'
             | 'portal_tasks';
         };
         Update: {
@@ -62,6 +64,7 @@ export interface Database {
             | 'portal_text_templates'
             | 'portal_pricing_items'
             | 'portal_quota_targets'
+            | 'portal_quota_metrics'
             | 'portal_tasks';
         };
         Relationships: [];
@@ -234,6 +237,48 @@ export interface Database {
           target_value?: number;
           updated_at?: string;
           week_start?: string;
+        };
+        Relationships: [];
+      };
+      portal_quota_metrics: {
+        Row: {
+          area_key: string;
+          area_label: string;
+          calculation_key: string;
+          created_at: string;
+          description: string | null;
+          id: number;
+          is_active: boolean;
+          metric_key: string;
+          metric_label: string;
+          sort_order: number;
+          updated_at: string;
+        };
+        Insert: {
+          area_key: string;
+          area_label: string;
+          calculation_key?: string;
+          created_at?: string;
+          description?: string | null;
+          id?: never;
+          is_active?: boolean;
+          metric_key: string;
+          metric_label: string;
+          sort_order?: number;
+          updated_at?: string;
+        };
+        Update: {
+          area_key?: string;
+          area_label?: string;
+          calculation_key?: string;
+          created_at?: string;
+          description?: string | null;
+          id?: never;
+          is_active?: boolean;
+          metric_key?: string;
+          metric_label?: string;
+          sort_order?: number;
+          updated_at?: string;
         };
         Relationships: [];
       };
@@ -572,6 +617,7 @@ export type CmsAuditLog = Database['public']['Tables']['cms_audit_log']['Row'];
 export type PortalLead = Database['public']['Tables']['portal_leads']['Row'];
 export type PortalPricingItem = Database['public']['Tables']['portal_pricing_items']['Row'];
 export type PortalQuotaTarget = Database['public']['Tables']['portal_quota_targets']['Row'];
+export type PortalQuotaMetric = Database['public']['Tables']['portal_quota_metrics']['Row'];
 export type PortalUser = Database['public']['Tables']['portal_users']['Row'];
 export type PortalTask = Database['public']['Tables']['portal_tasks']['Row'];
 export type PortalTextTemplateRow = Database['public']['Tables']['portal_text_templates']['Row'];
