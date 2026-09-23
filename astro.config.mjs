@@ -70,7 +70,7 @@ export default defineConfig({
   integrations: [
     mdx(),
     sitemap({
-      filter: (page) => !new globalThis.URL(page).pathname.startsWith('/veidnes'),
+      filter: (page) => !new globalThis.URL(page).pathname.startsWith('/veidnes/demo'),
     }),
     icon(),
   ],
