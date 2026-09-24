@@ -195,19 +195,19 @@ const socialItems = [
           <div class="contact-field contact-field--budget">
             <div class="contact-budget__heading">
               <label for="contact-budget">Aptuvenais budžets</label>
-              <output for="contact-budget" data-budget-output>15 000 €</output>
+              <output for="contact-budget" data-budget-output>450 €</output>
             </div>
             <input
               id="contact-budget"
               name="budget"
               type="range"
-              min="500"
-              max="50000"
-              step="500"
-              value="15000"
+              min="450"
+              max="5000"
+              step="50"
+              value="450"
             />
             <div class="contact-budget__limits" aria-hidden="true">
-              <span>500 €</span><span>50 000 €+</span>
+              <span>450 €</span><span>5 000 €</span>
             </div>
           </div>
 
@@ -424,8 +424,7 @@ const socialItems = [
       const value = Number(budget.value);
       const progress =
         ((value - Number(budget.min)) / (Number(budget.max) - Number(budget.min))) * 100;
-      budgetOutput.textContent =
-        value === Number(budget.max) ? `${formatBudget(value)}+` : formatBudget(value);
+      budgetOutput.textContent = formatBudget(value);
       budget.style.setProperty('--budget-progress', `${progress}%`);
     };
 
@@ -830,7 +829,7 @@ const socialItems = [
   }
 
   .contact-field input[type='range'] {
-    --budget-progress: 27%;
+    --budget-progress: 0%;
     width: 100%;
     height: 2px;
     margin: 1.6rem 0 0;
@@ -1073,11 +1072,27 @@ const socialItems = [
     font: 600 0.66rem/1 var(--font-mono);
   }
   .contact-card__availability span {
+    position: relative;
     width: 0.5rem;
     height: 0.5rem;
+    flex: 0 0 auto;
     border-radius: 50%;
-    background: #ff5378;
-    box-shadow: 0 0 0 5px rgb(255 83 120 / 12%);
+    background: var(--color-signal-400);
+    box-shadow:
+      0 0 0 5px rgb(224 35 78 / 12%),
+      0 0 16px rgb(224 35 78 / 38%);
+    animation: contact-availability-glow 2.8s ease-in-out infinite;
+  }
+  .contact-card__availability span::after {
+    content: '';
+    position: absolute;
+    inset: -0.45rem;
+    border-radius: inherit;
+    background: radial-gradient(circle, rgb(224 35 78 / 28%) 0 28%, transparent 68%);
+    opacity: 0;
+    transform: scale(0.72);
+    animation: contact-availability-ring 2.8s ease-out infinite;
+    pointer-events: none;
   }
   .contact-card__socials {
     display: flex;
@@ -1130,6 +1145,47 @@ const socialItems = [
       opacity: 0;
     }
   }
+
+  @keyframes contact-availability-glow {
+    0%,
+    18%,
+    100% {
+      background: var(--color-signal-400);
+      box-shadow:
+        0 0 0 5px rgb(224 35 78 / 12%),
+        0 0 16px rgb(224 35 78 / 38%);
+    }
+    5%,
+    8% {
+      background: var(--color-signal-50);
+      box-shadow:
+        0 0 0 6px rgb(224 35 78 / 18%),
+        0 0 30px rgb(224 35 78 / 72%);
+    }
+    11% {
+      background: var(--color-signal-400);
+      box-shadow:
+        0 0 0 4px rgb(224 35 78 / 10%),
+        0 0 12px rgb(224 35 78 / 30%);
+    }
+  }
+
+  @keyframes contact-availability-ring {
+    0%,
+    4%,
+    100% {
+      opacity: 0;
+      transform: scale(0.72);
+    }
+    8% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    22% {
+      opacity: 0;
+      transform: scale(1.38);
+    }
+  }
   @media (max-width: 64rem) {
     .contact__layout {
       grid-template-columns: 1fr;
@@ -1177,6 +1233,14 @@ const socialItems = [
   @media (prefers-reduced-motion: reduce) {
     .contact__cursor {
       animation: none;
+    }
+    .contact-card__availability span,
+    .contact-card__availability span::after {
+      animation: none;
+    }
+    .contact-card__availability span::after {
+      opacity: 0.55;
+      transform: scale(1);
     }
     .contact-form__actions button,
     .contact-card__socials a,
