@@ -1,3 +1,7 @@
+---
+import { Icon } from 'astro-icon/components';
+---
+
 <aside
   class="cookie-consent"
   data-cookie-consent
@@ -5,6 +9,10 @@
   aria-describedby="cookie-consent-description"
   hidden
 >
+  <div class="cookie-consent__icon" aria-hidden="true">
+    <Icon name="lucide:cookie" />
+  </div>
+
   <div class="cookie-consent__copy">
     <h2 id="cookie-consent-title">Sīkdatņu izvēle</h2>
     <p id="cookie-consent-description">
@@ -128,6 +136,33 @@
 
   .cookie-consent__copy {
     max-width: 48rem;
+    padding-left: 3.3rem;
+  }
+
+  .cookie-consent__icon {
+    position: absolute;
+    top: 0.82rem;
+    left: clamp(1rem, 2.2vw, 1.45rem);
+    display: grid;
+    width: 2.25rem;
+    height: 2.25rem;
+    place-items: center;
+    border: 1px solid rgb(255 255 255 / 16%);
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 34% 30%, rgb(247 95 127 / 32%), transparent 42%),
+      linear-gradient(145deg, rgb(98 11 34 / 95%), rgb(17 17 17 / 96%));
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 14%),
+      0 12px 30px rgb(0 0 0 / 38%),
+      0 0 0 1px rgb(224 35 78 / 14%);
+    color: var(--color-signal-100);
+  }
+
+  .cookie-consent__icon :global(svg) {
+    width: 1.12rem;
+    height: 1.12rem;
+    stroke-width: 1.9;
   }
 
   .cookie-consent h2 {
@@ -216,6 +251,17 @@
       gap: 1rem;
       margin: 0;
       padding: 1rem;
+    }
+
+    .cookie-consent__copy {
+      padding-left: 3.05rem;
+    }
+
+    .cookie-consent__icon {
+      top: 0.92rem;
+      left: 1rem;
+      width: 2.12rem;
+      height: 2.12rem;
     }
 
     .cookie-consent__copy > p:last-child {
