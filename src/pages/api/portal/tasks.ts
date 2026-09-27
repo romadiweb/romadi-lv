@@ -98,6 +98,27 @@ const resolveAssignee = async (
   };
 };
 
+const assertActiveQuotaTarget = async (
+  supabase: PortalSupabase,
+  taskType: string | undefined,
+  sourceModule: string | null | undefined,
+  sourceRecordId: number | null | undefined,
+) => {
+  if (taskType !== 'quota') return;
+  if (sourceModule !== 'quota-targets' || !sourceRecordId) {
+    throw new PortalRequestError('Izvēlies aktīvo kvotu, ar kuru sasaistīt uzdevumu.', 422);
+  }
+
+  const result = await supabase
+    .from('portal_quota_targets')
+    .select('id,is_active')
+    .eq('id', sourceRecordId)
+    .eq('is_active', true)
+    .maybeSingle();
+  if (result.error) throw result.error;
+  if (!result.data) throw new PortalRequestError('Izvēlētā kvota vairs nav aktīva.', 422);
+};
+
 export const GET: APIRoute = async ({ locals }) => {
   try {
     await requirePortalIdentity(locals.supabase);
@@ -140,6 +161,12 @@ export const POST: APIRoute = async (context) => {
       context.locals.supabase,
       parsed.data.assigned_to_user_id,
     );
+    await assertActiveQuotaTarget(
+      context.locals.supabase,
+      parsed.data.task_type,
+      parsed.data.source_module,
+      parsed.data.source_record_id,
+    );
 
     const payload: TaskInsert = {
       ...(parsed.data as TaskInsert),
@@ -177,6 +204,16 @@ export const PATCH: APIRoute = async (context) => {
       throw new PortalRequestError('Invalid task ID');
     }
 
+    const existing = await context.locals.supabase
+      .from('portal_tasks')
+      .select(
+        'id,assigned_to,assigned_to_user_id,created_by,created_by_user_id,source_module,source_record_id,status,task_type',
+      )
+      .eq('id', Number(id))
+      .maybeSingle();
+    if (existing.error) throw existing.error;
+    if (!existing.data) throw new PortalRequestError('Uzdevums nav atrasts.', 404);
+
     const parsed = parsePortalTask(data, true);
     if (!parsed.success) {
       return jsonResponse(
@@ -188,7 +225,49 @@ export const PATCH: APIRoute = async (context) => {
       );
     }
 
+    const identityEmail = identity.email.toLowerCase();
+    const isCreator =
+      existing.data.created_by_user_id === identity.id ||
+      (!existing.data.created_by_user_id &&
+        existing.data.created_by?.toLowerCase() === identityEmail);
+    const isAssignee =
+      existing.data.assigned_to_user_id === identity.id ||
+      (!existing.data.assigned_to_user_id &&
+        existing.data.assigned_to?.toLowerCase() === identityEmail);
+    const canFullyEdit = identity.role === 'super-admin' || isCreator;
+
+    if (!canFullyEdit) {
+      const changedFields = Object.keys(parsed.data);
+      const isCompletionOnly =
+        isAssignee &&
+        changedFields.length === 1 &&
+        changedFields[0] === 'status' &&
+        parsed.data.status === 'done';
+      if (!isCompletionOnly) {
+        throw new PortalAuthError(
+          isAssignee
+            ? 'Uzdevuma saņēmējs drīkst tikai atzīmēt uzdevumu kā pabeigtu.'
+            : 'Tikai uzdevuma piešķīrējs drīkst to rediģēt.',
+          403,
+        );
+      }
+    }
+
     await ensureCurrentPortalUser(context.locals.supabase, identity);
+    if (
+      'task_type' in parsed.data ||
+      'source_module' in parsed.data ||
+      'source_record_id' in parsed.data
+    ) {
+      await assertActiveQuotaTarget(
+        context.locals.supabase,
+        parsed.data.task_type ?? existing.data.task_type,
+        'source_module' in parsed.data ? parsed.data.source_module : existing.data.source_module,
+        'source_record_id' in parsed.data
+          ? parsed.data.source_record_id
+          : existing.data.source_record_id,
+      );
+    }
     const assignment =
       'assigned_to_user_id' in parsed.data
         ? await resolveAssignee(context.locals.supabase, parsed.data.assigned_to_user_id)

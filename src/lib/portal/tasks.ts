@@ -41,7 +41,27 @@ const withPriorityRules = <
   return priority ? { ...task, priority } : task;
 };
 
-const taskSchema = taskFields.transform(withPriorityRules);
+const validateQuotaLink = (
+  task: {
+    source_module?: string | null;
+    source_record_id?: number | null;
+    task_type?: (typeof portalTaskTypes)[number];
+  },
+  context: z.RefinementCtx,
+) => {
+  if (
+    task.task_type === 'quota' &&
+    (task.source_module !== 'quota-targets' || !task.source_record_id)
+  ) {
+    context.addIssue({
+      code: 'custom',
+      message: 'Izvēlies aktīvo kvotu, ar kuru sasaistīt uzdevumu.',
+      path: ['source_record_id'],
+    });
+  }
+};
+
+const taskSchema = taskFields.superRefine(validateQuotaLink).transform(withPriorityRules);
 
 export function parsePortalTask(value: unknown, partial = false) {
   if (!partial) return taskSchema.safeParse(value);
@@ -49,6 +69,7 @@ export function parsePortalTask(value: unknown, partial = false) {
   return taskFields
     .partial()
     .refine((record) => Object.keys(record).length > 0, 'No changes supplied')
+    .superRefine(validateQuotaLink)
     .transform(withPriorityRules)
     .safeParse(value);
 }
