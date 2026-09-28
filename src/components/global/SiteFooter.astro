@@ -3,6 +3,12 @@ import { SITE } from '@/config/site';
 
 const currentYear = new Date().getFullYear();
 const serviceLinks = SITE.services.slice(0, 4);
+const socialLinks = [
+  { label: 'Instagram', href: SITE.social.instagram },
+  { label: 'Facebook', href: SITE.social.facebook },
+  { label: 'LinkedIn', href: SITE.social.linkedin },
+  { label: 'TikTok', href: SITE.social.tiktok },
+];
 
 interface Props {
   ctaVariant?: 'default' | 'portfolio' | 'about' | false;
@@ -139,10 +145,17 @@ const cta =
 
         <nav aria-label="Sociālie tīkli">
           <p>SOCIĀLIE TĪKLI</p>
-          <span>Instagram</span>
-          <span>Facebook</span>
-          <span>LinkedIn</span>
-          <span>TikTok</span>
+          {
+            socialLinks.map((item) =>
+              item.href ? (
+                <a href={item.href} target="_blank" rel="noopener noreferrer">
+                  {item.label}
+                </a>
+              ) : (
+                <span>{item.label}</span>
+              ),
+            )
+          }
         </nav>
       </div>
 

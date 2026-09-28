@@ -134,7 +134,7 @@ export const SITE = {
    * Add exact profile URLs once confirmed.
    */
   social: {
-    facebook: '',
+    facebook: 'https://www.facebook.com/people/Sia-Romadi/61594766196559',
     instagram: '',
     tiktok: '',
     linkedin: '',
