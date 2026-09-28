@@ -1886,6 +1886,14 @@ export function initPortalDashboard(): void {
   const getQuotaAreaLabel = (areaKey: string) =>
     quotaMetrics.find((metric) => metric.area_key === areaKey)?.area_label ?? areaKey;
 
+  const getQuotaTaskCount = (target: Pick<PortalQuotaTarget, 'id'>) =>
+    portalTasks.filter(
+      (task) =>
+        task.source_module === 'quota-targets' &&
+        task.source_record_id === target.id &&
+        !isTaskClosed(task),
+    ).length;
+
   const renderQuotaMetricControls = (selectedArea?: string, selectedMetric?: string) => {
     const areas = [...new Map(quotaMetrics.map((metric) => [metric.area_key, metric])).values()];
     quotaArea.replaceChildren(
@@ -1945,6 +1953,14 @@ export function initPortalDashboard(): void {
       case 'completed-tasks':
         return portalTasks.filter((task) =>
           isDateInWeek(task.completed_at?.slice(0, 10) ?? null, target.week_start),
+        ).length;
+      case 'completed-quota-tasks':
+        return portalTasks.filter(
+          (task) =>
+            task.source_module === 'quota-targets' &&
+            task.source_record_id === target.id &&
+            task.status === 'done' &&
+            isDateInWeek(task.completed_at?.slice(0, 10) ?? null, target.week_start),
         ).length;
       case 'max-priority-tasks':
         return portalTasks.filter(
@@ -2027,6 +2043,7 @@ export function initPortalDashboard(): void {
       .forEach((target) => {
         const value = getQuotaProgress(target);
         const percent = Math.min(100, Math.round((value / target.target_value) * 100));
+        const taskCount = getQuotaTaskCount(target);
         const card = document.createElement('article');
         card.className = 'portal-quota-progress-card';
         card.append(
@@ -2036,6 +2053,7 @@ export function initPortalDashboard(): void {
             'small',
             `${getQuotaAreaLabel(target.module)} · ${getQuotaMetricLabel(target)} · ${percent}%`,
           ),
+          text('small', taskCount === 1 ? '1 aktīvs uzdevums' : `${taskCount} aktīvi uzdevumi`),
         );
         card.style.setProperty('--quota-progress', `${percent}%`);
         progressFragment.append(card);
@@ -2049,9 +2067,11 @@ export function initPortalDashboard(): void {
       button.className = 'portal-quota-item';
       button.classList.toggle('is-selected', activeQuotaTarget?.id === target.id);
       button.classList.toggle('is-muted', !target.is_active);
+      const taskCount = getQuotaTaskCount(target);
       button.append(
         text('strong', target.label),
         text('small', `${getQuotaAreaLabel(target.module)} · ${getQuotaMetricLabel(target)}`),
+        text('small', taskCount === 1 ? '1 aktīvs uzdevums' : `${taskCount} aktīvi uzdevumi`),
         text('b', String(target.target_value)),
       );
       button.addEventListener('click', () => openQuotaEditor(target));
@@ -2116,7 +2136,7 @@ export function initPortalDashboard(): void {
       ...targets.map(
         (target) =>
           new Option(
-            `${getQuotaMetricLabel(target)} · nedēļa no ${formatDate(target.week_start)}${
+            `${getQuotaAreaLabel(target.module)} · ${getQuotaMetricLabel(target)} · nedēļa no ${formatDate(target.week_start)}${
               target.is_active ? '' : ' · neaktīva'
             }`,
             String(target.id),
@@ -2308,7 +2328,7 @@ export function initPortalDashboard(): void {
         ? [
             detailRow(
               'Saistītā kvota',
-              `${getQuotaMetricLabel(quotaTarget)} · nedēļa no ${formatDate(quotaTarget.week_start)}`,
+              `${getQuotaAreaLabel(quotaTarget.module)} · ${getQuotaMetricLabel(quotaTarget)} · nedēļa no ${formatDate(quotaTarget.week_start)}`,
             ),
           ]
         : []),
@@ -2396,7 +2416,14 @@ export function initPortalDashboard(): void {
             `${getTaskAssigneeLabel(task)} · ${taskStatusLabels[task.status]}${task.due_date ? ` · ${formatDate(task.due_date)}` : ''}`,
           ),
           text('small', `Piešķīra: ${getTaskCreatorLabel(task)}`),
-          ...(linkedQuota ? [text('small', `Kvota: ${getQuotaMetricLabel(linkedQuota)}`)] : []),
+          ...(linkedQuota
+            ? [
+                text(
+                  'small',
+                  `Kvota: ${getQuotaAreaLabel(linkedQuota.module)} · ${getQuotaMetricLabel(linkedQuota)}`,
+                ),
+              ]
+            : []),
           text('b', taskPriorityLabels[task.priority]),
         );
         button.addEventListener('click', () => openTaskDetails(task));
@@ -2505,6 +2532,7 @@ export function initPortalDashboard(): void {
       currentTargets.slice(0, 4).forEach((target) => {
         const value = getQuotaProgress(target);
         const percent = Math.min(100, Math.round((value / target.target_value) * 100));
+        const taskCount = getQuotaTaskCount(target);
         const item = document.createElement('article');
         item.className = 'portal-home-quota-item';
         item.style.setProperty('--quota-progress', `${percent}%`);
@@ -2515,6 +2543,7 @@ export function initPortalDashboard(): void {
             'small',
             `${getQuotaAreaLabel(target.module)} · ${getQuotaMetricLabel(target)} · ${percent}%`,
           ),
+          text('small', taskCount === 1 ? '1 aktīvs uzdevums' : `${taskCount} aktīvi uzdevumi`),
         );
         quotaFragment.append(item);
       });
@@ -2547,6 +2576,7 @@ export function initPortalDashboard(): void {
       );
       const state = text('b', taskPriorityLabels[task.priority]);
       state.dataset.state = ['critical', 'max'].includes(task.priority) ? 'due' : 'new';
+      state.dataset.priority = task.priority;
       button.append(copy, state);
       button.addEventListener('click', () => {
         void afterDiscard(async () => {

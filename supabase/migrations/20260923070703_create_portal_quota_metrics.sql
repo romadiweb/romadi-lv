@@ -166,6 +166,15 @@ values
     20
   ),
   (
+    'getapro',
+    'GetaPro',
+    'sent-proposals',
+    'Izsūtītie piedāvājumi',
+    'Pabeigtie uzdevumi, kas piesaistīti šīs nedēļas GetaPro piedāvājumu kvotai.',
+    'completed-quota-tasks',
+    10
+  ),
+  (
     'collaborations',
     'Sadarbības',
     'new-collaboration-offers-sent',
