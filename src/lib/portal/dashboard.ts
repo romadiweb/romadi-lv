@@ -8,6 +8,7 @@ import type {
   PortalUser,
 } from '@/types/database';
 import type { TextTemplateVariant } from '@/lib/portal/text-templates';
+import { getKnownLeadSource, isGetAProSource, OTHER_LEAD_SOURCE } from '@/lib/portal/lead-sources';
 
 type Resource = 'projects' | 'reviews' | 'pricing_plans';
 type View =
@@ -130,10 +131,10 @@ const taskTypeLabels: Record<TaskType, string> = {
 const fallbackQuotaMetrics: PortalQuotaMetric[] = [
   {
     area_key: 'getapro',
-    area_label: 'GetaPro',
-    calculation_key: 'completed-quota-tasks',
+    area_label: 'GetAPro',
+    calculation_key: 'contacted-getapro-leads',
     created_at: '',
-    description: 'Pabeigtie uzdevumi, kas piesaistīti šīs nedēļas GetaPro piedāvājumu kvotai.',
+    description: 'GetAPro atrastie lead, kas šajā nedēļā ir uzrunāti.',
     id: -1,
     is_active: true,
     metric_key: 'sent-proposals',
@@ -384,6 +385,8 @@ export function initPortalDashboard(): void {
   const taskAssignee = $<HTMLSelectElement>(root, '[data-task-assignee]');
   const taskQuotaField = $<HTMLElement>(root, '[data-task-quota-field]');
   const taskQuota = $<HTMLSelectElement>(root, '[data-task-quota]');
+  const taskEditorPanel = $<HTMLElement>(root, '[data-task-editor-panel]');
+  const taskEditorClose = $<HTMLButtonElement>(root, '[data-task-editor-close]');
   const taskEditorTitle = $<HTMLElement>(root, '[data-task-editor-title]');
   const taskFormState = $<HTMLElement>(root, '[data-task-form-state]');
   const taskSaveStatus = $<HTMLElement>(root, '[data-task-save-status]');
@@ -427,6 +430,9 @@ export function initPortalDashboard(): void {
   const leadEditorClose = $<HTMLButtonElement>(root, '[data-lead-editor-close]');
   const leadOutreachFields = $<HTMLElement>(leadForm, '[data-lead-outreach-fields]');
   const leadOwner = $<HTMLSelectElement>(leadForm, '[data-lead-owner]');
+  const leadFoundOn = $<HTMLSelectElement>(leadForm, '[data-lead-found-on]');
+  const leadFoundOnOtherField = $<HTMLElement>(leadForm, '[data-lead-found-on-other]');
+  const leadFoundOnOther = $<HTMLInputElement>(leadFoundOnOtherField, 'input');
   const leadEditorTitle = $<HTMLElement>(root, '[data-lead-editor-title]');
   const leadEditorCopy = $<HTMLElement>(root, '[data-lead-editor-copy]');
   const leadFormState = $<HTMLElement>(root, '[data-lead-form-state]');
@@ -930,6 +936,23 @@ export function initPortalDashboard(): void {
     return control as T;
   };
 
+  const syncLeadFoundOnOtherField = () => {
+    const isOther = leadFoundOn.value === OTHER_LEAD_SOURCE;
+    leadFoundOnOtherField.hidden = !isOther;
+    leadFoundOnOther.required = isOther;
+    leadFoundOn.setAttribute('aria-expanded', String(isOther));
+  };
+
+  const setLeadFoundOnValue = (value: string) => {
+    const knownSource = getKnownLeadSource(value);
+    leadFoundOn.value = knownSource ?? OTHER_LEAD_SOURCE;
+    leadFoundOnOther.value = knownSource ? '' : value;
+    syncLeadFoundOnOtherField();
+  };
+
+  const getLeadFoundOnValue = () =>
+    leadFoundOn.value === OTHER_LEAD_SOURCE ? leadFoundOnOther.value.trim() : leadFoundOn.value;
+
   const renderLeadOwnerOptions = (selectedOwner = '') => {
     const labels = portalUsers.map((user) => user.display_name || user.email);
     const options = [
@@ -1030,9 +1053,7 @@ export function initPortalDashboard(): void {
 
     if (isContacted) {
       if (!status.value || status.value === 'not_contacted') status.value = 'contacted';
-      const platformChannel = getContactChannelFromPlatform(
-        leadControl<HTMLInputElement>('found_on').value,
-      );
+      const platformChannel = getContactChannelFromPlatform(getLeadFoundOnValue());
       if (platformChannel && (!activeLead || activeLead.status === 'not_contacted')) {
         contactChannel.value = platformChannel;
       }
@@ -1051,6 +1072,7 @@ export function initPortalDashboard(): void {
     setDirty(false);
     activeLead = null;
     leadForm.reset();
+    syncLeadFoundOnOtherField();
     renderLeadOwnerOptions();
     setLeadOutreachState(false, true);
     leadEditorTitle.textContent = 'Jauns lead';
@@ -1075,7 +1097,7 @@ export function initPortalDashboard(): void {
     }
 
     leadControl<HTMLInputElement>('company_name').value = lead.company_name;
-    leadControl<HTMLInputElement>('found_on').value = lead.found_on;
+    setLeadFoundOnValue(lead.found_on);
     leadControl<HTMLInputElement>('industry').value = lead.industry ?? '';
     const isContacted = lead.status !== 'not_contacted';
     setLeadOutreachState(isContacted);
@@ -1109,7 +1131,7 @@ export function initPortalDashboard(): void {
         ? leadControl<HTMLInputElement>('contacted_at').value || null
         : null,
       follow_up_enabled: isContacted && leadControl<HTMLInputElement>('follow_up_enabled').checked,
-      found_on: leadControl<HTMLInputElement>('found_on').value.trim(),
+      found_on: getLeadFoundOnValue(),
       has_website: leadControl<HTMLInputElement>('has_website').checked,
       high_priority: leadControl<HTMLInputElement>('high_priority').checked,
       industry: leadControl<HTMLInputElement>('industry').value.trim() || null,
@@ -1135,9 +1157,17 @@ export function initPortalDashboard(): void {
       (lead) => !['client', 'rejected', 'no_response'].includes(lead.status),
     ).length;
     const dueCount = leads.filter(isFollowUpDue).length;
+    const currentWeek = getWeekStart();
+    const getAProCount = leads.filter(
+      (lead) =>
+        isGetAProSource(lead.found_on) &&
+        isDateInWeek(lead.contacted_at?.slice(0, 10) ?? null, currentWeek),
+    ).length;
     root.querySelector<HTMLElement>('[data-lead-metric="open"]')!.textContent = String(openCount);
     root.querySelector<HTMLElement>('[data-lead-metric="followups"]')!.textContent =
       String(dueCount);
+    root.querySelector<HTMLElement>('[data-lead-metric="quota"]')!.textContent =
+      String(getAProCount);
     leadStatus.textContent = `${filtered.length} no ${leads.length} lead`;
 
     if (leads.length === 0) {
@@ -1969,6 +1999,12 @@ export function initPortalDashboard(): void {
         return leads.filter((lead) =>
           isDateInWeek(lead.contacted_at?.slice(0, 10) ?? null, target.week_start),
         ).length;
+      case 'contacted-getapro-leads':
+        return leads.filter(
+          (lead) =>
+            isGetAProSource(lead.found_on) &&
+            isDateInWeek(lead.contacted_at?.slice(0, 10) ?? null, target.week_start),
+        ).length;
       case 'followups-due':
         return leads.filter((lead) => isDateInWeek(lead.follow_up_due_at, target.week_start))
           .length;
@@ -2283,6 +2319,13 @@ export function initPortalDashboard(): void {
     taskSaveStatus.textContent = '';
   };
 
+  const closeTaskEditor = () => {
+    resetTaskForm();
+    taskEditorPanel.hidden = true;
+    taskGrid.classList.remove('is-editor-open');
+    renderTaskList();
+  };
+
   const openTaskEditor = (task: PortalTask | null) => {
     if (task && role !== 'super-admin' && !isTaskCreatedByCurrentUser(task)) {
       openTaskDetails(task);
@@ -2290,6 +2333,8 @@ export function initPortalDashboard(): void {
     }
     resetTaskForm();
     activeTask = task;
+    taskEditorPanel.hidden = false;
+    taskGrid.classList.add('is-editor-open');
     if (!task) {
       window.setTimeout(() => taskControl<HTMLInputElement>('title').focus(), 120);
       return;
@@ -2951,6 +2996,7 @@ export function initPortalDashboard(): void {
   quotaForm.addEventListener('input', () => setDirty(true));
   taskForm.addEventListener('input', () => setDirty(true));
   templateForm.addEventListener('input', () => setDirty(true));
+  leadFoundOn.addEventListener('change', syncLeadFoundOnOtherField);
   leadControl<HTMLInputElement>('is_contacted').addEventListener('change', (event) => {
     const toggle = event.currentTarget;
     if (!(toggle instanceof HTMLInputElement)) return;
@@ -3016,6 +3062,7 @@ export function initPortalDashboard(): void {
   priceResetButton.addEventListener('click', () => void afterDiscard(() => openPriceEditor(null)));
   quotaResetButton.addEventListener('click', () => void afterDiscard(() => openQuotaEditor(null)));
   taskResetButton.addEventListener('click', () => void afterDiscard(() => openTaskEditor(null)));
+  taskEditorClose.addEventListener('click', () => void afterDiscard(closeTaskEditor));
   templateResetButton.addEventListener('click', () => {
     void afterDiscard(() => openTemplateEditor(activeTemplate));
   });
@@ -3233,9 +3280,8 @@ export function initPortalDashboard(): void {
         activeTask = null;
         setDirty(false);
         updateCount('portal_tasks', portalTasks.filter((task) => !isTaskClosed(task)).length);
-        resetTaskForm();
+        closeTaskEditor();
         renderUserDirectory();
-        renderTaskList();
         notify('Uzdevums ir dzēsts.');
       } else if (deleteMode === 'template' && activeTemplate) {
         await request('/api/portal/text-templates', {

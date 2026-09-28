@@ -1,5 +1,6 @@
 ---
 import PortalLayout from '@/layouts/PortalLayout.astro';
+import { LEAD_SOURCE_OPTIONS, OTHER_LEAD_SOURCE } from '@/lib/portal/lead-sources';
 
 export const prerender = false;
 
@@ -470,8 +471,8 @@ if (!existingCsrf) {
               <p>Follow-up šonedēļ</p>
             </article>
             <article>
-              <span data-lead-metric="quota">Kvotas gatavs</span>
-              <p>Uzdevumu norma tiks pieslēgta pie šīs plūsmas</p>
+              <span data-lead-metric="quota">—</span>
+              <p>GetAPro uzrunāti šonedēļ</p>
             </article>
           </div>
           <div class="portal-kanban" data-lead-kanban aria-live="polite"></div>
@@ -510,12 +511,25 @@ if (!existingCsrf) {
                 <input name="company_name" required maxlength="180" autocomplete="organization" />
               </label>
               <label class="portal-field">
-                <span>Kur atrasts? Platforma</span>
-                <input
+                <span>Kur atrasts?</span>
+                <select
                   name="found_on"
+                  data-lead-found-on
                   required
+                  aria-controls="lead-found-on-other"
+                  aria-expanded="false"
+                >
+                  <option value="">Izvēlies avotu</option>
+                  {LEAD_SOURCE_OPTIONS.map((source) => <option value={source}>{source}</option>)}
+                  <option value={OTHER_LEAD_SOURCE}>Cits</option>
+                </select>
+              </label>
+              <label class="portal-field" id="lead-found-on-other" data-lead-found-on-other hidden>
+                <span>Cits avots</span>
+                <input
+                  name="found_on_other"
                   maxlength="180"
-                  placeholder="Instagram, Google Maps…"
+                  placeholder="Norādi, kur lead atrasts"
                 />
               </label>
               <label class="portal-field">
@@ -719,13 +733,30 @@ if (!existingCsrf) {
           </article>
         </aside>
 
-        <section class="portal-task-editor" aria-labelledby="task-editor-title">
+        <section
+          class="portal-task-editor"
+          aria-labelledby="task-editor-title"
+          data-task-editor-panel
+          hidden
+        >
           <header>
             <div>
               <h2 id="task-editor-title" data-task-editor-title>Jauns uzdevums</h2>
               <p>Piešķir darbu komandai, nosaki statusu un prioritāti.</p>
             </div>
-            <span class="portal-draft-state" data-task-form-state>Nav saglabāts</span>
+            <div class="portal-panel-actions">
+              <span class="portal-draft-state" data-task-form-state>Nav saglabāts</span>
+              <button
+                type="button"
+                class="portal-icon-action"
+                data-task-editor-close
+                aria-label="Aizvērt uzdevuma formu"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M6 6l12 12M18 6L6 18"></path>
+                </svg>
+              </button>
+            </div>
           </header>
 
           <form class="portal-task-form" data-task-form>
