@@ -424,6 +424,8 @@ export function initPortalDashboard(): void {
   const toast = $<HTMLElement>(root, '[data-toast]');
   const leadStatus = $<HTMLElement>(root, '[data-lead-status]');
   const leadKanban = $<HTMLElement>(root, '[data-lead-kanban]');
+  const leadKanbanScroll = $<HTMLElement>(root, '[data-lead-kanban-scroll]');
+  const leadKanbanScrollTrack = $<HTMLElement>(root, '[data-lead-kanban-scroll-track]');
   const leadSearch = $<HTMLInputElement>(root, '[data-lead-search]');
   const leadForm = $<HTMLFormElement>(root, '[data-lead-form]');
   const leadEditorPanel = $<HTMLElement>(root, '[data-lead-editor-panel]');
@@ -1143,6 +1145,15 @@ export function initPortalDashboard(): void {
     };
   };
 
+  const syncLeadKanbanScroll = () => {
+    window.requestAnimationFrame(() => {
+      const hasHorizontalOverflow = leadKanban.scrollWidth > leadKanban.clientWidth + 1;
+      leadKanbanScrollTrack.style.width = `${leadKanban.scrollWidth}px`;
+      leadKanbanScroll.hidden = !hasHorizontalOverflow;
+      if (hasHorizontalOverflow) leadKanbanScroll.scrollLeft = leadKanban.scrollLeft;
+    });
+  };
+
   const renderLeadBoard = () => {
     const query = leadSearch.value.trim().toLowerCase();
     const filtered = query
@@ -1171,6 +1182,7 @@ export function initPortalDashboard(): void {
     leadStatus.textContent = `${filtered.length} no ${leads.length} lead`;
 
     if (leads.length === 0) {
+      leadKanbanScroll.hidden = true;
       const empty = document.createElement('div');
       empty.className = 'portal-list-empty';
       empty.append(
@@ -1265,6 +1277,7 @@ export function initPortalDashboard(): void {
       fragment.append(section);
     }
     leadKanban.replaceChildren(fragment);
+    syncLeadKanbanScroll();
   };
 
   const showLeads = async () => {
@@ -2490,12 +2503,16 @@ export function initPortalDashboard(): void {
         button.classList.toggle('is-mine', isTaskAssignedToCurrentUser(task));
         button.classList.toggle('is-selected', activeTask?.id === task.id);
         button.classList.toggle('is-done', isTaskClosed(task));
+        const taskMeta = document.createElement('small');
+        taskMeta.append(
+          text('span', getTaskAssigneeLabel(task), 'portal-task-assignee'),
+          document.createTextNode(
+            ` · ${taskStatusLabels[task.status]}${task.due_date ? ` · ${formatDate(task.due_date)}` : ''}`,
+          ),
+        );
         button.append(
           text('strong', task.title),
-          text(
-            'small',
-            `${getTaskAssigneeLabel(task)} · ${taskStatusLabels[task.status]}${task.due_date ? ` · ${formatDate(task.due_date)}` : ''}`,
-          ),
+          taskMeta,
           text('small', `Piešķīra: ${getTaskCreatorLabel(task)}`),
           ...(linkedQuota
             ? [
@@ -2997,6 +3014,19 @@ export function initPortalDashboard(): void {
   taskForm.addEventListener('input', () => setDirty(true));
   templateForm.addEventListener('input', () => setDirty(true));
   leadFoundOn.addEventListener('change', syncLeadFoundOnOtherField);
+  leadKanbanScroll.addEventListener('scroll', () => {
+    if (leadKanban.scrollLeft !== leadKanbanScroll.scrollLeft) {
+      leadKanban.scrollLeft = leadKanbanScroll.scrollLeft;
+    }
+  });
+  leadKanban.addEventListener('scroll', () => {
+    if (leadKanbanScroll.scrollLeft !== leadKanban.scrollLeft) {
+      leadKanbanScroll.scrollLeft = leadKanban.scrollLeft;
+    }
+  });
+  window.addEventListener('resize', () => {
+    if (activeView === 'leads') syncLeadKanbanScroll();
+  });
   leadControl<HTMLInputElement>('is_contacted').addEventListener('change', (event) => {
     const toggle = event.currentTarget;
     if (!(toggle instanceof HTMLInputElement)) return;

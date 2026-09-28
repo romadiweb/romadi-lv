@@ -475,7 +475,17 @@ if (!existingCsrf) {
               <p>GetAPro uzrunāti šonedēļ</p>
             </article>
           </div>
-          <div class="portal-kanban" data-lead-kanban aria-live="polite"></div>
+          <div
+            class="portal-kanban-scroll"
+            data-lead-kanban-scroll
+            role="region"
+            aria-label="Ritināt Kanban horizontāli"
+            tabindex="0"
+            hidden
+          >
+            <div data-lead-kanban-scroll-track aria-hidden="true"></div>
+          </div>
+          <div class="portal-kanban" id="lead-kanban" data-lead-kanban aria-live="polite"></div>
         </section>
 
         <section
