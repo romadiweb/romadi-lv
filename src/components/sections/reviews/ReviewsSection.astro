@@ -266,6 +266,8 @@ const hasMultipleReviews = reviews.length > 1;
     sort_order: number;
   }
 
+  const reviewControllers = new WeakMap<HTMLElement, AbortController>();
+
   const getLinkLabel = (url: string): string => {
     try {
       return new URL(url).hostname.replace(/^www\./, '');
@@ -451,7 +453,10 @@ const hasMultipleReviews = reviews.length > 1;
 
   const initReviews = (): void => {
     document.querySelectorAll<HTMLElement>('[data-reviews]').forEach((section) => {
-      if (section.dataset.reviewsReady === 'true') return;
+      reviewControllers.get(section)?.abort();
+
+      const controller = new AbortController();
+      reviewControllers.set(section, controller);
       section.dataset.reviewsReady = 'true';
 
       const cards = Array.from(section.querySelectorAll<HTMLElement>('[data-review-card]'));
@@ -497,22 +502,36 @@ const hasMultipleReviews = reviews.length > 1;
         if (current) current.textContent = String(activeIndex + 1).padStart(2, '0');
       };
 
-      previous?.addEventListener('click', () => selectReview(activeIndex - 1, -1));
-      next?.addEventListener('click', () => selectReview(activeIndex + 1, 1));
+      previous?.addEventListener('click', () => selectReview(activeIndex - 1, -1), {
+        signal: controller.signal,
+      });
+      next?.addEventListener('click', () => selectReview(activeIndex + 1, 1), {
+        signal: controller.signal,
+      });
       dots.forEach((dot, index) => {
-        dot.addEventListener('click', () => selectReview(index, index >= activeIndex ? 1 : -1));
+        dot.addEventListener('click', () => selectReview(index, index >= activeIndex ? 1 : -1), {
+          signal: controller.signal,
+        });
       });
 
-      section.addEventListener('keydown', (event) => {
-        if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
-        if (!(event.target instanceof HTMLElement) || !event.target.closest('.reviews__navigation'))
-          return;
-        event.preventDefault();
-        selectReview(
-          activeIndex + (event.key === 'ArrowRight' ? 1 : -1),
-          event.key === 'ArrowRight' ? 1 : -1,
-        );
-      });
+      section.addEventListener(
+        'keydown',
+        (event) => {
+          if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+          if (
+            !(event.target instanceof HTMLElement) ||
+            !event.target.closest('.reviews__navigation')
+          ) {
+            return;
+          }
+          event.preventDefault();
+          selectReview(
+            activeIndex + (event.key === 'ArrowRight' ? 1 : -1),
+            event.key === 'ArrowRight' ? 1 : -1,
+          );
+        },
+        { signal: controller.signal },
+      );
     });
   };
 
