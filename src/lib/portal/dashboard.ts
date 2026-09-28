@@ -280,6 +280,14 @@ const formatDate = (value: string | null) =>
       )
     : 'Nav datuma';
 
+const formatDateTime = (value: string | null) =>
+  value
+    ? new Intl.DateTimeFormat('lv-LV', {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      }).format(new Date(value))
+    : 'Nav datuma';
+
 const toDateInputValue = (date: Date) => {
   const copy = new Date(date);
   copy.setHours(12, 0, 0, 0);
@@ -358,6 +366,8 @@ export function initPortalDashboard(): void {
   const taskList = $<HTMLElement>(root, '[data-task-list]');
   const taskForm = $<HTMLFormElement>(root, '[data-task-form]');
   const taskAssignee = $<HTMLSelectElement>(root, '[data-task-assignee]');
+  const taskQuotaField = $<HTMLElement>(root, '[data-task-quota-field]');
+  const taskQuota = $<HTMLSelectElement>(root, '[data-task-quota]');
   const taskEditorTitle = $<HTMLElement>(root, '[data-task-editor-title]');
   const taskFormState = $<HTMLElement>(root, '[data-task-form-state]');
   const taskSaveStatus = $<HTMLElement>(root, '[data-task-save-status]');
@@ -397,13 +407,29 @@ export function initPortalDashboard(): void {
   const leadKanban = $<HTMLElement>(root, '[data-lead-kanban]');
   const leadSearch = $<HTMLInputElement>(root, '[data-lead-search]');
   const leadForm = $<HTMLFormElement>(root, '[data-lead-form]');
+  const leadEditorPanel = $<HTMLElement>(root, '[data-lead-editor-panel]');
+  const leadEditorClose = $<HTMLButtonElement>(root, '[data-lead-editor-close]');
   const leadOutreachFields = $<HTMLElement>(leadForm, '[data-lead-outreach-fields]');
+  const leadOwner = $<HTMLSelectElement>(leadForm, '[data-lead-owner]');
   const leadEditorTitle = $<HTMLElement>(root, '[data-lead-editor-title]');
   const leadEditorCopy = $<HTMLElement>(root, '[data-lead-editor-copy]');
   const leadFormState = $<HTMLElement>(root, '[data-lead-form-state]');
   const leadSaveStatus = $<HTMLElement>(root, '[data-lead-save-status]');
   const leadDeleteButton = $<HTMLButtonElement>(root, '[data-lead-delete]');
   const leadResetButton = $<HTMLButtonElement>(root, '[data-lead-reset]');
+  const leadDetailDialog = $<HTMLDialogElement>(root, '[data-lead-detail-dialog]');
+  const leadDetailTitle = $<HTMLElement>(leadDetailDialog, '[data-lead-detail-title]');
+  const leadDetailContent = $<HTMLElement>(leadDetailDialog, '[data-lead-detail-content]');
+  const leadDetailEdit = $<HTMLButtonElement>(leadDetailDialog, '[data-lead-detail-edit]');
+  const taskDetailDialog = $<HTMLDialogElement>(root, '[data-task-detail-dialog]');
+  const taskDetailTitle = $<HTMLElement>(taskDetailDialog, '[data-task-detail-title]');
+  const taskDetailContent = $<HTMLElement>(taskDetailDialog, '[data-task-detail-content]');
+  const taskDetailEdit = $<HTMLButtonElement>(taskDetailDialog, '[data-task-detail-edit]');
+  const taskCompleteButton = $<HTMLButtonElement>(taskDetailDialog, '[data-task-complete]');
+  const leadContactDialog = $<HTMLDialogElement>(root, '[data-lead-contact-dialog]');
+  const leadContactForm = $<HTMLFormElement>(leadContactDialog, '[data-lead-contact-form]');
+  const leadContactOwner = $<HTMLSelectElement>(leadContactDialog, '[data-lead-contact-owner]');
+  const leadContactCopy = $<HTMLElement>(leadContactDialog, '[data-lead-contact-copy]');
   const calculatorGrid = $<HTMLElement>(root, '[data-calculator-grid]');
   const priceStatus = $<HTMLElement>(root, '[data-price-status]');
   const priceSearch = $<HTMLInputElement>(root, '[data-price-search]');
@@ -442,6 +468,9 @@ export function initPortalDashboard(): void {
   let activeView: View = 'dashboard';
   let activeRecord: PortalRecord | null = null;
   let activeLead: PortalLead | null = null;
+  let activeLeadDetail: PortalLead | null = null;
+  let activeTaskDetail: PortalTask | null = null;
+  let pendingLeadStatus: { id: number; status: LeadStatus } | null = null;
   let activeTemplate: PortalTextTemplate | null = null;
   let deleteMode: 'cms' | 'lead' | 'pricing' | 'quota' | 'task' | 'template' | null = null;
   let isDirty = false;
@@ -867,10 +896,95 @@ export function initPortalDashboard(): void {
     return control as T;
   };
 
+  const renderLeadOwnerOptions = (selectedOwner = '') => {
+    const labels = portalUsers.map((user) => user.display_name || user.email);
+    const options = [
+      new Option('Izvēlies lietotāju', ''),
+      ...portalUsers.map(
+        (user) =>
+          new Option(
+            user.display_name ? `${user.display_name} · ${user.email}` : user.email,
+            user.display_name || user.email,
+          ),
+      ),
+    ];
+    if (selectedOwner && !labels.includes(selectedOwner)) {
+      options.push(new Option(`${selectedOwner} (iepriekš saglabāts)`, selectedOwner));
+    }
+    leadOwner.replaceChildren(...options);
+    leadOwner.value = selectedOwner;
+  };
+
+  const renderContactOwnerOptions = () => {
+    const options = [
+      new Option('Izvēlies lietotāju', ''),
+      ...portalUsers.map(
+        (user) =>
+          new Option(
+            user.display_name ? `${user.display_name} · ${user.email}` : user.email,
+            user.id,
+          ),
+      ),
+    ];
+    leadContactOwner.replaceChildren(...options);
+    const currentUser = portalUsers.find((user) => user.id === currentUserId);
+    leadContactOwner.value = currentUser?.id ?? '';
+  };
+
+  const detailRow = (label: string, value: string) => {
+    const row = document.createElement('div');
+    row.className = 'portal-detail-row';
+    row.append(text('dt', label), text('dd', value));
+    return row;
+  };
+
+  const closeLeadEditor = () => {
+    setDirty(false);
+    resetLeadForm();
+    leadEditorPanel.hidden = true;
+    leadGrid.classList.remove('is-editor-open');
+    root.classList.remove('is-mobile-overlay-open');
+  };
+
+  const openLeadDetails = (lead: PortalLead) => {
+    activeLeadDetail = lead;
+    leadDetailTitle.textContent = lead.company_name;
+    const details = document.createElement('dl');
+    details.className = 'portal-detail-list';
+    details.append(
+      detailRow(
+        'Statuss',
+        leadColumns.find((column) => column.status === lead.status)?.label ?? lead.status,
+      ),
+      detailRow('Atrasts', lead.found_on),
+      detailRow('Nozare', lead.industry ?? 'Nav norādīta'),
+      detailRow('Mājaslapa', lead.has_website ? 'Ir' : 'Nav'),
+      detailRow('Prioritāte', lead.high_priority ? 'Svarīgs lead' : 'Standarta'),
+      detailRow('Uzrunāja', lead.outreach_owner ?? 'Vēl nav uzrunāts'),
+      detailRow(
+        'Uzrunas informācija',
+        lead.status === 'not_contacted'
+          ? 'Nav uzrunāts'
+          : `${formatDate(lead.contacted_at)} · ${channelLabels[lead.contact_channel]}`,
+      ),
+      detailRow(
+        'Follow-up',
+        lead.follow_up_due_at ? formatDate(lead.follow_up_due_at) : 'Nav ieplānots',
+      ),
+      detailRow('Izveidots', formatDateTime(lead.created_at)),
+      detailRow('Atjaunināts', formatDateTime(lead.updated_at)),
+    );
+    const notes = document.createElement('section');
+    notes.className = 'portal-detail-notes';
+    notes.append(text('h3', 'Piezīmes'), text('p', lead.notes ?? 'Piezīmju nav.'));
+    leadDetailContent.replaceChildren(details, notes);
+    if (!leadDetailDialog.open) leadDetailDialog.showModal();
+  };
+
   const setLeadOutreachState = (isContacted: boolean, clearDetails = false) => {
     const toggle = leadControl<HTMLInputElement>('is_contacted');
     const status = leadControl<HTMLSelectElement>('status');
-    const owner = leadControl<HTMLInputElement>('outreach_owner');
+    const owner = leadControl<HTMLSelectElement>('outreach_owner');
     const contactedAt = leadControl<HTMLInputElement>('contacted_at');
     const contactChannel = leadControl<HTMLSelectElement>('contact_channel');
     const followUp = leadControl<HTMLInputElement>('follow_up_enabled');
@@ -903,6 +1017,7 @@ export function initPortalDashboard(): void {
     setDirty(false);
     activeLead = null;
     leadForm.reset();
+    renderLeadOwnerOptions();
     setLeadOutreachState(false, true);
     leadEditorTitle.textContent = 'Jauns lead';
     leadEditorCopy.textContent = 'Izveido kontaktu un ieliec to pareizajā statusā.';
@@ -915,6 +1030,11 @@ export function initPortalDashboard(): void {
   const openLeadEditor = (lead: PortalLead | null) => {
     resetLeadForm();
     activeLead = lead;
+    leadEditorPanel.hidden = false;
+    leadGrid.classList.add('is-editor-open');
+    if (window.matchMedia('(max-width: 720px)').matches) {
+      root.classList.add('is-mobile-overlay-open');
+    }
     if (!lead) {
       window.setTimeout(() => leadControl<HTMLInputElement>('company_name').focus(), 120);
       return;
@@ -926,7 +1046,7 @@ export function initPortalDashboard(): void {
     const isContacted = lead.status !== 'not_contacted';
     setLeadOutreachState(isContacted);
     leadControl<HTMLInputElement>('contacted_at').value = lead.contacted_at ?? '';
-    leadControl<HTMLInputElement>('outreach_owner').value = lead.outreach_owner ?? '';
+    renderLeadOwnerOptions(lead.outreach_owner ?? '');
     leadControl<HTMLSelectElement>('contact_channel').value = lead.contact_channel;
     leadControl<HTMLSelectElement>('status').value = lead.status;
     leadControl<HTMLInputElement>('has_website').checked = lead.has_website;
@@ -961,7 +1081,7 @@ export function initPortalDashboard(): void {
       industry: leadControl<HTMLInputElement>('industry').value.trim() || null,
       notes: leadControl<HTMLTextAreaElement>('notes').value.trim() || null,
       outreach_owner: isContacted
-        ? leadControl<HTMLInputElement>('outreach_owner').value.trim() || null
+        ? leadControl<HTMLSelectElement>('outreach_owner').value.trim() || null
         : null,
       status: isContacted ? leadControl<HTMLSelectElement>('status').value : 'not_contacted',
     };
@@ -1023,8 +1143,7 @@ export function initPortalDashboard(): void {
       }
 
       for (const lead of columnLeads) {
-        const card = document.createElement('button');
-        card.type = 'button';
+        const card = document.createElement('article');
         card.draggable = true;
         card.className = 'portal-lead-card';
         card.classList.toggle('is-due', isFollowUpDue(lead));
@@ -1033,7 +1152,12 @@ export function initPortalDashboard(): void {
           event.dataTransfer?.setData('text/plain', String(lead.id));
           event.dataTransfer?.setData('application/x-lead-id', String(lead.id));
         });
-        card.addEventListener('click', () => openLeadEditor(lead));
+
+        const summary = document.createElement('button');
+        summary.type = 'button';
+        summary.className = 'portal-lead-card-summary';
+        summary.setAttribute('aria-label', `Atvērt ${lead.company_name} informāciju`);
+        summary.addEventListener('click', () => openLeadDetails(lead));
 
         const meta = document.createElement('span');
         meta.append(
@@ -1044,7 +1168,7 @@ export function initPortalDashboard(): void {
           ),
           text('small', lead.has_website ? 'Ir mājaslapa' : 'Nav mājaslapas'),
         );
-        card.append(
+        summary.append(
           text('strong', lead.company_name),
           text(
             'small',
@@ -1062,6 +1186,14 @@ export function initPortalDashboard(): void {
                 : `Uzrunāts ${formatDate(lead.contacted_at)}`,
           ),
         );
+        const edit = document.createElement('button');
+        edit.type = 'button';
+        edit.className = 'portal-lead-card-edit';
+        edit.setAttribute('aria-label', `Rediģēt ${lead.company_name}`);
+        edit.innerHTML =
+          '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4z"></path></svg>';
+        edit.addEventListener('click', () => openLeadEditor(lead));
+        card.append(summary, edit);
         cards.append(card);
       }
 
@@ -1085,9 +1217,11 @@ export function initPortalDashboard(): void {
     leadStatus.textContent = 'Ielādē…';
 
     try {
-      await loadLeads();
+      await Promise.all([loadLeads(), loadPortalUsers()]);
+      renderLeadOwnerOptions(activeLead?.outreach_owner ?? '');
+      renderContactOwnerOptions();
       renderLeadBoard();
-      if (!activeLead) resetLeadForm();
+      if (!activeLead && !leadEditorPanel.hidden) resetLeadForm();
     } catch (error) {
       leadStatus.textContent = 'Savienojuma kļūda';
       const failure = document.createElement('div');
@@ -1967,6 +2101,32 @@ export function initPortalDashboard(): void {
       currentValue && portalUsers.some((user) => user.id === currentValue) ? currentValue : '';
   };
 
+  const renderTaskQuotaOptions = (selectedId?: number | null) => {
+    const selectedTarget = selectedId
+      ? quotaTargets.find((target) => target.id === selectedId)
+      : undefined;
+    const targets = quotaTargets
+      .filter((target) => target.is_active || target.id === selectedId)
+      .sort(
+        (a, b) =>
+          b.week_start.localeCompare(a.week_start) || a.sort_order - b.sort_order || a.id - b.id,
+      );
+    const options = [
+      new Option('Izvēlies kvotu', ''),
+      ...targets.map(
+        (target) =>
+          new Option(
+            `${getQuotaMetricLabel(target)} · nedēļa no ${formatDate(target.week_start)}${
+              target.is_active ? '' : ' · neaktīva'
+            }`,
+            String(target.id),
+          ),
+      ),
+    ];
+    taskQuota.replaceChildren(...options);
+    taskQuota.value = selectedTarget ? String(selectedTarget.id) : '';
+  };
+
   const openUserProfile = (user: PortalUser | null) => {
     activeProfileUser = user;
     userList
@@ -2057,6 +2217,9 @@ export function initPortalDashboard(): void {
     taskControl<HTMLSelectElement>('task_type').value = 'manual';
     taskControl<HTMLSelectElement>('priority').value = 'normal';
     taskControl<HTMLSelectElement>('status').value = 'todo';
+    renderTaskQuotaOptions();
+    taskQuotaField.hidden = true;
+    taskQuota.required = false;
     taskEditorTitle.textContent = 'Jauns uzdevums';
     taskFormState.textContent = 'Nav saglabāts';
     taskFormState.dataset.state = 'draft';
@@ -2065,6 +2228,10 @@ export function initPortalDashboard(): void {
   };
 
   const openTaskEditor = (task: PortalTask | null) => {
+    if (task && role !== 'super-admin' && !isTaskCreatedByCurrentUser(task)) {
+      openTaskDetails(task);
+      return;
+    }
     resetTaskForm();
     activeTask = task;
     if (!task) {
@@ -2075,6 +2242,11 @@ export function initPortalDashboard(): void {
     taskControl<HTMLSelectElement>('assigned_to_user_id').value = task.assigned_to_user_id ?? '';
     taskControl<HTMLInputElement>('due_date').value = task.due_date ?? '';
     taskControl<HTMLSelectElement>('task_type').value = task.task_type;
+    renderTaskQuotaOptions(
+      task.source_module === 'quota-targets' ? task.source_record_id : undefined,
+    );
+    taskQuotaField.hidden = task.task_type !== 'quota';
+    taskQuota.required = task.task_type === 'quota';
     taskControl<HTMLSelectElement>('priority').value = task.priority;
     taskControl<HTMLSelectElement>('status').value = task.status;
     taskControl<HTMLTextAreaElement>('description').value = task.description ?? '';
@@ -2089,8 +2261,12 @@ export function initPortalDashboard(): void {
     description: taskControl<HTMLTextAreaElement>('description').value.trim() || null,
     due_date: taskControl<HTMLInputElement>('due_date').value || null,
     priority: taskControl<HTMLSelectElement>('priority').value,
-    source_module: null,
-    source_record_id: null,
+    source_module:
+      taskControl<HTMLSelectElement>('task_type').value === 'quota' ? 'quota-targets' : null,
+    source_record_id:
+      taskControl<HTMLSelectElement>('task_type').value === 'quota' && taskQuota.value
+        ? Number(taskQuota.value)
+        : null,
     status: taskControl<HTMLSelectElement>('status').value,
     task_type: taskControl<HTMLSelectElement>('task_type').value,
     title: taskControl<HTMLInputElement>('title').value.trim(),
@@ -2101,7 +2277,53 @@ export function initPortalDashboard(): void {
     const priority = taskControl<HTMLSelectElement>('priority');
     if (type === 'bug') priority.value = 'critical';
     if (type === 'new_client') priority.value = 'max';
+    const isQuotaTask = type === 'quota';
+    taskQuotaField.hidden = !isQuotaTask;
+    taskQuota.required = isQuotaTask;
+    if (!isQuotaTask) taskQuota.value = '';
   };
+
+  function openTaskDetails(task: PortalTask) {
+    activeTaskDetail = task;
+    taskDetailTitle.textContent = task.title;
+    const details = document.createElement('dl');
+    details.className = 'portal-detail-list';
+    const quotaTarget =
+      task.source_module === 'quota-targets' && task.source_record_id
+        ? quotaTargets.find((target) => target.id === task.source_record_id)
+        : null;
+    details.append(
+      detailRow('Statuss', taskStatusLabels[task.status]),
+      detailRow('Prioritāte', taskPriorityLabels[task.priority]),
+      detailRow('Tips', taskTypeLabels[task.task_type]),
+      detailRow('Piešķirts', getTaskAssigneeLabel(task)),
+      detailRow('Piešķīra', getTaskCreatorLabel(task)),
+      detailRow('Termiņš', task.due_date ? formatDate(task.due_date) : 'Nav noteikts'),
+      detailRow('Izveidots', formatDateTime(task.created_at)),
+      detailRow(
+        'Pabeigts',
+        task.completed_at ? formatDateTime(task.completed_at) : 'Vēl nav pabeigts',
+      ),
+      ...(quotaTarget
+        ? [
+            detailRow(
+              'Saistītā kvota',
+              `${getQuotaMetricLabel(quotaTarget)} · nedēļa no ${formatDate(quotaTarget.week_start)}`,
+            ),
+          ]
+        : []),
+    );
+    const description = document.createElement('section');
+    description.className = 'portal-detail-notes';
+    description.append(
+      text('h3', 'Apraksts'),
+      text('p', task.description ?? 'Apraksts nav pievienots.'),
+    );
+    taskDetailContent.replaceChildren(details, description);
+    taskDetailEdit.hidden = role !== 'super-admin' && !isTaskCreatedByCurrentUser(task);
+    taskCompleteButton.hidden = !isTaskAssignedToCurrentUser(task) || isTaskClosed(task);
+    if (!taskDetailDialog.open) taskDetailDialog.showModal();
+  }
 
   const renderTaskList = () => {
     const query = taskSearch.value.trim().toLowerCase();
@@ -2156,6 +2378,10 @@ export function initPortalDashboard(): void {
           (a.due_date ?? '9999-12-31').localeCompare(b.due_date ?? '9999-12-31'),
       )
       .forEach((task) => {
+        const linkedQuota =
+          task.source_module === 'quota-targets' && task.source_record_id
+            ? quotaTargets.find((target) => target.id === task.source_record_id)
+            : null;
         const button = document.createElement('button');
         button.type = 'button';
         button.className = 'portal-task-item';
@@ -2170,9 +2396,10 @@ export function initPortalDashboard(): void {
             `${getTaskAssigneeLabel(task)} · ${taskStatusLabels[task.status]}${task.due_date ? ` · ${formatDate(task.due_date)}` : ''}`,
           ),
           text('small', `Piešķīra: ${getTaskCreatorLabel(task)}`),
+          ...(linkedQuota ? [text('small', `Kvota: ${getQuotaMetricLabel(linkedQuota)}`)] : []),
           text('b', taskPriorityLabels[task.priority]),
         );
-        button.addEventListener('click', () => openTaskEditor(task));
+        button.addEventListener('click', () => openTaskDetails(task));
         fragment.append(button);
       });
     taskList.replaceChildren(fragment);
@@ -2193,8 +2420,16 @@ export function initPortalDashboard(): void {
     userStatus.textContent = 'Ielādē…';
 
     try {
-      await Promise.all([loadPortalUsers(), loadPortalTasks()]);
+      await Promise.all([
+        loadPortalUsers(),
+        loadPortalTasks(),
+        loadQuotaMetrics(),
+        loadQuotaTargets(),
+      ]);
       renderUserDirectory();
+      renderTaskQuotaOptions(
+        activeTask?.source_module === 'quota-targets' ? activeTask.source_record_id : undefined,
+      );
       renderTaskList();
       if (!activeTask) resetTaskForm();
     } catch (error) {
@@ -2369,21 +2604,41 @@ export function initPortalDashboard(): void {
     const lead = leads.find((item) => item.id === id);
     if (!lead || lead.status === status) return;
     if (status !== 'not_contacted' && !lead.outreach_owner) {
-      openLeadEditor(lead);
-      setLeadOutreachState(true);
-      leadControl<HTMLSelectElement>('status').value = status;
-      setDirty(true);
-      leadControl<HTMLInputElement>('outreach_owner').focus();
-      notify('Pirms statusa maiņas norādi, kurš uzrunāja lead.', 'error');
+      pendingLeadStatus = { id, status };
+      renderContactOwnerOptions();
+      leadContactCopy.textContent = `${lead.company_name} tiks pārvietots uz “${
+        leadColumns.find((column) => column.status === status)?.label ?? status
+      }”.`;
+      leadContactDialog.showModal();
+      window.setTimeout(() => leadContactOwner.focus(), 0);
       return;
     }
     try {
+      const statusData =
+        status === 'not_contacted'
+          ? {
+              contacted_at: null,
+              follow_up_enabled: false,
+              outreach_owner: null,
+              status,
+            }
+          : {
+              ...(lead.status === 'not_contacted'
+                ? {
+                    contact_channel:
+                      getContactChannelFromPlatform(lead.found_on) ?? lead.contact_channel,
+                    contacted_at: lead.contacted_at ?? toDateInputValue(new Date()),
+                  }
+                : {}),
+              status,
+            };
       const response = await request<{ data: PortalLead }>('/api/portal/leads', {
         method: 'PATCH',
-        body: JSON.stringify({ id, data: { status } }),
+        body: JSON.stringify({ id, data: statusData }),
       });
       leads = leads.map((item) => (item.id === id ? response.data : item));
       if (activeLead?.id === id) openLeadEditor(response.data);
+      if (activeLeadDetail?.id === id) activeLeadDetail = response.data;
       renderLeadBoard();
       notify('Lead statuss atjaunināts.');
     } catch (error) {
@@ -2483,10 +2738,11 @@ export function initPortalDashboard(): void {
       updateCount('leads', leads.length);
       renderLeadBoard();
       if (isCreatingLead) {
-        openLeadEditor(null);
-        notify('Lead ir saglabāts. Forma ir notīrīta nākamajam lead.');
+        closeLeadEditor();
+        notify('Lead ir saglabāts un pievienots plūsmai.');
       } else {
         activeLead = response.data;
+        if (activeLeadDetail?.id === response.data.id) activeLeadDetail = response.data;
         openLeadEditor(response.data);
         notify('Lead ir saglabāts.');
       }
@@ -2651,6 +2907,7 @@ export function initPortalDashboard(): void {
   taskSearch.addEventListener('input', renderTaskList);
   taskScope.addEventListener('change', renderTaskList);
   taskAssignee.addEventListener('change', () => setDirty(true));
+  taskQuota.addEventListener('change', () => setDirty(true));
   taskControl<HTMLSelectElement>('task_type').addEventListener('change', () => {
     syncPriorityForTaskType();
     setDirty(true);
@@ -2689,11 +2946,119 @@ export function initPortalDashboard(): void {
   });
 
   leadResetButton.addEventListener('click', () => void afterDiscard(() => openLeadEditor(null)));
+  leadEditorClose.addEventListener('click', () => void afterDiscard(closeLeadEditor));
   priceResetButton.addEventListener('click', () => void afterDiscard(() => openPriceEditor(null)));
   quotaResetButton.addEventListener('click', () => void afterDiscard(() => openQuotaEditor(null)));
   taskResetButton.addEventListener('click', () => void afterDiscard(() => openTaskEditor(null)));
   templateResetButton.addEventListener('click', () => {
     void afterDiscard(() => openTemplateEditor(activeTemplate));
+  });
+
+  root
+    .querySelectorAll<HTMLButtonElement>('[data-lead-detail-close], [data-lead-detail-dismiss]')
+    .forEach((button) => button.addEventListener('click', () => leadDetailDialog.close()));
+  leadDetailEdit.addEventListener('click', () => {
+    if (!activeLeadDetail) return;
+    const lead = activeLeadDetail;
+    leadDetailDialog.close();
+    openLeadEditor(lead);
+  });
+  leadDetailDialog.addEventListener('close', () => {
+    activeLeadDetail = null;
+  });
+
+  root
+    .querySelectorAll<HTMLButtonElement>('[data-task-detail-close], [data-task-detail-dismiss]')
+    .forEach((button) => button.addEventListener('click', () => taskDetailDialog.close()));
+  taskDetailEdit.addEventListener('click', () => {
+    if (!activeTaskDetail) return;
+    const task = activeTaskDetail;
+    taskDetailDialog.close();
+    openTaskEditor(task);
+    window.setTimeout(() => {
+      document.querySelector('[data-task-editor-title]')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }, 0);
+  });
+  taskCompleteButton.addEventListener('click', async () => {
+    if (!activeTaskDetail || !isTaskAssignedToCurrentUser(activeTaskDetail)) return;
+    taskCompleteButton.disabled = true;
+    taskCompleteButton.textContent = 'Saglabā…';
+    try {
+      const response = await request<{ data: PortalTask }>('/api/portal/tasks', {
+        method: 'PATCH',
+        body: JSON.stringify({ id: activeTaskDetail.id, data: { status: 'done' } }),
+      });
+      portalTasks = portalTasks.map((task) =>
+        task.id === response.data.id ? response.data : task,
+      );
+      activeTaskDetail = response.data;
+      updateCount('portal_tasks', portalTasks.filter((task) => !isTaskClosed(task)).length);
+      renderUserDirectory();
+      renderTaskList();
+      openTaskDetails(response.data);
+      notify('Uzdevums atzīmēts kā pabeigts.');
+    } catch (error) {
+      notify(error instanceof Error ? error.message : 'Statusu neizdevās mainīt.', 'error');
+    } finally {
+      taskCompleteButton.disabled = false;
+      taskCompleteButton.textContent = 'Atzīmēt kā pabeigtu';
+    }
+  });
+  taskDetailDialog.addEventListener('close', () => {
+    activeTaskDetail = null;
+  });
+
+  const closeLeadContactDialog = () => {
+    pendingLeadStatus = null;
+    if (leadContactDialog.open) leadContactDialog.close();
+  };
+  root
+    .querySelectorAll<HTMLButtonElement>('[data-lead-contact-close], [data-lead-contact-cancel]')
+    .forEach((button) => button.addEventListener('click', closeLeadContactDialog));
+  leadContactDialog.addEventListener('close', () => {
+    pendingLeadStatus = null;
+  });
+  leadContactForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!pendingLeadStatus) return;
+    const pending = pendingLeadStatus;
+    const lead = leads.find((item) => item.id === pending.id);
+    const owner = portalUsers.find((user) => user.id === leadContactOwner.value);
+    if (!lead || !owner) {
+      notify('Izvēlies lietotāju, kurš uzrunāja lead.', 'error');
+      leadContactOwner.focus();
+      return;
+    }
+    const submit = leadContactForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (!submit) return;
+    submit.disabled = true;
+    submit.textContent = 'Saglabā…';
+    try {
+      const response = await request<{ data: PortalLead }>('/api/portal/leads', {
+        method: 'PATCH',
+        body: JSON.stringify({
+          id: lead.id,
+          data: {
+            contact_channel: getContactChannelFromPlatform(lead.found_on) ?? lead.contact_channel,
+            contacted_at: lead.contacted_at ?? toDateInputValue(new Date()),
+            outreach_owner: owner.display_name || owner.email,
+            status: pending.status,
+          },
+        }),
+      });
+      leads = leads.map((item) => (item.id === response.data.id ? response.data : item));
+      renderLeadBoard();
+      closeLeadContactDialog();
+      notify('Lead statuss un uzrunātājs atjaunināti.');
+    } catch (error) {
+      notify(error instanceof Error ? error.message : 'Statusu neizdevās mainīt.', 'error');
+    } finally {
+      submit.disabled = false;
+      submit.textContent = 'Saglabāt un pārvietot';
+    }
   });
 
   deleteButton.addEventListener('click', () => {
