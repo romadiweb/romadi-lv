@@ -173,6 +173,79 @@ const hasMultipleReviews = reviews.length > 1;
           </div>
         )}
       </div>
+
+      <template data-review-card-template>
+        <article class="reviews__card" data-review-card>
+          <div class="reviews__brand">
+            <img
+              data-review-logo
+              src=""
+              alt=""
+              width="480"
+              height="240"
+              loading="lazy"
+              decoding="async"
+            />
+            <span data-review-mark aria-hidden="true">
+              R
+            </span>
+          </div>
+
+          <blockquote class="reviews__quote" data-review-quote />
+
+          <footer class="reviews__footer">
+            <div>
+              <strong data-reviewer-name />
+              <span data-reviewer-role />
+              <span data-review-pending>Apstiprinātais teksts vēl tiek gaidīts</span>
+            </div>
+
+            <a data-review-link href="" target="_blank" rel="noopener noreferrer">
+              <span data-review-link-label />
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M7 5h8v8M15 5l-9.5 9.5" />
+              </svg>
+            </a>
+          </footer>
+        </article>
+      </template>
+
+      <template data-review-stack-template>
+        <div class="reviews__stack" data-review-stack />
+      </template>
+
+      <template data-review-navigation-template>
+        <div class="reviews__navigation" aria-label="Atsauksmju navigācija" data-review-navigation>
+          <button type="button" data-review-previous aria-label="Iepriekšējā atsauksme">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </button>
+
+          <div class="reviews__position" aria-live="polite" aria-atomic="true">
+            <span data-review-current>01</span>
+            <span aria-hidden="true">/</span>
+            <span data-review-total />
+          </div>
+
+          <div
+            class="reviews__dots"
+            role="group"
+            aria-label="Izvēlēties atsauksmi"
+            data-review-dots
+          />
+
+          <button type="button" data-review-next aria-label="Nākamā atsauksme">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </button>
+        </div>
+      </template>
+
+      <template data-review-dot-template>
+        <button type="button" data-review-dot aria-current="false" />
+      </template>
     </section>
   )
 }
@@ -201,146 +274,99 @@ const hasMultipleReviews = reviews.length > 1;
     }
   };
 
-  const createSvgPath = (pathData: string): SVGSVGElement => {
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    svg.setAttribute('viewBox', '0 0 24 24');
-    svg.setAttribute('aria-hidden', 'true');
-    path.setAttribute('d', pathData);
-    svg.append(path);
-    return svg;
+  const cloneTemplateElement = (
+    template: HTMLTemplateElement | null,
+    label: string,
+  ): HTMLElement | null => {
+    const element = template?.content.firstElementChild?.cloneNode(true);
+    if (element instanceof HTMLElement) return element;
+    console.warn(`Missing reviews template: ${label}`);
+    return null;
   };
 
-  const createReviewCard = (review: ClientReview, index: number): HTMLElement => {
-    const card = document.createElement('article');
-    card.className = 'reviews__card';
-    card.dataset.reviewCard = '';
+  const createReviewCard = (
+    review: ClientReview,
+    index: number,
+    template: HTMLTemplateElement,
+  ): HTMLElement | null => {
+    const card = cloneTemplateElement(template, 'card');
+    if (!card) return null;
+
     card.dataset.reviewSlug = review.slug;
     card.setAttribute('aria-hidden', index === 0 ? 'false' : 'true');
     card.hidden = index !== 0;
 
-    const brand = document.createElement('div');
-    brand.className = 'reviews__brand';
+    const logo = card.querySelector<HTMLImageElement>('[data-review-logo]');
+    const mark = card.querySelector<HTMLElement>('[data-review-mark]');
 
-    if (review.logo_url) {
-      const logo = document.createElement('img');
-      logo.src = review.logo_url;
-      logo.alt = '';
-      logo.width = 480;
-      logo.height = 240;
-      logo.loading = 'lazy';
-      logo.decoding = 'async';
-      brand.append(logo);
-    } else {
-      const mark = document.createElement('span');
-      mark.setAttribute('aria-hidden', 'true');
-      mark.textContent = 'R';
-      brand.append(mark);
+    if (logo) {
+      if (review.logo_url) {
+        logo.src = review.logo_url;
+        logo.hidden = false;
+      } else {
+        logo.removeAttribute('src');
+        logo.hidden = true;
+      }
     }
+    if (mark) mark.hidden = Boolean(review.logo_url);
 
-    const quote = document.createElement('blockquote');
+    const quote = card.querySelector<HTMLElement>('[data-review-quote]');
+    if (!quote) return card;
     quote.className = 'reviews__quote';
     if (review.quote && review.quote.length > 180) quote.classList.add('reviews__quote--long');
     if (!review.quote) quote.classList.add('reviews__quote--pending');
     quote.textContent = review.quote ?? 'Atsauksmes teksts tiks pievienots drīzumā.';
 
-    const footer = document.createElement('footer');
-    footer.className = 'reviews__footer';
+    const reviewerName = card.querySelector<HTMLElement>('[data-reviewer-name]');
+    const role = card.querySelector<HTMLElement>('[data-reviewer-role]');
+    const pending = card.querySelector<HTMLElement>('[data-review-pending]');
+    const link = card.querySelector<HTMLAnchorElement>('[data-review-link]');
+    const linkLabel = card.querySelector<HTMLElement>('[data-review-link-label]');
 
-    const reviewer = document.createElement('div');
-    const reviewerName = document.createElement('strong');
-    reviewerName.textContent = review.reviewer_name ?? review.client_name;
-    reviewer.append(reviewerName);
-
-    if (review.reviewer_role) {
-      const role = document.createElement('span');
-      role.textContent = review.reviewer_role;
-      reviewer.append(role);
+    if (reviewerName) {
+      reviewerName.textContent = review.reviewer_name ?? review.client_name;
     }
-
-    if (!review.quote) {
-      const pending = document.createElement('span');
-      pending.textContent = 'Apstiprinātais teksts vēl tiek gaidīts';
-      reviewer.append(pending);
+    if (role) {
+      role.textContent = review.reviewer_role ?? '';
+      role.hidden = !review.reviewer_role;
     }
+    if (pending) pending.hidden = Boolean(review.quote);
 
-    footer.append(reviewer);
-
-    if (review.client_url) {
-      const link = document.createElement('a');
+    if (link && linkLabel && review.client_url) {
       link.href = review.client_url;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-
-      const label = document.createElement('span');
-      label.textContent = getLinkLabel(review.client_url);
-      link.append(label);
-
-      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      svg.setAttribute('viewBox', '0 0 20 20');
-      svg.setAttribute('aria-hidden', 'true');
-      path.setAttribute('d', 'M7 5h8v8M15 5l-9.5 9.5');
-      svg.append(path);
-      link.append(svg);
-
-      footer.append(link);
+      linkLabel.textContent = getLinkLabel(review.client_url);
+      link.hidden = false;
+    } else if (link) {
+      link.hidden = true;
     }
 
-    card.append(brand, quote, footer);
     return card;
   };
 
-  const createReviewsNavigation = (reviews: ClientReview[]): HTMLElement | null => {
+  const createReviewsNavigation = (
+    reviews: ClientReview[],
+    navigationTemplate: HTMLTemplateElement,
+    dotTemplate: HTMLTemplateElement,
+  ): HTMLElement | null => {
     if (reviews.length < 2) return null;
 
-    const navigation = document.createElement('div');
-    navigation.className = 'reviews__navigation';
-    navigation.dataset.reviewNavigation = '';
-    navigation.setAttribute('aria-label', 'Atsauksmju navigācija');
+    const navigation = cloneTemplateElement(navigationTemplate, 'navigation');
+    if (!navigation) return null;
 
-    const previous = document.createElement('button');
-    previous.type = 'button';
-    previous.dataset.reviewPrevious = '';
-    previous.setAttribute('aria-label', 'Iepriekšējā atsauksme');
-    previous.append(createSvgPath('m15 18-6-6 6-6'));
+    const total = navigation.querySelector<HTMLElement>('[data-review-total]');
+    const dots = navigation.querySelector<HTMLElement>('[data-review-dots]');
+    if (total) total.textContent = String(reviews.length).padStart(2, '0');
 
-    const position = document.createElement('div');
-    position.className = 'reviews__position';
-    position.setAttribute('aria-live', 'polite');
-    position.setAttribute('aria-atomic', 'true');
-
-    const current = document.createElement('span');
-    current.dataset.reviewCurrent = '';
-    current.textContent = '01';
-    const slash = document.createElement('span');
-    slash.setAttribute('aria-hidden', 'true');
-    slash.textContent = '/';
-    const total = document.createElement('span');
-    total.textContent = String(reviews.length).padStart(2, '0');
-    position.append(current, slash, total);
-
-    const dots = document.createElement('div');
-    dots.className = 'reviews__dots';
-    dots.setAttribute('role', 'group');
-    dots.setAttribute('aria-label', 'Izvēlēties atsauksmi');
-
-    reviews.forEach((review, index) => {
-      const dot = document.createElement('button');
-      dot.type = 'button';
+    const dotElements = reviews.flatMap((review, index) => {
+      const dot = cloneTemplateElement(dotTemplate, 'dot');
+      if (!(dot instanceof HTMLButtonElement)) return [];
       dot.dataset.reviewDot = String(index);
       dot.setAttribute('aria-label', `Rādīt ${review.client_name} atsauksmi`);
       dot.setAttribute('aria-current', index === 0 ? 'true' : 'false');
-      dots.append(dot);
+      return [dot];
     });
 
-    const next = document.createElement('button');
-    next.type = 'button';
-    next.dataset.reviewNext = '';
-    next.setAttribute('aria-label', 'Nākamā atsauksme');
-    next.append(createSvgPath('m9 18 6-6-6-6'));
-
-    navigation.append(previous, position, dots, next);
+    dots?.replaceChildren(...dotElements);
     return navigation;
   };
 
@@ -352,7 +378,28 @@ const hasMultipleReviews = reviews.length > 1;
       Array.from(document.querySelectorAll<HTMLElement>('[data-reviews]')).map(async (section) => {
         const stage = section.querySelector<HTMLElement>('.reviews__stage');
         const stack = section.querySelector<HTMLElement>('[data-review-stack]');
-        if (!stage || !stack) return;
+        const stackTemplate = section.querySelector<HTMLTemplateElement>(
+          '[data-review-stack-template]',
+        );
+        const cardTemplate = section.querySelector<HTMLTemplateElement>(
+          '[data-review-card-template]',
+        );
+        const navigationTemplate = section.querySelector<HTMLTemplateElement>(
+          '[data-review-navigation-template]',
+        );
+        const dotTemplate = section.querySelector<HTMLTemplateElement>(
+          '[data-review-dot-template]',
+        );
+        if (
+          !stage ||
+          !stack ||
+          !stackTemplate ||
+          !cardTemplate ||
+          !navigationTemplate ||
+          !dotTemplate
+        ) {
+          return;
+        }
 
         const requestedSlugs = JSON.parse(section.dataset.reviewSlugs || '[]') as string[];
 
@@ -381,16 +428,20 @@ const hasMultipleReviews = reviews.length > 1;
 
         if (reviews.length === 0) return;
 
-        const nextStack = document.createElement('div');
-        nextStack.className = 'reviews__stack';
-        nextStack.dataset.reviewStack = '';
+        const nextStack = cloneTemplateElement(stackTemplate, 'stack');
+        if (!nextStack) return;
         if (reviews.length < 2) nextStack.classList.add('reviews__stack--single');
-        nextStack.replaceChildren(...reviews.map(createReviewCard));
+        nextStack.replaceChildren(
+          ...reviews.flatMap((review, index) => {
+            const card = createReviewCard(review, index, cardTemplate);
+            return card ? [card] : [];
+          }),
+        );
 
         stack.replaceWith(nextStack);
         section.querySelector<HTMLElement>('[data-review-navigation]')?.remove();
 
-        const navigation = createReviewsNavigation(reviews);
+        const navigation = createReviewsNavigation(reviews, navigationTemplate, dotTemplate);
         if (navigation) stage.append(navigation);
 
         section.dataset.reviewCount = String(reviews.length);
