@@ -32,7 +32,26 @@ if (!existingCsrf) {
     data-user-email={identity.email}
     data-csrf={csrfToken}
   >
-    <aside class="portal-sidebar">
+    <button
+      type="button"
+      class="portal-mobile-menu-button"
+      data-mobile-menu-toggle
+      aria-expanded="false"
+      aria-controls="portal-sidebar"
+      aria-label="Atvērt portāla izvēlni"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 7h16M4 12h16M4 17h16"></path>
+      </svg>
+    </button>
+    <button
+      type="button"
+      class="portal-sidebar-backdrop"
+      data-mobile-menu-close
+      aria-label="Aizvērt portāla izvēlni"
+      hidden></button>
+
+    <aside class="portal-sidebar" id="portal-sidebar">
       <button
         type="button"
         class="portal-sidebar-brand"

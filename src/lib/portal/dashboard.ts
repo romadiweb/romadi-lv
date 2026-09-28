@@ -127,6 +127,22 @@ const taskTypeLabels: Record<TaskType, string> = {
   quota: 'Kvotas darbs',
 };
 
+const fallbackQuotaMetrics: PortalQuotaMetric[] = [
+  {
+    area_key: 'getapro',
+    area_label: 'GetaPro',
+    calculation_key: 'completed-quota-tasks',
+    created_at: '',
+    description: 'Pabeigtie uzdevumi, kas piesaistīti šīs nedēļas GetaPro piedāvājumu kvotai.',
+    id: -1,
+    is_active: true,
+    metric_key: 'sent-proposals',
+    metric_label: 'Izsūtītie piedāvājumi',
+    sort_order: 10,
+    updated_at: '',
+  },
+];
+
 const definitions: Record<Resource, ResourceDefinition> = {
   projects: {
     title: 'Projekti',
@@ -563,6 +579,24 @@ export function initPortalDashboard(): void {
     if (counter) counter.textContent = String(count);
   };
 
+  const activeQuotaTargetCount = () => quotaTargets.filter((target) => target.is_active).length;
+
+  const withFallbackQuotaMetrics = (metrics: PortalQuotaMetric[]) => {
+    const metricMap = new Map(
+      metrics.map((metric) => [`${metric.area_key}:${metric.metric_key}`, metric]),
+    );
+    fallbackQuotaMetrics.forEach((metric) => {
+      const key = `${metric.area_key}:${metric.metric_key}`;
+      if (!metricMap.has(key)) metricMap.set(key, metric);
+    });
+    return [...metricMap.values()].sort(
+      (a, b) =>
+        a.area_label.localeCompare(b.area_label, 'lv-LV') ||
+        a.sort_order - b.sort_order ||
+        a.metric_label.localeCompare(b.metric_label, 'lv-LV'),
+    );
+  };
+
   const setNavState = (view: View) => {
     root
       .querySelectorAll<HTMLButtonElement>('[data-resource], [data-section]')
@@ -611,14 +645,14 @@ export function initPortalDashboard(): void {
     if (!force && quotaTargets.length > 0) return quotaTargets;
     const response = await request<{ data: PortalQuotaTarget[] }>('/api/portal/quota-targets');
     quotaTargets = response.data;
-    updateCount('portal_quota_targets', quotaTargets.length);
+    updateCount('portal_quota_targets', activeQuotaTargetCount());
     return quotaTargets;
   };
 
   const loadQuotaMetrics = async (force = false): Promise<PortalQuotaMetric[]> => {
     if (!force && quotaMetrics.length > 0) return quotaMetrics;
     const response = await request<{ data: PortalQuotaMetric[] }>('/api/portal/quota-metrics');
-    quotaMetrics = response.data;
+    quotaMetrics = withFallbackQuotaMetrics(response.data);
     return quotaMetrics;
   };
 
@@ -2023,9 +2057,13 @@ export function initPortalDashboard(): void {
     const weekTargets = quotaTargets
       .filter((target) => target.week_start === selectedWeek)
       .sort((a, b) => a.sort_order - b.sort_order || a.id - b.id);
-    quotaStatus.textContent = `${weekTargets.length} kvotas šai nedēļai`;
+    const activeWeekTargets = weekTargets.filter((target) => target.is_active);
+    quotaStatus.textContent =
+      activeWeekTargets.length === 1
+        ? '1 aktīva kvota šai nedēļai'
+        : `${activeWeekTargets.length} aktīvas kvotas šai nedēļai`;
 
-    if (weekTargets.length === 0) {
+    if (activeWeekTargets.length === 0) {
       quotaProgress.replaceChildren();
       const empty = document.createElement('div');
       empty.className = 'portal-list-empty';
@@ -2038,30 +2076,28 @@ export function initPortalDashboard(): void {
     }
 
     const progressFragment = document.createDocumentFragment();
-    weekTargets
-      .filter((target) => target.is_active)
-      .forEach((target) => {
-        const value = getQuotaProgress(target);
-        const percent = Math.min(100, Math.round((value / target.target_value) * 100));
-        const taskCount = getQuotaTaskCount(target);
-        const card = document.createElement('article');
-        card.className = 'portal-quota-progress-card';
-        card.append(
-          text('strong', target.label),
-          text('span', `${value} / ${target.target_value}`),
-          text(
-            'small',
-            `${getQuotaAreaLabel(target.module)} · ${getQuotaMetricLabel(target)} · ${percent}%`,
-          ),
-          text('small', taskCount === 1 ? '1 aktīvs uzdevums' : `${taskCount} aktīvi uzdevumi`),
-        );
-        card.style.setProperty('--quota-progress', `${percent}%`);
-        progressFragment.append(card);
-      });
+    activeWeekTargets.forEach((target) => {
+      const value = getQuotaProgress(target);
+      const percent = Math.min(100, Math.round((value / target.target_value) * 100));
+      const taskCount = getQuotaTaskCount(target);
+      const card = document.createElement('article');
+      card.className = 'portal-quota-progress-card';
+      card.append(
+        text('strong', target.label),
+        text('span', `${value} / ${target.target_value}`),
+        text(
+          'small',
+          `${getQuotaAreaLabel(target.module)} · ${getQuotaMetricLabel(target)} · ${percent}%`,
+        ),
+        text('small', taskCount === 1 ? '1 aktīvs uzdevums' : `${taskCount} aktīvi uzdevumi`),
+      );
+      card.style.setProperty('--quota-progress', `${percent}%`);
+      progressFragment.append(card);
+    });
     quotaProgress.replaceChildren(progressFragment);
 
     const listFragment = document.createDocumentFragment();
-    weekTargets.forEach((target) => {
+    activeWeekTargets.forEach((target) => {
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'portal-quota-item';
@@ -2855,7 +2891,7 @@ export function initPortalDashboard(): void {
         quotaTargets = [response.data, ...quotaTargets];
       }
       activeQuotaTarget = response.data;
-      updateCount('portal_quota_targets', quotaTargets.length);
+      updateCount('portal_quota_targets', activeQuotaTargetCount());
       quotaWeek.value = response.data.week_start;
       renderQuotaBoard();
       openQuotaEditor(response.data);
@@ -3184,7 +3220,7 @@ export function initPortalDashboard(): void {
         quotaTargets = quotaTargets.filter((target) => target.id !== activeQuotaTarget?.id);
         activeQuotaTarget = null;
         setDirty(false);
-        updateCount('portal_quota_targets', quotaTargets.length);
+        updateCount('portal_quota_targets', activeQuotaTargetCount());
         resetQuotaForm();
         renderQuotaBoard();
         notify('Kvota ir dzēsta.');
@@ -3298,7 +3334,19 @@ export function initPortalDashboard(): void {
     });
   });
 
+  const mobileMenuToggle = $<HTMLButtonElement>(root, '[data-mobile-menu-toggle]');
+  const mobileMenuClose = $<HTMLButtonElement>(root, '[data-mobile-menu-close]');
+  const mobileMenuQuery = window.matchMedia('(max-width: 960px)');
   const sidebarToggle = $<HTMLButtonElement>(root, '[data-sidebar-toggle]');
+  const setMobileSidebarOpen = (open: boolean) => {
+    root.classList.toggle('is-mobile-sidebar-open', open);
+    mobileMenuToggle.setAttribute('aria-expanded', String(open));
+    mobileMenuToggle.setAttribute(
+      'aria-label',
+      open ? 'Aizvērt portāla izvēlni' : 'Atvērt portāla izvēlni',
+    );
+    mobileMenuClose.hidden = !open;
+  };
   const setSidebarCollapsed = (collapsed: boolean) => {
     root.classList.toggle('is-sidebar-collapsed', collapsed);
     sidebarToggle.setAttribute('aria-expanded', String(!collapsed));
@@ -3317,6 +3365,10 @@ export function initPortalDashboard(): void {
   }
 
   sidebarToggle.addEventListener('click', () => {
+    if (mobileMenuQuery.matches) {
+      setMobileSidebarOpen(false);
+      return;
+    }
     const collapsed = !root.classList.contains('is-sidebar-collapsed');
     setSidebarCollapsed(collapsed);
     try {
@@ -3325,6 +3377,29 @@ export function initPortalDashboard(): void {
       // The navigation still works when storage is unavailable.
     }
   });
+
+  mobileMenuToggle.addEventListener('click', () => {
+    setMobileSidebarOpen(!root.classList.contains('is-mobile-sidebar-open'));
+  });
+  mobileMenuClose.addEventListener('click', () => setMobileSidebarOpen(false));
+  mobileMenuQuery.addEventListener('change', (event) => {
+    if (!event.matches) setMobileSidebarOpen(false);
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && root.classList.contains('is-mobile-sidebar-open')) {
+      setMobileSidebarOpen(false);
+      mobileMenuToggle.focus();
+    }
+  });
+  root
+    .querySelectorAll<HTMLButtonElement>(
+      '.portal-nav button:not([disabled]), [data-dashboard-brand]',
+    )
+    .forEach((button) =>
+      button.addEventListener('click', () => {
+        if (mobileMenuQuery.matches) setMobileSidebarOpen(false);
+      }),
+    );
 
   $<HTMLButtonElement>(root, '[data-logout]').addEventListener('click', async () => {
     if (!(await confirmDiscard())) return;

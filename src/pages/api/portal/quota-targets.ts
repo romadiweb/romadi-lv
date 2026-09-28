@@ -18,6 +18,20 @@ type PortalSupabase = SupabaseClient<Database>;
 
 const migrationName = '20260922105558_create_portal_quotas_and_tasks.sql';
 
+const fallbackQuotaMetrics = [
+  {
+    area_key: 'getapro',
+    metric_key: 'sent-proposals',
+    metric_label: 'Izsūtītie piedāvājumi',
+    is_active: true,
+  },
+] satisfies Array<{
+  area_key: string;
+  metric_key: string;
+  metric_label: string;
+  is_active: boolean;
+}>;
+
 const readJsonBody = async (request: Request): Promise<unknown> => {
   const declaredLength = Number(request.headers.get('content-length') ?? 0);
   if (declaredLength > 100_000) throw new PortalRequestError('Request is too large', 413);
@@ -70,7 +84,13 @@ const resolveQuotaMetric = async (supabase: PortalSupabase, areaKey: string, met
     .maybeSingle();
 
   if (result.error) throw result.error;
-  if (!result.data) throw new PortalRequestError('Izvēlētais kvotas rādītājs nav atrasts.', 422);
+  if (!result.data) {
+    const fallbackMetric = fallbackQuotaMetrics.find(
+      (metric) => metric.area_key === areaKey && metric.metric_key === metricKey,
+    );
+    if (fallbackMetric) return fallbackMetric;
+    throw new PortalRequestError('Izvēlētais kvotas rādītājs nav atrasts.', 422);
+  }
   return result.data;
 };
 
