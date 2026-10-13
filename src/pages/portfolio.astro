@@ -2,8 +2,6 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { getPublishedPortfolioProjects, type PortfolioProject } from '@/lib/projects';
 
-export const prerender = false;
-
 const fallbackBySlug: Record<string, Partial<PortfolioProject>> = {
   'diana-hunt': {
     summary:
