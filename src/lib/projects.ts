@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { createPortalAdminClient } from '@/lib/portal/supabase-server';
 import type { Project } from '@/types/database';
 
 export type ProjectProof = Pick<Project, 'id' | 'name' | 'slug' | 'logo_url' | 'sort_order'>;
@@ -140,10 +141,11 @@ const warnProjectQueryFailure = (scope: string, error: unknown): void => {
 
 export async function getPublishedWebsiteProjects(): Promise<ProjectProof[]> {
   const fallbackProjects = getFallbackProjectProofs();
-  if (!supabase) return fallbackProjects;
+  const client = createPortalAdminClient() ?? supabase;
+  if (!client) return fallbackProjects;
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await client
       .from('projects')
       .select('id, name, slug, logo_url, sort_order')
       .eq('type', 'website')
@@ -166,10 +168,11 @@ export async function getPublishedWebsiteProjects(): Promise<ProjectProof[]> {
 
 export async function getPublishedPortfolioProjects(): Promise<PortfolioProject[]> {
   const fallbackProjects = getFallbackPortfolioProjects();
-  if (!supabase) return fallbackProjects;
+  const client = createPortalAdminClient() ?? supabase;
+  if (!client) return fallbackProjects;
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await client
       .from('projects')
       .select(
         'id, slug, name, type, summary, logo_url, portfolio_image_url, project_url, alt_text, build_platform, status, challenge, solution, features, technologies, integrations, sort_order, is_featured, completed_at',
