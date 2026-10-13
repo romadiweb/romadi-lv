@@ -140,9 +140,9 @@ const projects = dbProjects.map((project) => {
 });
 
 const showcaseOrder = ['liepajas-teltis', 'diana-hunt', 'rtu-liepajas-jurniecibas-koledza'];
-const showcaseProjects = [...projects].sort(
-  (a, b) => showcaseOrder.indexOf(a.slug) - showcaseOrder.indexOf(b.slug),
-);
+const showcaseProjects = showcaseOrder
+  .map((slug) => projects.find((project) => project.slug === slug))
+  .filter((project): project is (typeof projects)[number] => Boolean(project));
 ---
 
 <BaseLayout
@@ -192,6 +192,24 @@ const showcaseProjects = [...projects].sort(
                   />
                 </picture>
               </figure>
+            ))
+          }
+        </div>
+
+        <div class="portfolio-showcase__tabs" role="tablist" aria-label="Projektu kategorijas">
+          {
+            showcaseProjects.map((project, index) => (
+              <button
+                class:list={['portfolio-showcase__tab', { 'is-active': index === 0 }]}
+                type="button"
+                role="tab"
+                aria-selected={index === 0 ? 'true' : 'false'}
+                data-showcase-tab={project.slug}
+              >
+                <span>{String(index + 1).padStart(2, '0')} / Kategorija</span>
+                <strong>{categoryBySlug[project.slug]?.name ?? 'Mājaslapas'}</strong>
+                <small>{categoryBySlug[project.slug]?.description ?? project.summary}</small>
+              </button>
             ))
           }
         </div>
@@ -460,6 +478,89 @@ const showcaseProjects = [...projects].sort(
 </BaseLayout>
 
 <script>
+  const initPortfolioShowcase = () => {
+    document.querySelectorAll<HTMLElement>('[data-portfolio-showcase]').forEach((showcase) => {
+      if (showcase.dataset.showcaseReady === 'true') return;
+
+      const tabs = Array.from(showcase.querySelectorAll<HTMLButtonElement>('[data-showcase-tab]'));
+      const visuals = Array.from(showcase.querySelectorAll<HTMLElement>('[data-showcase-visual]'));
+      const frame = showcase.querySelector<HTMLElement>('.portfolio-showcase__frame');
+      const mobileViewport = window.matchMedia('(max-width: 640px)');
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      let activeIndex = Math.max(
+        0,
+        tabs.findIndex((tab) => tab.classList.contains('is-active')),
+      );
+
+      if (tabs.length < 2) return;
+      showcase.dataset.showcaseReady = 'true';
+
+      const activate = (nextIndex: number, scrollToFrame = false) => {
+        const normalizedIndex = (nextIndex + tabs.length) % tabs.length;
+        const selectedTab = tabs[normalizedIndex]!;
+        const selected = selectedTab.dataset.showcaseTab;
+
+        if (normalizedIndex === activeIndex) {
+          selectedTab.classList.remove('is-active');
+          void selectedTab.offsetWidth;
+        }
+
+        tabs.forEach((item, index) => {
+          const active = index === normalizedIndex;
+          item.classList.toggle('is-active', active);
+          item.setAttribute('aria-selected', String(active));
+        });
+
+        visuals.forEach((visual) => {
+          visual.classList.toggle('is-active', visual.dataset.showcaseVisual === selected);
+        });
+
+        activeIndex = normalizedIndex;
+
+        if (scrollToFrame && mobileViewport.matches && frame) {
+          requestAnimationFrame(() => {
+            frame.scrollIntoView({
+              behavior: reducedMotion.matches ? 'auto' : 'smooth',
+              block: 'start',
+            });
+          });
+        }
+      };
+
+      tabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => {
+          activate(index, true);
+        });
+
+        tab.addEventListener('animationend', (event) => {
+          if (
+            reducedMotion.matches ||
+            event.animationName !== 'portfolio-showcase-progress' ||
+            event.pseudoElement !== '::after' ||
+            !tab.classList.contains('is-active')
+          ) {
+            return;
+          }
+
+          activate(index + 1);
+        });
+      });
+
+      showcase.addEventListener('focusin', (event) => {
+        const target = event.target as HTMLElement | null;
+        if (target?.matches(':focus-visible')) {
+          showcase.dataset.autoplayPaused = 'true';
+        }
+      });
+
+      showcase.addEventListener('focusout', (event) => {
+        if (!showcase.contains(event.relatedTarget as Node | null)) {
+          delete showcase.dataset.autoplayPaused;
+        }
+      });
+    });
+  };
+
   const initLiquidCanvas = () => {
     document.querySelectorAll<HTMLCanvasElement>('[data-liquid-canvas]').forEach((canvas) => {
       if (canvas.dataset.liquidReady === 'true') return;
@@ -641,6 +742,7 @@ const showcaseProjects = [...projects].sort(
   };
 
   document.addEventListener('astro:page-load', () => {
+    initPortfolioShowcase();
     initLiquidCanvas();
     initProjectDialogs();
   });
@@ -721,6 +823,11 @@ const showcaseProjects = [...projects].sort(
 
   .portfolio-showcase__header,
   .portfolio-showcase__frame,
+  .portfolio-showcase__tabs {
+    position: relative;
+    z-index: 1;
+  }
+
   .portfolio-showcase__header {
     padding: clamp(2.5rem, 4vw, 4rem) 2rem 2rem;
     text-align: center;
@@ -863,6 +970,78 @@ const showcaseProjects = [...projects].sort(
     object-position: center;
 
     background: #111315;
+  }
+
+  .portfolio-showcase__tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem;
+    padding: 2rem 2.5rem 1.75rem;
+    background: #1b1b1c;
+  }
+
+  .portfolio-showcase__tab {
+    position: relative;
+    min-width: 0;
+    padding: 0 0 1.5rem;
+    border: 0;
+    border-bottom: 1px solid #3d3d3f;
+    background: transparent;
+    color: #6f6f72;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .portfolio-showcase__tab::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 100%;
+    height: 1px;
+    background: #d8d8da;
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+
+  .portfolio-showcase__tab.is-active {
+    color: #f4f4f5;
+  }
+  .portfolio-showcase__tab.is-active::after {
+    animation: portfolio-showcase-progress 5s linear forwards;
+  }
+
+  .portfolio-showcase[data-autoplay-paused='true'] .portfolio-showcase__tab.is-active::after {
+    animation-play-state: paused;
+  }
+
+  @keyframes portfolio-showcase-progress {
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  .portfolio-showcase__tab span {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .portfolio-showcase__tab strong {
+    display: block;
+    font-size: 1.05rem;
+    font-weight: 580;
+  }
+
+  .portfolio-showcase__tab small {
+    display: block;
+    margin-top: 0.65rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    line-height: 1.55;
   }
 
   .portfolio-work {
@@ -1502,6 +1681,9 @@ const showcaseProjects = [...projects].sort(
     .project-card:hover .project-card__media > img:not(.project-card__logo) {
       transform: scale(1.045);
     }
+    .portfolio-showcase:hover .portfolio-showcase__tab.is-active::after {
+      animation-play-state: paused;
+    }
     .portfolio-hero__jump:hover {
       color: #fff;
     }
@@ -1549,6 +1731,36 @@ const showcaseProjects = [...projects].sort(
     }
     .portfolio-showcase__visual {
       inset: 0.5rem 0.5rem 0;
+    }
+    .portfolio-showcase__tabs {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      overflow: visible;
+      gap: 0.5rem;
+      padding: 1rem 0.75rem 1.25rem;
+    }
+
+    .portfolio-showcase__tab {
+      min-width: 0;
+      padding: 0.8rem 0.35rem 1rem;
+
+      text-align: center;
+    }
+
+    .portfolio-showcase__tab::after {
+      left: 16%;
+      width: 68%;
+    }
+
+    .portfolio-showcase__tab span,
+    .portfolio-showcase__tab small {
+      display: none;
+    }
+
+    .portfolio-showcase__tab strong {
+      font-size: 0.74rem;
+      line-height: 1.25;
+      text-wrap: balance;
     }
     .project-dialog__surface {
       max-height: calc(100dvh - 1rem);
@@ -1638,6 +1850,10 @@ const showcaseProjects = [...projects].sort(
     }
     .portfolio-showcase__visual {
       transition: none;
+    }
+    .portfolio-showcase__tab.is-active::after {
+      animation: none;
+      transform: scaleX(1);
     }
   }
 </style>
