@@ -238,6 +238,7 @@ const showcaseProjects = [...projects].sort(
                     'project-card__media',
                     { 'project-card__media--logo': !project.portfolio_image_url },
                   ]}
+                  data-project-slug={project.slug}
                 >
                   <div class="project-card__platform">
                     <span aria-hidden="true">{'{ }'}</span>
@@ -349,6 +350,7 @@ const showcaseProjects = [...projects].sort(
                             'project-dialog__media',
                             { 'project-dialog__media--logo': !project.portfolio_image_url },
                           ]}
+                          data-project-slug={project.slug}
                         >
                           {project.portfolio_image_url ? (
                             <img
@@ -1134,6 +1136,25 @@ const showcaseProjects = [...projects].sort(
     transition: transform 650ms var(--ease-out-expo);
   }
 
+  .project-card__media[data-project-slug='lalu'] {
+    display: grid;
+    place-items: center;
+    padding: clamp(0.45rem, 1.15vw, 0.85rem);
+    background:
+      radial-gradient(circle at 80% 12%, rgb(198 168 245 / 22%), transparent 38%),
+      linear-gradient(145deg, #16110f, #070606 72%);
+  }
+
+  .project-card__media[data-project-slug='lalu'] > img:not(.project-card__logo) {
+    width: 100%;
+    height: auto;
+    max-height: 100%;
+    border-radius: 0.65rem;
+    object-fit: contain;
+    object-position: top center;
+    box-shadow: 0 1rem 2.75rem rgb(0 0 0 / 34%);
+  }
+
   .project-card__media--logo {
     display: grid;
     place-items: center;
@@ -1449,6 +1470,23 @@ const showcaseProjects = [...projects].sort(
     object-fit: cover;
   }
 
+  .project-dialog__media[data-project-slug='lalu'] {
+    display: grid;
+    place-items: center;
+    padding: clamp(0.5rem, 1.2vw, 0.9rem);
+    background:
+      radial-gradient(circle at 80% 12%, rgb(198 168 245 / 18%), transparent 36%), #11100f;
+  }
+
+  .project-dialog__media[data-project-slug='lalu'] img {
+    width: 100%;
+    height: auto;
+    max-height: 100%;
+    border-radius: 0.65rem;
+    object-fit: contain;
+    object-position: top center;
+  }
+
   .project-dialog__media--logo {
     display: grid;
     place-items: center;
@@ -1678,6 +1716,11 @@ const showcaseProjects = [...projects].sort(
   @media (hover: hover) and (pointer: fine) {
     .project-card:hover .project-card__media > img:not(.project-card__logo) {
       transform: scale(1.045);
+    }
+    .project-card:hover
+      .project-card__media[data-project-slug='lalu']
+      > img:not(.project-card__logo) {
+      transform: scale(1.012);
     }
     .portfolio-showcase:hover .portfolio-showcase__tab.is-active::after {
       animation-play-state: paused;
