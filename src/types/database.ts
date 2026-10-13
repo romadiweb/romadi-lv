@@ -519,7 +519,7 @@ export interface Database {
       projects: {
         Row: {
           alt_text: string | null;
-          build_platform: string;
+          build_platform: string | null;
           challenge: string | null;
           completed_at: string | null;
           created_at: string;
@@ -534,6 +534,7 @@ export interface Database {
           project_url: string | null;
           slug: string;
           sort_order: number;
+          status: 'completed' | 'in_progress' | 'planned' | 'paused' | 'archived';
           summary: string | null;
           solution: string | null;
           technologies: string[];
@@ -542,7 +543,7 @@ export interface Database {
         };
         Insert: {
           alt_text?: string | null;
-          build_platform?: string;
+          build_platform?: string | null;
           challenge?: string | null;
           completed_at?: string | null;
           created_at?: string;
@@ -557,6 +558,7 @@ export interface Database {
           project_url?: string | null;
           slug: string;
           sort_order?: number;
+          status?: 'completed' | 'in_progress' | 'planned' | 'paused' | 'archived';
           summary?: string | null;
           solution?: string | null;
           technologies?: string[];
@@ -565,7 +567,7 @@ export interface Database {
         };
         Update: {
           alt_text?: string | null;
-          build_platform?: string;
+          build_platform?: string | null;
           challenge?: string | null;
           completed_at?: string | null;
           created_at?: string;
@@ -580,6 +582,7 @@ export interface Database {
           project_url?: string | null;
           slug?: string;
           sort_order?: number;
+          status?: 'completed' | 'in_progress' | 'planned' | 'paused' | 'archived';
           summary?: string | null;
           solution?: string | null;
           technologies?: string[];

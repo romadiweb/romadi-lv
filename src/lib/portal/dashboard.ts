@@ -17,7 +17,7 @@ type PortalRecord = Record<string, unknown> & { id: number };
 type PortalTextTemplate = Omit<PortalTextTemplateRow, 'variants'> & {
   variants: TextTemplateVariant[];
 };
-type FieldType = 'text' | 'textarea' | 'url' | 'number' | 'date' | 'list' | 'checkbox';
+type FieldType = 'text' | 'textarea' | 'url' | 'number' | 'date' | 'list' | 'checkbox' | 'select';
 type LeadStatus = PortalLead['status'];
 type PricingCategory = PortalPricingItem['category'];
 type TaskPriority = PortalTask['priority'];
@@ -33,6 +33,7 @@ interface FieldDefinition {
   wide?: boolean;
   min?: number;
   max?: number;
+  options?: { value: string; label: string }[];
 }
 
 interface ResourceDefinition {
@@ -167,6 +168,7 @@ const definitions: Record<Resource, ResourceDefinition> = {
       slug: '',
       solution: null,
       sort_order: 0,
+      status: 'completed',
       summary: null,
       technologies: [],
       type: 'website',
@@ -175,6 +177,19 @@ const definitions: Record<Resource, ResourceDefinition> = {
       { key: 'name', label: 'Nosaukums', type: 'text', required: true },
       { key: 'slug', label: 'Slug', type: 'text', required: true, hint: 'mazie-burti-ar-defisem' },
       { key: 'type', label: 'Kategorija', type: 'text', required: true },
+      {
+        key: 'status',
+        label: 'Projekta statuss',
+        type: 'select',
+        required: true,
+        options: [
+          { value: 'completed', label: 'Pabeigts' },
+          { value: 'in_progress', label: 'Izstrādē' },
+          { value: 'planned', label: 'Plānots' },
+          { value: 'paused', label: 'Pauzēts' },
+          { value: 'archived', label: 'Arhivēts' },
+        ],
+      },
       { key: 'build_platform', label: 'Izstrādes platforma', type: 'text' },
       { key: 'summary', label: 'Kopsavilkums', type: 'textarea', wide: true },
       { key: 'challenge', label: 'Izaicinājums', type: 'textarea', wide: true },
@@ -718,14 +733,26 @@ export function initPortalDashboard(): void {
         ? ''
         : String(value);
     const control =
-      definition.type === 'textarea' || definition.type === 'list'
-        ? document.createElement('textarea')
-        : document.createElement('input');
+      definition.type === 'select'
+        ? document.createElement('select')
+        : definition.type === 'textarea' || definition.type === 'list'
+          ? document.createElement('textarea')
+          : document.createElement('input');
     control.id = id;
     control.name = definition.key;
     control.required = Boolean(definition.required);
+    if (control instanceof HTMLSelectElement) {
+      for (const optionDefinition of definition.options ?? []) {
+        const option = document.createElement('option');
+        option.value = optionDefinition.value;
+        option.textContent = optionDefinition.label;
+        control.append(option);
+      }
+    }
     control.value = displayValue;
-    control.maxLength = definition.type === 'textarea' ? 4_000 : 500;
+    if (control instanceof HTMLInputElement || control instanceof HTMLTextAreaElement) {
+      control.maxLength = definition.type === 'textarea' ? 4_000 : 500;
+    }
 
     if (control instanceof HTMLInputElement) {
       control.type = definition.type === 'url' ? 'url' : definition.type;
@@ -759,7 +786,10 @@ export function initPortalDashboard(): void {
     editorForm.hidden = false;
     saveStatus.textContent = '';
     editorPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    window.setTimeout(() => formFields.querySelector<HTMLElement>('input, textarea')?.focus(), 200);
+    window.setTimeout(
+      () => formFields.querySelector<HTMLElement>('input, textarea, select')?.focus(),
+      200,
+    );
   };
 
   const renderList = (items: PortalRecord[]) => {
@@ -905,7 +935,12 @@ export function initPortalDashboard(): void {
     const result: Record<string, unknown> = {};
     for (const field of definition.fields) {
       const input = editorForm.elements.namedItem(field.key);
-      if (!(input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement)) continue;
+      if (!(
+        input instanceof HTMLInputElement ||
+        input instanceof HTMLTextAreaElement ||
+        input instanceof HTMLSelectElement
+      ))
+        continue;
       if (field.type === 'checkbox' && input instanceof HTMLInputElement) {
         result[field.key] = input.checked;
       } else if (field.type === 'number')

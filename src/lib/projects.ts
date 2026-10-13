@@ -15,6 +15,7 @@ export type PortfolioProject = Pick<
   | 'project_url'
   | 'alt_text'
   | 'build_platform'
+  | 'status'
   | 'challenge'
   | 'solution'
   | 'features'
@@ -40,6 +41,7 @@ const fallbackPortfolioProjects: PortfolioProject[] = [
     project_url: 'https://dianahunt.lv',
     alt_text: 'Diana Hunt interneta veikala sākumlapa',
     build_platform: 'Custom izstrāde',
+    status: 'completed',
     challenge:
       'Vienā saprotamā vietnē bija jāapvieno medību preču katalogs, mācību saturs un droša piekļuve eksāmena testa sistēmai.',
     solution:
@@ -74,6 +76,7 @@ const fallbackPortfolioProjects: PortfolioProject[] = [
     project_url: 'https://liepajasteltis.lv',
     alt_text: 'Liepājas Teltis vietnes sākumlapa',
     build_platform: 'Custom izstrāde',
+    status: 'completed',
     challenge: null,
     solution: null,
     features: [],
@@ -95,6 +98,7 @@ const fallbackPortfolioProjects: PortfolioProject[] = [
     project_url: 'https://ljk.lv',
     alt_text: 'RTU Liepājas Jūrniecības koledžas logotips',
     build_platform: 'Custom izstrāde',
+    status: 'completed',
     challenge: null,
     solution: null,
     features: [],
@@ -168,7 +172,7 @@ export async function getPublishedPortfolioProjects(): Promise<PortfolioProject[
     const { data, error } = await supabase
       .from('projects')
       .select(
-        'id, slug, name, type, summary, logo_url, portfolio_image_url, project_url, alt_text, build_platform, challenge, solution, features, technologies, integrations, sort_order, is_featured, completed_at',
+        'id, slug, name, type, summary, logo_url, portfolio_image_url, project_url, alt_text, build_platform, status, challenge, solution, features, technologies, integrations, sort_order, is_featured, completed_at',
       )
       .eq('is_published', true)
       .order('is_featured', { ascending: false })

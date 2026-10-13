@@ -77,12 +77,54 @@ const showcaseVisualBySlug: Record<string, { desktop: string; mobile?: string; a
   },
 };
 
+const projectStatusMeta: Record<
+  PortfolioProject['status'],
+  { label: string; shortLabel: string; tone: string; showOverlay: boolean; icon: string }
+> = {
+  archived: {
+    label: 'Arhivēts',
+    shortLabel: 'Arhīvs',
+    tone: 'muted',
+    showOverlay: true,
+    icon: '↙',
+  },
+  completed: {
+    label: 'Pabeigts',
+    shortLabel: 'Live',
+    tone: 'done',
+    showOverlay: false,
+    icon: '✓',
+  },
+  in_progress: {
+    label: 'Izstrādē',
+    shortLabel: 'Procesā',
+    tone: 'active',
+    showOverlay: true,
+    icon: '{}',
+  },
+  paused: {
+    label: 'Pauzēts',
+    shortLabel: 'Pauze',
+    tone: 'paused',
+    showOverlay: true,
+    icon: 'Ⅱ',
+  },
+  planned: {
+    label: 'Plānots',
+    shortLabel: 'Plāns',
+    tone: 'planned',
+    showOverlay: true,
+    icon: '+',
+  },
+};
+
 const dbProjects = await getPublishedPortfolioProjects();
 const projects = dbProjects.map((project) => {
   const fallback = fallbackBySlug[project.slug];
 
   return {
     ...project,
+    build_platform: project.build_platform || null,
     summary: project.summary ?? fallback?.summary ?? null,
     portfolio_image_url: project.portfolio_image_url ?? fallback?.portfolio_image_url ?? null,
     alt_text: project.alt_text ?? fallback?.alt_text ?? null,
@@ -188,6 +230,8 @@ const showcaseProjects = [...projects].sort(
         projects.length > 0 ? (
           <ol class="portfolio-grid">
             {projects.map((project, index) => {
+              const status = projectStatusMeta[project.status] ?? projectStatusMeta.completed;
+              const platformLabel = project.build_platform || 'Individuāls risinājums';
               const content = (
                 <figure
                   class:list={[
@@ -197,8 +241,22 @@ const showcaseProjects = [...projects].sort(
                 >
                   <div class="project-card__platform">
                     <span aria-hidden="true">{'{ }'}</span>
-                    <strong>{project.build_platform}</strong>
+                    <strong>{platformLabel}</strong>
                   </div>
+
+                  {status.showOverlay && (
+                    <div class="project-card__status-overlay" data-status-tone={status.tone}>
+                      <span class="project-card__tool-icons" aria-hidden="true">
+                        <i>{status.icon}</i>
+                        <i>/</i>
+                        <i>↗</i>
+                      </span>
+                      <span class="project-card__status-pill">
+                        <span aria-hidden="true">{status.icon}</span>
+                        {status.label}
+                      </span>
+                    </div>
+                  )}
 
                   {project.portfolio_image_url ? (
                     <img
@@ -320,7 +378,11 @@ const showcaseProjects = [...projects].sort(
                           <dl>
                             <div>
                               <dt>Izstrādes veids</dt>
-                              <dd>{project.build_platform}</dd>
+                              <dd>{platformLabel}</dd>
+                            </div>
+                            <div>
+                              <dt>Statuss</dt>
+                              <dd>{status.label}</dd>
                             </div>
                             <div>
                               <dt>Virziens</dt>
@@ -1128,6 +1190,77 @@ const showcaseProjects = [...projects].sort(
     font: 600 0.72rem/1 var(--font-mono);
   }
 
+  .project-card__status-overlay {
+    position: absolute;
+    z-index: 2;
+    top: 1rem;
+    right: 1rem;
+    display: grid;
+    gap: 0.55rem;
+    justify-items: end;
+    max-width: min(72%, 18rem);
+    border: 1px solid rgb(255 255 255 / 18%);
+    border-radius: 0.85rem;
+    padding: 0.6rem;
+    background:
+      linear-gradient(135deg, rgb(255 255 255 / 20%), rgb(255 255 255 / 7%)), rgb(7 7 8 / 42%);
+    color: #fff;
+    box-shadow: 0 1rem 2.5rem rgb(0 0 0 / 25%);
+    backdrop-filter: blur(14px) saturate(1.25);
+    pointer-events: none;
+  }
+
+  .project-card__status-overlay[data-status-tone='active'] {
+    border-color: rgb(224 35 78 / 44%);
+    background:
+      radial-gradient(circle at 24% 10%, rgb(224 35 78 / 34%), transparent 46%),
+      linear-gradient(135deg, rgb(255 255 255 / 18%), rgb(255 255 255 / 6%)), rgb(7 7 8 / 48%);
+  }
+
+  .project-card__status-overlay[data-status-tone='planned'] {
+    border-color: rgb(95 174 255 / 42%);
+  }
+
+  .project-card__status-overlay[data-status-tone='paused'] {
+    border-color: rgb(255 193 105 / 42%);
+  }
+
+  .project-card__tool-icons {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .project-card__tool-icons i {
+    display: grid;
+    width: 1.85rem;
+    height: 1.85rem;
+    place-items: center;
+    border: 1px solid rgb(255 255 255 / 15%);
+    border-radius: 999px;
+    background: rgb(2 2 3 / 34%);
+    color: rgb(255 255 255 / 82%);
+    font: 750 0.72rem/1 var(--font-mono);
+    font-style: normal;
+  }
+
+  .project-card__status-pill {
+    display: inline-flex;
+    min-height: 2.15rem;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 999px;
+    padding: 0.48rem 0.75rem;
+    background: rgb(3 3 3 / 58%);
+    color: rgb(255 255 255 / 88%);
+    font: 700 0.68rem/1 var(--font-mono);
+    white-space: nowrap;
+  }
+
+  .project-card__status-pill span {
+    color: var(--accent);
+  }
+
   .project-card__info {
     position: absolute;
     z-index: 2;
@@ -1656,6 +1789,22 @@ const showcaseProjects = [...projects].sort(
     .project-card__platform {
       top: 0.85rem;
       left: 0.85rem;
+      max-width: calc(100% - 6.75rem);
+      min-height: 2rem;
+      padding: 0.48rem 0.62rem;
+    }
+    .project-card__status-overlay {
+      top: 0.75rem;
+      right: 0.75rem;
+      padding: 0.48rem;
+    }
+    .project-card__tool-icons {
+      display: none;
+    }
+    .project-card__status-pill {
+      min-height: 2rem;
+      padding: 0.45rem 0.62rem;
+      font-size: 0.62rem;
     }
     .project-card__info {
       right: 1rem;

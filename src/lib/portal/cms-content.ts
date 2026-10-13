@@ -8,12 +8,7 @@ export const isCmsResource = (value: string | undefined): value is CmsResource =
 
 const withoutMarkup = (value: string) => !/[<>]/.test(value);
 const cleanText = (max: number, min = 0) =>
-  z
-    .string()
-    .trim()
-    .min(min)
-    .max(max)
-    .refine(withoutMarkup, 'HTML markup is not allowed');
+  z.string().trim().min(min).max(max).refine(withoutMarkup, 'HTML markup is not allowed');
 
 const nullableText = (max: number) => z.union([cleanText(max), z.null()]);
 const slug = cleanText(100, 1).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
@@ -30,19 +25,29 @@ const safeWebUrl = z
   }, 'Only HTTP(S) URLs are allowed');
 const safeAssetUrl = z.union([
   safeWebUrl,
-  z.string().trim().max(500).regex(/^\/(?!\/)[^<>]*$/),
+  z
+    .string()
+    .trim()
+    .max(500)
+    .regex(/^\/(?!\/)[^<>]*$/),
 ]);
 const safeLink = z.union([
   safeWebUrl,
-  z.string().trim().max(500).regex(/^(?:\/|#)[^<>]*$/),
+  z
+    .string()
+    .trim()
+    .max(500)
+    .regex(/^(?:\/|#)[^<>]*$/),
 ]);
 const nullable = <T extends z.ZodType>(schema: T) => z.union([schema, z.null()]);
 const textList = z.array(cleanText(200, 1)).max(50);
+const projectStatus = z.enum(['completed', 'in_progress', 'planned', 'paused', 'archived']);
+const optionalCleanText = (max: number) => z.union([cleanText(max), z.literal(''), z.null()]);
 
 const projectSchema = z
   .object({
     alt_text: nullableText(300),
-    build_platform: cleanText(120),
+    build_platform: optionalCleanText(120),
     challenge: nullableText(4_000),
     completed_at: nullable(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)),
     features: textList,
@@ -56,6 +61,7 @@ const projectSchema = z
     slug,
     solution: nullableText(4_000),
     sort_order: z.number().int().min(0).max(1_000_000),
+    status: projectStatus,
     summary: nullableText(1_000),
     technologies: textList,
     type: cleanText(80, 1),
