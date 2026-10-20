@@ -3547,9 +3547,11 @@
   overflow-y: auto;
 }
 .portal-home-task.is-completed {
+  border: 1px solid rgb(187 247 208 / 25%);
   background: rgb(74 222 128 / 7%);
 }
 .portal-home-task.is-completed:hover {
+  border-color: rgb(187 247 208 / 42%);
   background: rgb(74 222 128 / 12%);
 }
 .portal-home-task.is-completed small {

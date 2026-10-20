@@ -36,10 +36,10 @@ const icon =
   .project-status-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.8rem;
+    gap: 0.6rem;
     border: 1px solid rgb(255 255 255 / 25%);
     border-radius: 999px;
-    padding: 0.45rem 1.15rem 0.45rem 0.45rem;
+    padding: 0.35rem 0.9rem 0.35rem 0.35rem;
     background: linear-gradient(115deg, rgb(34 18 25 / 80%), rgb(101 91 97 / 43%));
     color: #f4edf0;
     box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 20%);
@@ -51,8 +51,8 @@ const icon =
   }
   .project-status-badge__icon {
     display: grid;
-    width: 2.75rem;
-    height: 2.75rem;
+    width: 2.15rem;
+    height: 2.15rem;
     flex: 0 0 auto;
     place-items: center;
     border: 1px solid rgb(247 95 127 / 70%);
@@ -61,14 +61,14 @@ const icon =
     color: #f75f7f;
   }
   .project-status-badge__icon :global(svg) {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 1.2rem;
+    height: 1.2rem;
     stroke-width: 1.8;
   }
   .project-status-badge__copy {
     display: grid;
-    gap: 0.45rem;
-    font-size: 0.9rem;
+    gap: 0.3rem;
+    font-size: 0.78rem;
     font-weight: 600;
     line-height: 1.2;
     white-space: nowrap;
@@ -89,19 +89,19 @@ const icon =
     animation: project-activity 2.6s ease-in-out infinite alternate;
   }
   .is-compact {
-    gap: 0.55rem;
-    padding: 0.3rem 0.85rem 0.3rem 0.3rem;
+    gap: 0.45rem;
+    padding: 0.25rem 0.7rem 0.25rem 0.25rem;
   }
   .is-compact .project-status-badge__icon {
-    width: 2.1rem;
-    height: 2.1rem;
+    width: 1.8rem;
+    height: 1.8rem;
   }
   .is-compact .project-status-badge__icon :global(svg) {
-    width: 1.2rem;
-    height: 1.2rem;
+    width: 1rem;
+    height: 1rem;
   }
   .is-compact .project-status-badge__copy {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     gap: 0.3rem;
   }
   @keyframes project-activity {
