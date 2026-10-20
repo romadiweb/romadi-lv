@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { getPublishedPortfolioProjects, type PortfolioProject } from '@/lib/projects';
+import { portfolioDetails } from '@/lib/portfolio-details';
 
 const fallbackBySlug: Record<string, Partial<PortfolioProject>> = {
   'diana-hunt': {
@@ -29,14 +30,12 @@ const fallbackBySlug: Record<string, Partial<PortfolioProject>> = {
     ],
   },
   'liepajas-teltis': {
-    summary:
-      'Pakalpojumu vietne, kas palīdz ātri saprast piedāvājumu un nonākt līdz rezervācijas pieprasījumam.',
+    ...portfolioDetails['liepajas-teltis'],
     portfolio_image_url: '/images/projects/liepajas-teltis-1600.webp',
     alt_text: 'Liepājas Teltis vietnes sākumlapa',
   },
   'rtu-liepajas-jurniecibas-koledza': {
-    summary:
-      'Digitāla klātbūtne jūrniecības izglītības iestādei ar pārskatāmu informācijas arhitektūru.',
+    ...portfolioDetails['rtu-liepajas-jurniecibas-koledza'],
     portfolio_image_url: '/images/projects/ljk.png',
     alt_text: 'RTU Liepājas Jūrniecības koledžas logotips',
   },

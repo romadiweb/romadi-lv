@@ -41,8 +41,8 @@ values
     true,
     true
   ),
-  ('liepajas-teltis', 'Liepājas Teltis', 'website', 'Custom izstrāde', '/images/projects/liepajasteltis-logo-metallic.webp', null, null, null, null, null, '{}', '{}', '{}', 20, true, true),
-  ('rtu-liepajas-jurniecibas-koledza', 'RTU Liepājas Jūrniecības koledža', 'website', 'Custom izstrāde', '/images/projects/ljk-logo-metallic.webp', null, null, null, null, null, '{}', '{}', '{}', 30, true, true),
+  ('liepajas-teltis', 'Liepājas Teltis', 'website', 'Custom izstrāde', '/images/projects/liepajasteltis-logo-metallic.webp', null, 'https://liepajasteltis.lv', 'Telšu un pasākumu inventāra nomas vietne ar pārskatāmu katalogu, nomas sarakstu un rezervācijas pieprasījumu vienuviet.', 'Palīdzēt pasākumu rīkotājiem atrast piemērotas teltis un inventāru un ērti nosūtīt vienotu nomas pieprasījumu.', 'Izveidojām vietni ar inventāra kategorijām, nomas sarakstu un pieteikuma formu, kur norādīt pasākuma datumu, vietu un vajadzīgo aprīkojumu.', array['Telšu un inventāra katalogs', 'Nomas saraksts', 'Rezervācijas pieprasījuma forma', 'Piegādes un kontaktinformācija'], '{}', '{}', 20, true, true),
+  ('rtu-liepajas-jurniecibas-koledza', 'RTU Liepājas Jūrniecības koledža', 'website', 'Custom izstrāde', '/images/projects/ljk-logo-metallic.webp', null, 'https://ljk.lv', 'Jūrniecības koledžas vietne, kas apvieno studiju programmas, aktualitātes un ikdienā nepieciešamo informāciju topošajiem un esošajiem studentiem.', 'Sakārtot plašo koledžas informāciju tā, lai studiju interesenti un studenti ātri atrastu sev vajadzīgo.', 'Veidojām pārskatāmu informācijas struktūru ar studiju programmām, aktualitātēm, dokumentiem un koledžas kontaktinformāciju.', array['Studiju programmu pārskats', 'Koledžas aktualitātes', 'Dokumenti un noderīga informācija', 'Kontaktinformācija'], '{}', '{}', 30, true, true),
   ('pabeigts-projekts-6', 'Pabeigts projekts 6', 'website', 'Custom izstrāde', null, null, null, null, null, null, '{}', '{}', '{}', 60, false, true),
   ('pabeigts-projekts-7', 'Pabeigts projekts 7', 'website', 'Custom izstrāde', null, null, null, null, null, null, '{}', '{}', '{}', 70, false, true)
 on conflict (slug) do update set

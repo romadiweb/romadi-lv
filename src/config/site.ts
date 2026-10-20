@@ -135,8 +135,8 @@ export const SITE = {
    */
   social: {
     facebook: 'https://www.facebook.com/people/Sia-Romadi/61594766196559',
-    instagram: '',
-    tiktok: '',
+    instagram: 'https://www.instagram.com/romadi.lv',
+    tiktok: 'https://www.tiktok.com/@romadilv',
     linkedin: '',
   },
 

@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import { createPortalAdminClient } from '@/lib/portal/supabase-server';
 import type { Project } from '@/types/database';
+import { portfolioDetails } from '@/lib/portfolio-details';
 
 export type ProjectProof = Pick<Project, 'id' | 'name' | 'slug' | 'logo_url' | 'sort_order'>;
 
@@ -114,7 +115,11 @@ const fallbackPortfolioProjects: PortfolioProject[] = [
 const getFallbackPortfolioProjects = (): PortfolioProject[] =>
   fallbackPortfolioProjects.map((project) => ({
     ...project,
-    features: [...project.features],
+    ...(portfolioDetails[project.slug as keyof typeof portfolioDetails] ?? {}),
+    features: [
+      ...(portfolioDetails[project.slug as keyof typeof portfolioDetails]?.features ??
+        project.features),
+    ],
     technologies: [...project.technologies],
     integrations: [...project.integrations],
   }));

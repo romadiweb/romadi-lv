@@ -12,7 +12,17 @@ import { getKnownLeadSource, isGetAProSource, OTHER_LEAD_SOURCE } from '@/lib/po
 
 type Resource = 'projects' | 'reviews' | 'pricing_plans';
 type View =
-  Resource | 'audit' | 'calculator' | 'dashboard' | 'leads' | 'quotas' | 'tasks' | 'templates';
+  | Resource
+  | 'audit'
+  | 'calculator'
+  | 'dashboard'
+  | 'leads'
+  | 'quotas'
+  | 'tasks'
+  | 'templates'
+  | 'notifications';
+type TaskNotification =
+  import('@/types/database').Database['public']['Tables']['portal_task_notifications']['Row'];
 type PortalRecord = Record<string, unknown> & { id: number };
 type PortalTextTemplate = Omit<PortalTextTemplateRow, 'variants'> & {
   variants: TextTemplateVariant[];
@@ -375,6 +385,13 @@ export function initPortalDashboard(): void {
   const leadGrid = $<HTMLElement>(root, '[data-lead-grid]');
   const homeView = $<HTMLElement>(root, '[data-dashboard-home-view]');
   const homeTaskList = $<HTMLElement>(root, '[data-home-task-list]');
+  const homeCompletedList = $<HTMLElement>(root, '[data-home-completed-list]');
+  const notificationView = $<HTMLElement>(root, '[data-notification-view]');
+  const notificationList = $<HTMLElement>(root, '[data-notification-list]');
+  const notificationStatus = $<HTMLElement>(root, '[data-notification-status]');
+  const notificationCounter = $<HTMLElement>(root, '[data-notification-count]');
+  const notificationNav = $<HTMLButtonElement>(root, '[data-section="notifications"]');
+  let taskNotifications: TaskNotification[] = [];
   const homeQuotaStatus = $<HTMLElement>(root, '[data-home-quota-status]');
   const homeQuotaList = $<HTMLElement>(root, '[data-home-quota-list]');
   const quotaGrid = $<HTMLElement>(root, '[data-quota-grid]');
@@ -687,6 +704,13 @@ export function initPortalDashboard(): void {
     return portalTasks;
   };
 
+  const loadNotifications = async () => {
+    const response = await request<{ data: TaskNotification[] }>('/api/portal/notifications');
+    taskNotifications = response.data;
+    notificationStatus.textContent = '';
+    renderNotifications();
+  };
+
   const loadPortalUsers = async (force = false): Promise<PortalUser[]> => {
     if (!force && portalUsers.length > 0) return portalUsers;
     const response = await request<{ data: PortalUser[] }>('/api/portal/users');
@@ -695,6 +719,7 @@ export function initPortalDashboard(): void {
   };
 
   const hideWorkspaceViews = () => {
+    notificationView.hidden = true;
     calculatorGrid.hidden = true;
     homeView.hidden = true;
     leadGrid.hidden = true;
@@ -1933,6 +1958,11 @@ export function initPortalDashboard(): void {
   const getTaskCreatorLabel = (task: PortalTask) =>
     getUserLabel(getUserById(task.created_by_user_id), task.created_by);
 
+  const getTaskCompleterLabel = (task: PortalTask) =>
+    task.completed_by_user_id || task.completed_by
+      ? getUserLabel(getUserById(task.completed_by_user_id), task.completed_by)
+      : 'Izpildītājs nav reģistrēts';
+
   const isTaskAssignedToCurrentUser = (task: PortalTask) =>
     (currentUserId && task.assigned_to_user_id === currentUserId) ||
     (!task.assigned_to_user_id &&
@@ -2434,6 +2464,7 @@ export function initPortalDashboard(): void {
 
   function openTaskDetails(task: PortalTask) {
     activeTaskDetail = task;
+    void markTaskNotificationsRead(task.id);
     taskDetailTitle.textContent = task.title;
     const details = document.createElement('dl');
     details.className = 'portal-detail-list';
@@ -2449,6 +2480,7 @@ export function initPortalDashboard(): void {
       detailRow('Piešķīra', getTaskCreatorLabel(task)),
       detailRow('Termiņš', task.due_date ? formatDate(task.due_date) : 'Nav noteikts'),
       detailRow('Izveidots', formatDateTime(task.created_at)),
+      ...(task.status === 'done' ? [detailRow('Izpildīja', getTaskCompleterLabel(task))] : []),
       detailRow(
         'Pabeigts',
         task.completed_at ? formatDateTime(task.completed_at) : 'Vēl nav pabeigts',
@@ -2535,7 +2567,10 @@ export function initPortalDashboard(): void {
         button.type = 'button';
         button.className = 'portal-task-item';
         button.dataset.priority = task.priority;
-        button.classList.toggle('is-mine', isTaskAssignedToCurrentUser(task));
+        button.classList.toggle(
+          'is-mine',
+          Boolean(isTaskAssignedToCurrentUser(task)) && !isTaskClosed(task),
+        );
         button.classList.toggle('is-selected', activeTask?.id === task.id);
         button.classList.toggle('is-done', isTaskClosed(task));
         const taskMeta = document.createElement('small');
@@ -2559,7 +2594,7 @@ export function initPortalDashboard(): void {
             : []),
           text('b', taskPriorityLabels[task.priority]),
         );
-        button.addEventListener('click', () => openTaskDetails(task));
+        button.addEventListener('click', () => void afterDiscard(() => openTaskDetails(task)));
         fragment.append(button);
       });
     taskList.replaceChildren(fragment);
@@ -2606,7 +2641,122 @@ export function initPortalDashboard(): void {
     }
   };
 
+  function renderCompletedTasks() {
+    const completed = portalTasks
+      .filter((task) => task.status === 'done')
+      .sort((a, b) => (b.completed_at ?? '').localeCompare(a.completed_at ?? ''));
+    const rows = completed.map((task) => {
+      const button = text('button', '', 'portal-home-task is-completed') as HTMLButtonElement;
+      button.type = 'button';
+      const copy = document.createElement('span');
+      copy.append(
+        text('strong', task.title),
+        text('small', `Izpildīja: ${getTaskCompleterLabel(task)}`),
+        text(
+          'small',
+          task.completed_at ? formatDateTime(task.completed_at) : 'Laiks nav reģistrēts',
+        ),
+      );
+      button.append(copy, text('b', 'Izpildīts'));
+      button.addEventListener('click', () => openTaskDetails(task));
+      return button;
+    });
+    homeCompletedList.replaceChildren(
+      ...(rows.length ? rows : [text('p', 'Vēl nav izpildītu uzdevumu.', 'portal-home-empty')]),
+    );
+  }
+
+  function renderNotifications() {
+    const available = taskNotifications.filter((item) =>
+      portalTasks.some((task) => task.id === item.task_id && isTaskAssignedToCurrentUser(task)),
+    );
+    const unread = available.filter(
+      (item) =>
+        !item.read_at &&
+        portalTasks.some((task) => task.id === item.task_id && !isTaskClosed(task)),
+    ).length;
+    notificationCounter.textContent = String(unread);
+    notificationCounter.hidden = unread === 0;
+    notificationNav.setAttribute(
+      'aria-label',
+      unread ? `Paziņojumi — ${unread} nelasīti` : 'Paziņojumi',
+    );
+    notificationList.replaceChildren(
+      ...available.map((item) => {
+        const task = portalTasks.find((task) => task.id === item.task_id)!;
+        const button = text(
+          'button',
+          '',
+          'portal-home-task portal-notification',
+        ) as HTMLButtonElement;
+        button.type = 'button';
+        button.classList.toggle('is-unread', !item.read_at && !isTaskClosed(task));
+        const copy = document.createElement('span');
+        copy.append(
+          text('strong', task.title),
+          text('small', `Tev piešķirts uzdevums · Piešķīra: ${getTaskCreatorLabel(task)}`),
+          text('small', `${formatDateTime(item.created_at)} · ${taskStatusLabels[task.status]}`),
+        );
+        button.append(copy, text('b', !item.read_at && !isTaskClosed(task) ? 'Jauns' : 'Skatīt'));
+        button.addEventListener('click', () => void afterDiscard(() => openTaskDetails(task)));
+        return button;
+      }),
+    );
+    if (!available.length && !notificationStatus.textContent) {
+      notificationList.append(
+        text(
+          'p',
+          'Tev vēl nav paziņojumu. Jauni piešķirtie uzdevumi parādīsies šeit.',
+          'portal-home-empty',
+        ),
+      );
+    }
+  }
+
+  async function markTaskNotificationsRead(taskId: number) {
+    const unread = taskNotifications.filter((item) => item.task_id === taskId && !item.read_at);
+    for (const item of unread) {
+      try {
+        const response = await request<{ data: TaskNotification }>('/api/portal/notifications', {
+          method: 'PATCH',
+          body: JSON.stringify({ id: item.id }),
+        });
+        taskNotifications = taskNotifications.map((entry) =>
+          entry.id === item.id ? response.data : entry,
+        );
+        renderNotifications();
+      } catch (error) {
+        notify(
+          error instanceof Error ? error.message : 'Paziņojumu neizdevās atzīmēt kā lasītu.',
+          'error',
+        );
+      }
+    }
+  }
+
+  const showNotifications = async () => {
+    setDirty(false);
+    activeView = 'notifications';
+    setNavState('notifications');
+    hideWorkspaceViews();
+    notificationView.hidden = false;
+    createButton.hidden = true;
+    sectionTitle.textContent = 'Paziņojumi';
+    sectionDescription.textContent =
+      'Tev piešķirtie uzdevumi. Atver paziņojumu, lai apskatītu kopsavilkumu.';
+    notificationStatus.textContent = 'Ielādē…';
+    try {
+      await Promise.all([loadPortalTasks(true), loadNotifications()]);
+      renderNotifications();
+    } catch (error) {
+      notificationStatus.textContent =
+        error instanceof Error ? error.message : 'Paziņojumus neizdevās ielādēt.';
+    }
+  };
+
   const renderDashboard = () => {
+    renderCompletedTasks();
+    renderNotifications();
     const currentWeek = getWeekStart();
     const nextWeek = addDays(currentWeek, 7);
     const openLeads = leads.filter(
@@ -2699,12 +2849,13 @@ export function initPortalDashboard(): void {
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'portal-home-task';
+      button.classList.toggle('is-mine', Boolean(isTaskAssignedToCurrentUser(task)));
       const copy = document.createElement('span');
       copy.append(
         text('strong', task.title),
         text(
           'small',
-          `${getTaskAssigneeLabel(task)} · ${taskTypeLabels[task.task_type]} · piešķīra ${getTaskCreatorLabel(task)}`,
+          `${isTaskAssignedToCurrentUser(task) ? 'Tev piešķirts · ' : ''}${getTaskAssigneeLabel(task)} · ${taskTypeLabels[task.task_type]} · piešķīra ${getTaskCreatorLabel(task)}${task.due_date ? ` · Termiņš: ${formatDate(task.due_date)}` : ''}`,
         ),
       );
       const state = text('b', taskPriorityLabels[task.priority]);
@@ -2712,10 +2863,7 @@ export function initPortalDashboard(): void {
       state.dataset.priority = task.priority;
       button.append(copy, state);
       button.addEventListener('click', () => {
-        void afterDiscard(async () => {
-          await showTasks();
-          openTaskEditor(task);
-        });
+        void afterDiscard(() => openTaskDetails(task));
       });
       fragment.append(button);
     });
@@ -2757,7 +2905,7 @@ export function initPortalDashboard(): void {
     homeView.hidden = false;
     sectionTitle.textContent = 'Pārskats';
     sectionDescription.textContent =
-      'Dienas uzdevumi, aktīvie kontakti un biežāk lietotās darbības vienuviet.';
+      'Dienas uzdevumi, aktīvie kontakti un komandas paveiktais vienuviet.';
     createButton.hidden = true;
     renderDashboard();
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -3152,7 +3300,10 @@ export function initPortalDashboard(): void {
     if (!activeTaskDetail) return;
     const task = activeTaskDetail;
     taskDetailDialog.close();
-    openTaskEditor(task);
+    void afterDiscard(async () => {
+      await showTasks();
+      openTaskEditor(task);
+    });
     window.setTimeout(() => {
       document.querySelector('[data-task-editor-title]')?.scrollIntoView({
         behavior: 'smooth',
@@ -3177,6 +3328,8 @@ export function initPortalDashboard(): void {
       renderUserDirectory();
       renderTaskList();
       openTaskDetails(response.data);
+      if (activeView === 'dashboard') renderDashboard();
+      else renderNotifications();
       notify('Uzdevums atzīmēts kā pabeigts.');
     } catch (error) {
       notify(error instanceof Error ? error.message : 'Statusu neizdevās mainīt.', 'error');
@@ -3395,6 +3548,11 @@ export function initPortalDashboard(): void {
   root.querySelector<HTMLButtonElement>('[data-section="tasks"]')?.addEventListener('click', () => {
     void afterDiscard(showTasks);
   });
+  root
+    .querySelector<HTMLButtonElement>('[data-section="notifications"]')
+    ?.addEventListener('click', () => {
+      void afterDiscard(showNotifications);
+    });
 
   root
     .querySelector<HTMLButtonElement>('[data-section="calculator"]')
@@ -3537,7 +3695,30 @@ export function initPortalDashboard(): void {
     loadQuotaTargets(),
     loadPortalUsers(),
     loadPortalTasks(),
+    loadNotifications().catch((error: unknown) => {
+      notificationStatus.textContent =
+        error instanceof Error ? error.message : 'Paziņojumus neizdevās ielādēt.';
+    }),
     loadTemplates(),
     ...(Object.keys(definitions) as Resource[]).map((resource) => loadResource(resource)),
   ]).then(() => showDashboard());
+
+  // Refresh assignments from teammates without interrupting an unsaved form.
+  let refreshingAssignments = false;
+  const refreshAssignments = async () => {
+    if (document.hidden || isDirty || refreshingAssignments || taskDetailDialog.open) return;
+    refreshingAssignments = true;
+    try {
+      await Promise.all([loadPortalTasks(true), loadNotifications()]);
+      renderNotifications();
+      if (activeView === 'dashboard') renderDashboard();
+      if (activeView === 'tasks') renderTaskList();
+    } catch {
+      // Existing cards stay usable; opening notifications retries and displays errors.
+    } finally {
+      refreshingAssignments = false;
+    }
+  };
+  window.setInterval(() => void refreshAssignments(), 45_000);
+  window.addEventListener('focus', () => void refreshAssignments());
 }

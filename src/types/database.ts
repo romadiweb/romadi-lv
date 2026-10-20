@@ -315,11 +315,37 @@ export interface Database {
         };
         Relationships: [];
       };
+      portal_task_notifications: {
+        Row: {
+          id: number;
+          task_id: number;
+          user_id: string;
+          created_at: string;
+          read_at: string | null;
+        };
+        Insert: {
+          id?: never;
+          task_id: number;
+          user_id: string;
+          created_at?: string;
+          read_at?: string | null;
+        };
+        Update: {
+          id?: never;
+          task_id?: number;
+          user_id?: string;
+          created_at?: string;
+          read_at?: string | null;
+        };
+        Relationships: [];
+      };
       portal_tasks: {
         Row: {
           assigned_to: string | null;
           assigned_to_user_id: string | null;
           completed_at: string | null;
+          completed_by: string | null;
+          completed_by_user_id: string | null;
           created_at: string;
           created_by: string | null;
           created_by_user_id: string | null;
@@ -338,6 +364,8 @@ export interface Database {
           assigned_to?: string | null;
           assigned_to_user_id?: string | null;
           completed_at?: string | null;
+          completed_by?: string | null;
+          completed_by_user_id?: string | null;
           created_at?: string;
           created_by?: string | null;
           created_by_user_id?: string | null;
@@ -356,6 +384,8 @@ export interface Database {
           assigned_to?: string | null;
           assigned_to_user_id?: string | null;
           completed_at?: string | null;
+          completed_by?: string | null;
+          completed_by_user_id?: string | null;
           created_at?: string;
           created_by?: string | null;
           created_by_user_id?: string | null;

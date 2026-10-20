@@ -25,4 +25,29 @@ test.describe('ROMADI portfolio', () => {
     await projectCards.first().locator('[data-open-project]').click();
     await expect(page.locator('[data-project-dialog][open]')).toContainText('Diana Hunt');
   });
+
+  test('provides case-study details, website buttons, and current social links', async ({
+    page,
+  }) => {
+    await page.goto('/portfolio');
+    for (const [index, url, feature] of [
+      [1, 'https://liepajasteltis.lv', 'Nomas saraksts'],
+      [2, 'https://ljk.lv', 'Studiju programmu pārskats'],
+    ] as const) {
+      await page.locator('.project-card').nth(index).locator('[data-open-project]').click();
+      const dialog = page.locator('[data-project-dialog][open]');
+      await expect(dialog).toContainText(feature);
+      await expect(dialog.getByRole('link', { name: /Apmeklēt vietni/ })).toHaveAttribute(
+        'href',
+        url,
+      );
+      await page.keyboard.press('Escape');
+    }
+    await expect(
+      page.locator('footer').getByRole('link', { name: 'Instagram', exact: true }),
+    ).toHaveAttribute('href', 'https://www.instagram.com/romadi.lv');
+    await expect(
+      page.locator('footer').getByRole('link', { name: 'TikTok', exact: true }),
+    ).toHaveAttribute('href', 'https://www.tiktok.com/@romadilv');
+  });
 });

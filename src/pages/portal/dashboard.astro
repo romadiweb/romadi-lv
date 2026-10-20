@@ -72,6 +72,16 @@ if (!existingCsrf) {
             </svg>
             <span>Pārskats</span>
           </button>
+          <button type="button" data-section="notifications">
+            <span class="portal-nav-signal"></span>
+            <svg class="portal-nav-icon" viewBox="0 0 24 24" aria-hidden="true"
+              ><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"></path></svg
+            >
+            <span>Paziņojumi</span>
+            <b class="portal-notification-count" data-notification-count aria-live="polite" hidden
+              >0</b
+            >
+          </button>
         </section>
 
         <section class="portal-nav-group" aria-labelledby="portal-nav-clients">
@@ -363,7 +373,7 @@ if (!existingCsrf) {
         <div>
           <h1 data-section-title>Pārskats</h1>
           <p data-section-description>
-            Dienas uzdevumi, aktīvie kontakti un biežāk lietotās darbības vienuviet.
+            Dienas uzdevumi, aktīvie kontakti un komandas paveiktais vienuviet.
           </p>
         </div>
         <button type="button" class="portal-create-action" data-create hidden>
@@ -415,35 +425,21 @@ if (!existingCsrf) {
             <div class="portal-home-task-list" data-home-task-list aria-live="polite"></div>
           </section>
 
-          <aside class="portal-quick-actions" aria-labelledby="quick-actions-title">
-            <h2 id="quick-actions-title">Ātrās darbības</h2>
-            <button type="button" data-home-action="new-lead">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
-              <span
-                ><strong>Pievienot lead</strong><small>Saglabā kontaktu pirms uzrunas</small></span
-              >
-            </button>
-            <button type="button" data-home-action="new-template">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
-              <span
-                ><strong>Jauna sagatave</strong><small>Pievieno tekstu ar vairākiem toņiem</small
-                ></span
-              >
-            </button>
-            <button type="button" data-home-action="new-task">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
-              <span><strong>Jauns uzdevums</strong><small>Piešķir darbu komandai</small></span>
-            </button>
-            <button type="button" data-home-action="projects">
-              <svg viewBox="0 0 24 24" aria-hidden="true"
-                ><path d="M8 7V4h8v3M3 12h18M3 7h18v13H3z"></path></svg
-              >
-              <span><strong>Mājaslapas saturs</strong><small>Atver projektu pārvaldību</small></span
-              >
-            </button>
+          <aside class="portal-home-completed" aria-labelledby="completed-tasks-title">
+            <header>
+              <h2 id="completed-tasks-title">Izpildītie uzdevumi</h2><p>
+                Komandas pabeigtie darbi — kas un kad tos izpildīja.
+              </p>
+            </header>
+            <div class="portal-home-task-list" data-home-completed-list aria-live="polite"></div>
           </aside>
         </div>
       </div>
+
+      <section class="portal-notifications" data-notification-view hidden aria-label="Paziņojumi">
+        <p data-notification-status role="status"></p>
+        <div class="portal-home-task-list" data-notification-list></div>
+      </section>
 
       <div class="portal-lead-grid" data-lead-grid hidden>
         <section class="portal-lead-board-panel" aria-labelledby="lead-board-title">
@@ -1171,12 +1167,16 @@ if (!existingCsrf) {
       </article>
     </dialog>
 
-    <dialog class="portal-detail-dialog" data-task-detail-dialog>
+    <dialog
+      class="portal-detail-dialog"
+      data-task-detail-dialog
+      aria-labelledby="task-summary-title"
+    >
       <article>
         <header>
           <div>
-            <span>Uzdevuma informācija</span>
-            <h2 data-task-detail-title>Uzdevums</h2>
+            <span>Kopsavilkums</span>
+            <h2 id="task-summary-title" data-task-detail-title>Uzdevums</h2>
           </div>
           <button
             type="button"
