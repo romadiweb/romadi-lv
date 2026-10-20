@@ -129,6 +129,9 @@ test('opens summaries, persists notification reads, and shows completed work', a
   await expect(page.locator('[data-notification-count]')).toBeHidden();
   await page.locator('[data-task-detail-dismiss]').click();
   await navigate('notifications');
+  await expect(page.locator('[data-notification-list]')).toContainText(
+    'Šobrīd nav neizlasītu paziņojumu.',
+  );
   await page.locator('[data-notification-list] button').first().click();
   await expect(summary).toBeVisible();
   await page.locator('[data-task-complete]').click();
@@ -159,4 +162,53 @@ test('opens summaries, persists notification reads, and shows completed work', a
   await page.locator('[data-task-detail-edit]').click();
   await expect(page.locator('[data-task-editor-panel]')).toBeVisible();
   await expect(page.locator('[data-task-form] [name="title"]')).toHaveValue(tasks[0]!.title);
+});
+
+test('distinguishes an empty notification list from a failed request and allows retry', async ({
+  page,
+}) => {
+  let failNotifications = false;
+  await page.route('**/__portal-fixture', (route) =>
+    route.fulfill({ contentType: 'text/html', body: html }),
+  );
+  await page.route('**/api/portal/**', (route) => {
+    if (route.request().url().endsWith('/notifications') && failNotifications) {
+      return route.fulfill({
+        status: 500,
+        json: { error: 'Paziņojumus neizdevās ielādēt. Mēģini vēlreiz.' },
+      });
+    }
+    return route.fulfill({ json: { data: [] } });
+  });
+  await page.goto('/__portal-fixture');
+  await page.addScriptTag({
+    type: 'module',
+    content:
+      "import { initPortalDashboard } from '/src/lib/portal/dashboard.ts'; initPortalDashboard();",
+  });
+  const navigate = async (section: string) => {
+    if (page.viewportSize()!.width <= 960) await page.locator('[data-mobile-menu-toggle]').click();
+    await page.locator(`[data-section="${section}"]`).click();
+  };
+  await navigate('notifications');
+  await expect(page.locator('[data-notification-list]')).toContainText(
+    'Šobrīd nav neizlasītu paziņojumu.',
+  );
+  await expect(page.locator('[data-notification-retry]')).toBeHidden();
+  await expect(page.locator('[data-notification-count]')).toBeHidden();
+  failNotifications = true;
+  await navigate('dashboard');
+  await navigate('notifications');
+  await expect(page.locator('[data-notification-status]')).toContainText(
+    'Paziņojumus neizdevās ielādēt.',
+  );
+  await expect(page.locator('[data-notification-list]')).toBeEmpty();
+  await expect(page.locator('[data-notification-retry]')).toBeVisible();
+  failNotifications = false;
+  await page.locator('[data-notification-retry]').click();
+  await expect(page.locator('[data-notification-list]')).toContainText(
+    'Šobrīd nav neizlasītu paziņojumu.',
+  );
+  await expect(page.locator('[data-notification-status]')).toBeEmpty();
+  await expect(page.locator('[data-notification-retry]')).toBeHidden();
 });

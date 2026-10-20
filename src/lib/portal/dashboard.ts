@@ -206,7 +206,12 @@ const definitions: Record<Resource, ResourceDefinition> = {
       { key: 'solution', label: 'Risinājums', type: 'textarea', wide: true },
       { key: 'project_url', label: 'Projekta URL', type: 'url' },
       { key: 'logo_url', label: 'Logotipa ceļš', type: 'text' },
-      { key: 'portfolio_image_url', label: 'Portfolio attēla ceļš', type: 'text' },
+      {
+        key: 'portfolio_image_url',
+        label: 'Portfolio attēla ceļš',
+        type: 'text',
+        hint: 'Atstāj tukšu, lai rādītu rozā un pelēku stikla fonu. Vēlāk pievieno ekrānattēla ceļu.',
+      },
       { key: 'alt_text', label: 'Attēla alternatīvais teksts', type: 'text' },
       {
         key: 'features',
@@ -389,6 +394,7 @@ export function initPortalDashboard(): void {
   const notificationView = $<HTMLElement>(root, '[data-notification-view]');
   const notificationList = $<HTMLElement>(root, '[data-notification-list]');
   const notificationStatus = $<HTMLElement>(root, '[data-notification-status]');
+  const notificationRetry = $<HTMLButtonElement>(root, '[data-notification-retry]');
   const notificationCounter = $<HTMLElement>(root, '[data-notification-count]');
   const notificationNav = $<HTMLButtonElement>(root, '[data-section="notifications"]');
   let taskNotifications: TaskNotification[] = [];
@@ -708,6 +714,7 @@ export function initPortalDashboard(): void {
     const response = await request<{ data: TaskNotification[] }>('/api/portal/notifications');
     taskNotifications = response.data;
     notificationStatus.textContent = '';
+    notificationRetry.hidden = true;
     renderNotifications();
   };
 
@@ -2702,14 +2709,8 @@ export function initPortalDashboard(): void {
         return button;
       }),
     );
-    if (!available.length && !notificationStatus.textContent) {
-      notificationList.append(
-        text(
-          'p',
-          'Tev vēl nav paziņojumu. Jauni piešķirtie uzdevumi parādīsies šeit.',
-          'portal-home-empty',
-        ),
-      );
+    if (unread === 0 && !notificationStatus.textContent) {
+      notificationList.prepend(text('p', 'Šobrīd nav neizlasītu paziņojumu.', 'portal-home-empty'));
     }
   }
 
@@ -2745,12 +2746,16 @@ export function initPortalDashboard(): void {
     sectionDescription.textContent =
       'Tev piešķirtie uzdevumi. Atver paziņojumu, lai apskatītu kopsavilkumu.';
     notificationStatus.textContent = 'Ielādē…';
+    notificationRetry.hidden = true;
+    notificationList.replaceChildren();
     try {
       await Promise.all([loadPortalTasks(true), loadNotifications()]);
       renderNotifications();
     } catch (error) {
       notificationStatus.textContent =
         error instanceof Error ? error.message : 'Paziņojumus neizdevās ielādēt.';
+      notificationList.replaceChildren();
+      notificationRetry.hidden = false;
     }
   };
 
@@ -3553,6 +3558,7 @@ export function initPortalDashboard(): void {
     ?.addEventListener('click', () => {
       void afterDiscard(showNotifications);
     });
+  notificationRetry.addEventListener('click', () => void showNotifications());
 
   root
     .querySelector<HTMLButtonElement>('[data-section="calculator"]')
@@ -3698,6 +3704,7 @@ export function initPortalDashboard(): void {
     loadNotifications().catch((error: unknown) => {
       notificationStatus.textContent =
         error instanceof Error ? error.message : 'Paziņojumus neizdevās ielādēt.';
+      notificationRetry.hidden = false;
     }),
     loadTemplates(),
     ...(Object.keys(definitions) as Resource[]).map((resource) => loadResource(resource)),

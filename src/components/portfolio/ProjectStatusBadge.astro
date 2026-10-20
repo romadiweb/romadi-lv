@@ -1,0 +1,121 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  label: string;
+  tone: string;
+  compact?: boolean;
+}
+const { label, tone, compact = false } = Astro.props;
+const icon =
+  tone === 'active'
+    ? 'braces'
+    : tone === 'paused'
+      ? 'pause'
+      : tone === 'planned'
+        ? 'calendar-clock'
+        : 'archive';
+---
+
+<span class:list={['project-status-badge', { 'is-compact': compact }]} data-status-tone={tone}>
+  <span class="project-status-badge__icon" aria-hidden="true"><Icon name={`lucide:${icon}`} /></span
+  >
+  <span class="project-status-badge__copy">
+    <span>{label}</span>
+    {
+      tone === 'active' && (
+        <span class="project-status-badge__activity" aria-hidden="true">
+          <i />
+        </span>
+      )
+    }
+  </span>
+</span>
+
+<style>
+  .project-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    border: 1px solid rgb(255 255 255 / 25%);
+    border-radius: 999px;
+    padding: 0.45rem 1.15rem 0.45rem 0.45rem;
+    background: linear-gradient(115deg, rgb(34 18 25 / 80%), rgb(101 91 97 / 43%));
+    color: #f4edf0;
+    box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 20%);
+    backdrop-filter: blur(16px);
+    pointer-events: none;
+  }
+  .project-status-badge[data-status-tone='active'] {
+    border-color: rgb(247 95 127 / 46%);
+  }
+  .project-status-badge__icon {
+    display: grid;
+    width: 2.75rem;
+    height: 2.75rem;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 1px solid rgb(247 95 127 / 70%);
+    border-radius: 50%;
+    background: rgb(20 11 16 / 60%);
+    color: #f75f7f;
+  }
+  .project-status-badge__icon :global(svg) {
+    width: 1.5rem;
+    height: 1.5rem;
+    stroke-width: 1.8;
+  }
+  .project-status-badge__copy {
+    display: grid;
+    gap: 0.45rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+  .project-status-badge__activity {
+    position: relative;
+    overflow: hidden;
+    height: 3px;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 20%);
+  }
+  .project-status-badge__activity i {
+    display: block;
+    width: 45%;
+    height: 100%;
+    border-radius: inherit;
+    background: #f75f7f;
+    animation: project-activity 2.6s ease-in-out infinite alternate;
+  }
+  .is-compact {
+    gap: 0.55rem;
+    padding: 0.3rem 0.85rem 0.3rem 0.3rem;
+  }
+  .is-compact .project-status-badge__icon {
+    width: 2.1rem;
+    height: 2.1rem;
+  }
+  .is-compact .project-status-badge__icon :global(svg) {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+  .is-compact .project-status-badge__copy {
+    font-size: 0.75rem;
+    gap: 0.3rem;
+  }
+  @keyframes project-activity {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(120%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .project-status-badge__activity i {
+      animation: none;
+      width: 100%;
+    }
+  }
+</style>

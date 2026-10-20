@@ -112,6 +112,53 @@ const fallbackPortfolioProjects: PortfolioProject[] = [
   },
 ];
 
+// Keep the published in-progress work available when the CMS cannot be reached.
+fallbackPortfolioProjects.push(
+  {
+    id: -4,
+    slug: 'lalu',
+    name: 'LaLu',
+    type: 'website',
+    summary: null,
+    logo_url: '/images/projects/lalu-logo.png',
+    portfolio_image_url: '/images/projects/lalu-home-screen.png',
+    project_url: 'https://lalu-lv.vercel.app/',
+    alt_text: 'LaLu vietnes priekšskatījums',
+    build_platform: 'Custom izstrāde',
+    status: 'in_progress',
+    challenge: null,
+    solution: 'Pielāgots',
+    features: [],
+    technologies: [],
+    integrations: [],
+    sort_order: 0,
+    is_featured: false,
+    completed_at: null,
+  },
+  {
+    id: -5,
+    slug: 'lr-events',
+    name: 'LR Events',
+    type: 'website',
+    summary:
+      'Top autosporta pasākumu vietne ar informāciju par auto, moto un sporta pasākumiem Latvijā, reģistrāciju, nolikumiem un rezultātiem.',
+    logo_url: '/images/projects/lr-events-logo.png',
+    portfolio_image_url: null,
+    project_url: 'https://lrevents-lv.vercel.app/',
+    alt_text: 'LR Events logotips',
+    build_platform: 'Custom izstrāde',
+    status: 'in_progress',
+    challenge: null,
+    solution: null,
+    features: [],
+    technologies: [],
+    integrations: [],
+    sort_order: 40,
+    is_featured: false,
+    completed_at: null,
+  },
+);
+
 const getFallbackPortfolioProjects = (): PortfolioProject[] =>
   fallbackPortfolioProjects.map((project) => ({
     ...project,
