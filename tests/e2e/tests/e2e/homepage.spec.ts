@@ -54,10 +54,7 @@ test.describe('ROMADI homepage', () => {
       'content',
       'image/png',
     );
-    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
-      'content',
-      'summary',
-    );
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary');
 
     const structuredData = await page
       .locator('script[type="application/ld+json"]')
@@ -79,11 +76,6 @@ test.describe('ROMADI homepage', () => {
           }),
         }),
       ]),
-    );
-
-    await expect(page.locator('.home-hero__image img')).toHaveAttribute(
-      'src',
-      '/images/home/hero-landscape-1600.webp',
     );
 
     await expect(page.locator('html')).toHaveAttribute('lang', 'lv');
@@ -174,7 +166,9 @@ test.describe('ROMADI homepage', () => {
     await expect(menu).not.toHaveAttribute('open', '', { timeout: 800 });
   });
 
-  test('contact launcher exposes direct contact options and closes with Escape', async ({ page }) => {
+  test('contact launcher exposes direct contact options and closes with Escape', async ({
+    page,
+  }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.addInitScript(() => {
       localStorage.setItem(
@@ -211,10 +205,9 @@ test.describe('ROMADI homepage', () => {
       'href',
       'tel:+37126625125',
     );
-    await expect(launcher.getByRole('link', { name: /rakstīt uz info@romadi.lv/i })).toHaveAttribute(
-      'href',
-      'mailto:info@romadi.lv',
-    );
+    await expect(
+      launcher.getByRole('link', { name: /rakstīt uz info@romadi.lv/i }),
+    ).toHaveAttribute('href', 'mailto:info@romadi.lv');
 
     await page.keyboard.press('Escape');
     await expect(toggle).toHaveAttribute('aria-expanded', 'false');
@@ -233,8 +226,7 @@ test.describe('ROMADI homepage', () => {
         const supportSection = document.querySelector('.home-support');
         return Boolean(
           supportSection &&
-            supportSection.compareDocumentPosition(reviewsSection) &
-              Node.DOCUMENT_POSITION_FOLLOWING,
+          supportSection.compareDocumentPosition(reviewsSection) & Node.DOCUMENT_POSITION_FOLLOWING,
         );
       }),
     ).toBe(true);
@@ -304,7 +296,7 @@ test.describe('ROMADI homepage', () => {
     await page.goto('/');
 
     const hero = page.locator('.home-hero');
-    const heroImage = hero.locator('.home-hero__image img');
+    const heroField = hero.locator('[data-ascii-field]');
     const mobileMenu = page.locator('.site-header__mobile-menu');
 
     await page.evaluate(() => {
@@ -316,19 +308,22 @@ test.describe('ROMADI homepage', () => {
     const footerWaves = page.locator('.site-footer__waves');
     await footerWaves.scrollIntoViewIfNeeded();
     await expect(footerWaves).toHaveAttribute('data-footer-wave-active', 'true');
-    await expect.poll(() => footerWaves.locator('svg').evaluate((svg) => svg.getAnimations().length)).toBe(1);
+    await expect
+      .poll(() => footerWaves.locator('svg').evaluate((svg) => svg.getAnimations().length))
+      .toBe(1);
     await expect
       .poll(() =>
         footerWaves
           .locator('path')
-          .evaluateAll((paths) => paths.reduce((total, path) => total + path.getAnimations().length, 0)),
+          .evaluateAll((paths) =>
+            paths.reduce((total, path) => total + path.getAnimations().length, 0),
+          ),
       )
       .toBe(0);
 
     await hero.scrollIntoViewIfNeeded();
     await expect(hero).toBeInViewport();
-    await expect(heroImage).toBeVisible();
-    await expect(heroImage).toHaveCSS('will-change', 'auto');
+    await expect(heroField).toBeVisible();
     await expect(mobileMenu).not.toHaveAttribute('open', '');
 
     const paintState = await page.evaluate(() => {
@@ -345,21 +340,29 @@ test.describe('ROMADI homepage', () => {
             (frame) => String(frame.opacity) === '0.42' && String(frame.transform).includes('22px'),
           );
       });
-      const image = document.querySelector<HTMLImageElement>('.home-hero__image img');
+      const field = document.querySelector<HTMLCanvasElement>('[data-ascii-field]');
 
       return {
         allRevealed: revealElements.every(
           (element) =>
             element.dataset.revealState === 'revealed' && getComputedStyle(element).opacity === '1',
         ),
-        heroImageDecoded: Boolean(image?.complete && image.naturalWidth > 0),
+        heroFieldPainted: Boolean(
+          field &&
+          field.width > 0 &&
+          field.height > 0 &&
+          field
+            .getContext('2d')
+            ?.getImageData(0, 0, field.width, field.height)
+            .data.some((value, index) => index % 4 === 3 && value > 0),
+        ),
         genericRevealAnimationCount: genericRevealAnimations.length,
       };
     });
 
     expect(paintState).toEqual({
       allRevealed: true,
-      heroImageDecoded: true,
+      heroFieldPainted: true,
       genericRevealAnimationCount: 0,
     });
   });
