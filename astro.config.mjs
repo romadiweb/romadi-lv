@@ -70,6 +70,11 @@ export default defineConfig({
   integrations: [
     mdx(),
     sitemap({
+      customPages: [
+        'https://romadi.lv/',
+        'https://romadi.lv/portfolio',
+        'https://romadi.lv/pakalpojumi/majaslapu-izstrade',
+      ],
       filter: (page) => !new globalThis.URL(page).pathname.startsWith('/veidnes/demo'),
     }),
     icon(),

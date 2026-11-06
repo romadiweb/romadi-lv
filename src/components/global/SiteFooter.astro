@@ -179,7 +179,10 @@ const cta =
       if (cta.dataset.footerCtaInitialized === 'true') return;
       cta.dataset.footerCtaInitialized = 'true';
 
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      if (
+        document.body.dataset.pageReveals === 'false' ||
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      ) {
         cta.dataset.footerCtaRevealed = 'true';
         return;
       }

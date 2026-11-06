@@ -157,9 +157,10 @@ const fallbackQuotaMetrics: PortalQuotaMetric[] = [
 
 const definitions: Record<Resource, ResourceDefinition> = {
   projects: {
-    title: 'Projekti',
-    description: 'Pārvaldi portfolio saturu un publicēšanas stāvokli.',
-    singular: 'projekts',
+    title: 'Klienti',
+    description:
+      'Viens klienta ieraksts portfolio, sākumlapas partneru joslai un pabeigto projektu sadaļai. Pabeigtajos projektos iekļaujam tikai pabeigtas mājaslapas ar metāliski rozā logo.',
+    singular: 'klients',
     labelKey: 'name',
     secondaryKey: 'type',
     defaults: {
@@ -172,19 +173,22 @@ const definitions: Record<Resource, ResourceDefinition> = {
       is_featured: false,
       is_published: false,
       logo_url: null,
+      partner_logo_url: null,
+      metallic_logo_url: null,
+      show_in_partners: true,
       name: '',
       portfolio_image_url: null,
       project_url: null,
       slug: '',
       solution: null,
       sort_order: 0,
-      status: 'completed',
+      status: 'in_progress',
       summary: null,
       technologies: [],
       type: 'website',
     },
     fields: [
-      { key: 'name', label: 'Nosaukums', type: 'text', required: true },
+      { key: 'name', label: 'Klienta nosaukums', type: 'text', required: true },
       { key: 'slug', label: 'Slug', type: 'text', required: true, hint: 'mazie-burti-ar-defisem' },
       { key: 'type', label: 'Kategorija', type: 'text', required: true },
       {
@@ -205,7 +209,25 @@ const definitions: Record<Resource, ResourceDefinition> = {
       { key: 'challenge', label: 'Izaicinājums', type: 'textarea', wide: true },
       { key: 'solution', label: 'Risinājums', type: 'textarea', wide: true },
       { key: 'project_url', label: 'Projekta URL', type: 'url' },
-      { key: 'logo_url', label: 'Logotipa ceļš', type: 'text' },
+      {
+        key: 'logo_url',
+        label: 'Klienta logotipa ceļš',
+        type: 'text',
+        hint: 'Logotips portfolio kartītei.',
+      },
+      {
+        key: 'partner_logo_url',
+        label: 'Baltais logo partneru joslai',
+        type: 'text',
+        hint: 'Plakans SVG vai PNG ar caurspīdīgu fonu. Joslā rādām baltā krāsā. Bez šī attēla rādām klienta nosaukumu.',
+      },
+      {
+        key: 'metallic_logo_url',
+        label: 'Metāliski rozā logo ceļš',
+        type: 'text',
+        hint: 'Atstāj tukšu, līdz logo ir gatavs. Pabeigto projektu skaitā un logo sadaļā iekļaujam tikai publicētas, pabeigtas mājaslapas ar šo logo.',
+      },
+      { key: 'show_in_partners', label: 'Rādīt sākumlapas partneru joslā', type: 'checkbox' },
       {
         key: 'portfolio_image_url',
         label: 'Portfolio attēla ceļš',

@@ -4,7 +4,7 @@ import { SERVICES, type ServiceDefinition } from '@/data/services';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 
 export function getStaticPaths() {
-  return SERVICES.map((service) => ({
+  return SERVICES.filter((service) => service.slug !== 'majaslapu-izstrade').map((service) => ({
     params: { slug: service.slug },
     props: { service },
   }));

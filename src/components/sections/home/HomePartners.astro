@@ -1,29 +1,16 @@
 ---
-const partners = [
-  {
-    name: 'RTU LJK',
-    href: 'https://ljk.lv',
-    logo: '',
-    className: 'home-partners__logo--wide',
-  },
-  {
-    name: 'DIANA',
-    href: 'https://dianahunt.lv',
-    logo: '',
-    className: 'home-partners__logo--badge',
-  },
-  {
-    name: 'LIEPAJASTELTIS',
-    href: 'https://liepajasteltis.netlify.app',
-    logo: '',
-    className: 'home-partners__logo--soft',
-  },
-];
+import { getPublishedClientPartners } from '@/lib/projects';
+
+const partners = await getPublishedClientPartners();
 
 const partnerLoop = [...partners, ...partners, ...partners];
 ---
 
-<section class="home-partners" aria-labelledby="home-partners-heading">
+<section
+  hidden={partners.length === 0}
+  class="home-partners"
+  aria-labelledby="home-partners-heading"
+>
   <div class="home-partners__inner">
     <p
       id="home-partners-heading"
@@ -49,7 +36,7 @@ const partnerLoop = [...partners, ...partners, ...partners];
             aria-hidden={index >= partners.length ? 'true' : undefined}
           >
             <a
-              class={`home-partners__logo ${partner.className}`}
+              class="home-partners__logo"
               href={partner.href}
               aria-label={`Atvērt ${partner.name}`}
               target="_blank"
@@ -59,6 +46,7 @@ const partnerLoop = [...partners, ...partners, ...partners];
               {partner.logo ? (
                 <img
                   class="home-partners__logo-image"
+                  data-client-logo={partner.slug}
                   src={partner.logo}
                   alt={partner.name}
                   loading="lazy"
@@ -132,11 +120,11 @@ const partnerLoop = [...partners, ...partners, ...partners];
 
   .home-partners__logos {
     display: grid;
-    grid-template-columns: repeat(3, minmax(9rem, max-content));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     justify-content: center;
-    gap: clamp(3rem, 5.5vw, 5rem) clamp(3.5rem, 8vw, 8rem);
+    gap: clamp(3rem, 5.5vw, 5rem) clamp(1.5rem, 4vw, 4rem);
 
-    width: min(100%, 64rem);
+    width: min(100%, 74rem);
     margin: clamp(3.75rem, 6vw, 5.25rem) auto 0;
     padding: 0;
 
@@ -146,6 +134,7 @@ const partnerLoop = [...partners, ...partners, ...partners];
   .home-partners__logo-item {
     display: flex;
     min-height: clamp(3.3rem, 6vw, 4.8rem);
+    min-width: 0;
 
     align-items: center;
     justify-content: center;
@@ -157,13 +146,14 @@ const partnerLoop = [...partners, ...partners, ...partners];
 
   .home-partners__logo {
     display: inline-flex;
-    min-width: 8rem;
+    width: 100%;
+    min-width: 0;
     min-height: 3rem;
 
     align-items: center;
     justify-content: center;
 
-    color: rgb(255 255 255 / 88%);
+    color: #fff;
 
     font-size: clamp(1.35rem, 2.15vw, 2.55rem);
     font-weight: 850;
@@ -176,72 +166,47 @@ const partnerLoop = [...partners, ...partners, ...partners];
     cursor: pointer;
 
     filter: blur(0);
-    opacity: 0.92;
-    transform: translateY(0);
-
+    opacity: 1;
     transition:
       filter 260ms ease,
-      opacity 260ms ease,
-      transform 260ms var(--ease-out-expo);
+      opacity 260ms ease;
   }
 
   .home-partners__logo-text {
     display: inline-block;
-    white-space: nowrap;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    font-size: clamp(0.9rem, 1.4vw, 1.4rem);
   }
 
   .home-partners__logo-image {
     display: block;
-    width: auto;
-    max-width: min(16rem, 100%);
-    height: clamp(2rem, 4.2vw, 3.6rem);
+    width: min(100%, 8rem);
+    height: clamp(3rem, 4.5vw, 4.5rem);
+    filter: grayscale(1);
 
     object-fit: contain;
   }
 
-  .home-partners__logo--wide {
-    letter-spacing: 0.1em;
+  .home-partners__logo-image[data-client-logo='lalu'] {
+    filter: grayscale(1) invert(1) brightness(2);
   }
 
-  .home-partners__logo--mark {
-    font-size: clamp(1.7rem, 2.6vw, 3rem);
-    letter-spacing: -0.04em;
-  }
-
-  .home-partners__logo--soft {
-    font-weight: 760;
-    letter-spacing: -0.03em;
-    text-transform: lowercase;
-  }
-
-  .home-partners__logo--badge {
-    min-width: 5.2rem;
-    min-height: 3.2rem;
-    padding-inline: 0.9rem;
-
-    border: 0.16rem solid currentColor;
-    border-radius: 999px;
-
-    font-size: clamp(1.1rem, 1.55vw, 1.65rem);
-    letter-spacing: 0.08em;
-  }
-
-  .home-partners__logo--script {
-    font-size: clamp(1.4rem, 2vw, 2.2rem);
-    font-style: italic;
-    font-weight: 720;
-    letter-spacing: -0.06em;
+  .home-partners__logo-image[data-client-logo='diana-hunt'] {
+    object-fit: cover;
+    filter: grayscale(1) brightness(1.6) contrast(4);
   }
 
   .home-partners__logo:hover,
   .home-partners__logo:focus-visible {
     opacity: 1;
     outline: none;
-    transform: translateY(-0.18rem);
   }
 
   .home-partners__logo:focus-visible {
-    color: white;
+    outline: 2px solid white;
+    outline-offset: 6px;
   }
 
   .home-partners__logos:has(.home-partners__logo:is(:hover, :focus-visible))
@@ -274,8 +239,8 @@ const partnerLoop = [...partners, ...partners, ...partners];
 
   @media (max-width: 840px) {
     .home-partners__logos {
-      grid-template-columns: repeat(3, minmax(7rem, max-content));
-      gap: 3.25rem clamp(1.5rem, 5vw, 3rem);
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 3.25rem 1.5rem;
     }
   }
 
@@ -302,12 +267,14 @@ const partnerLoop = [...partners, ...partners, ...partners];
 
       width: max-content;
       margin-top: 2.6rem;
+      padding-right: clamp(2.2rem, 11vw, 3.7rem);
 
       animation: home-partners-mobile-loop 18s linear infinite;
       will-change: transform;
     }
 
-    .home-partners__logos:hover {
+    .home-partners__logos:hover,
+    .home-partners__logos:focus-within {
       animation-play-state: paused;
     }
 
@@ -339,6 +306,14 @@ const partnerLoop = [...partners, ...partners, ...partners];
 
     .home-partners__logos {
       animation: none;
+      width: 100%;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding-inline: 1rem;
+    }
+
+    .home-partners__logo-item--duplicate {
+      display: none;
     }
   }
 </style>

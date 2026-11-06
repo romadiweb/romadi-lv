@@ -1,8 +1,8 @@
 const revealSelector = '[data-reveal]';
 
 const revealObserverOptions: IntersectionObserverInit = {
-  rootMargin: '0px 0px -8% 0px',
-  threshold: 0.12,
+  rootMargin: '0px 0px 100px 0px',
+  threshold: 0,
 };
 
 function revealElement(element: HTMLElement): void {
@@ -11,16 +11,14 @@ function revealElement(element: HTMLElement): void {
   const animation = element.animate(
     [
       {
-        opacity: 0.42,
-        transform: 'translate3d(0, 22px, 0)',
+        opacity: 0.8,
       },
       {
         opacity: 1,
-        transform: 'translate3d(0, 0, 0)',
       },
     ],
     {
-      duration: 680,
+      duration: 300,
       easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
       fill: 'none',
     },
@@ -39,7 +37,12 @@ export function initRevealAnimations(): void {
   // Mobile Safari is particularly sensitive to large transformed descendants,
   // filters and blend modes being promoted together. Keep mobile content fully
   // painted and reserve motion for each component's lightweight interactions.
-  if (reducedMotion || compactViewport || !('IntersectionObserver' in window)) {
+  if (
+    document.body.dataset.pageReveals === 'false' ||
+    reducedMotion ||
+    compactViewport ||
+    !('IntersectionObserver' in window)
+  ) {
     elements.forEach((element) => {
       element.dataset.revealInitialized = 'true';
       element.dataset.revealState = 'revealed';

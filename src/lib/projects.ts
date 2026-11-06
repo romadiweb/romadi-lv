@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase';
 import { createPortalAdminClient } from '@/lib/portal/supabase-server';
 import type { Project } from '@/types/database';
 import { portfolioDetails } from '@/lib/portfolio-details';
+import { selectClientPartners, selectWebsiteProofs } from '@/lib/clients';
 
 export type ProjectProof = Pick<Project, 'id' | 'name' | 'slug' | 'logo_url' | 'sort_order'>;
 
@@ -13,6 +14,9 @@ export type PortfolioProject = Pick<
   | 'type'
   | 'summary'
   | 'logo_url'
+  | 'partner_logo_url'
+  | 'metallic_logo_url'
+  | 'show_in_partners'
   | 'portfolio_image_url'
   | 'project_url'
   | 'alt_text'
@@ -39,6 +43,9 @@ const fallbackPortfolioProjects: PortfolioProject[] = [
     summary:
       'Medību preču kataloga vietne ar Latvijā izstrādātu mednieku eksāmena testa sistēmu, lietotāju kontiem un īpašnieka pārvaldības vidi.',
     logo_url: '/images/projects/diana-logo-metallic.webp',
+    partner_logo_url: '/images/clients/diana.png',
+    metallic_logo_url: '/images/projects/diana-logo-metallic.webp',
+    show_in_partners: true,
     portfolio_image_url: '/images/projects/dianahunt-1600.webp',
     project_url: 'https://dianahunt.lv',
     alt_text: 'Diana Hunt interneta veikala sākumlapa',
@@ -74,6 +81,9 @@ const fallbackPortfolioProjects: PortfolioProject[] = [
     summary:
       'Pakalpojumu vietne, kas palīdz ātri saprast piedāvājumu un nonākt līdz rezervācijas pieprasījumam.',
     logo_url: '/images/projects/liepajasteltis-logo-metallic.webp',
+    partner_logo_url: '/images/clients/liepajas-teltis.svg',
+    metallic_logo_url: '/images/projects/liepajasteltis-logo-metallic.webp',
+    show_in_partners: true,
     portfolio_image_url: '/images/projects/liepajas-teltis-1600.webp',
     project_url: 'https://liepajasteltis.lv',
     alt_text: 'Liepājas Teltis vietnes sākumlapa',
@@ -96,6 +106,9 @@ const fallbackPortfolioProjects: PortfolioProject[] = [
     summary:
       'Digitāla klātbūtne jūrniecības izglītības iestādei ar pārskatāmu informācijas arhitektūru.',
     logo_url: '/images/projects/ljk-logo-metallic.webp',
+    partner_logo_url: '/images/clients/ljk.png',
+    metallic_logo_url: '/images/projects/ljk-logo-metallic.webp',
+    show_in_partners: true,
     portfolio_image_url: '/images/projects/ljk.png',
     project_url: 'https://ljk.lv',
     alt_text: 'RTU Liepājas Jūrniecības koledžas logotips',
@@ -121,6 +134,9 @@ fallbackPortfolioProjects.push(
     type: 'website',
     summary: null,
     logo_url: '/images/projects/lalu-logo.png',
+    partner_logo_url: '/images/clients/lalu.svg',
+    metallic_logo_url: null,
+    show_in_partners: true,
     portfolio_image_url: '/images/projects/lalu-home-screen.png',
     project_url: 'https://lalu-lv.vercel.app/',
     alt_text: 'LaLu vietnes priekšskatījums',
@@ -143,9 +159,12 @@ fallbackPortfolioProjects.push(
     summary:
       'Top autosporta pasākumu vietne ar informāciju par auto, moto un sporta pasākumiem Latvijā, reģistrāciju, nolikumiem un rezultātiem.',
     logo_url: '/images/projects/lr-events-logo.png',
-    portfolio_image_url: null,
+    partner_logo_url: '/images/clients/lr-events.svg',
+    metallic_logo_url: null,
+    show_in_partners: true,
+    portfolio_image_url: '/images/projects/lr-events-home.webp',
     project_url: 'https://lrevents-lv.vercel.app/',
-    alt_text: 'LR Events logotips',
+    alt_text: 'LR Events autosporta pasākumu vietnes sākumlapa',
     build_platform: 'Custom izstrāde',
     status: 'in_progress',
     challenge: null,
@@ -171,15 +190,6 @@ const getFallbackPortfolioProjects = (): PortfolioProject[] =>
     integrations: [...project.integrations],
   }));
 
-const getFallbackProjectProofs = (): ProjectProof[] =>
-  fallbackPortfolioProjects.map(({ id, name, slug, logo_url, sort_order }) => ({
-    id,
-    name,
-    slug,
-    logo_url,
-    sort_order,
-  }));
-
 const warnProjectQueryFailure = (scope: string, error: unknown): void => {
   const message =
     error instanceof Error
@@ -192,42 +202,23 @@ const warnProjectQueryFailure = (scope: string, error: unknown): void => {
 };
 
 export async function getPublishedWebsiteProjects(): Promise<ProjectProof[]> {
-  const fallbackProjects = getFallbackProjectProofs();
-  const client = createPortalAdminClient() ?? supabase;
-  if (!client) return fallbackProjects;
+  return selectWebsiteProofs(await getPublishedPortfolioProjects());
+}
 
-  try {
-    const { data, error } = await client
-      .from('projects')
-      .select('id, name, slug, logo_url, sort_order')
-      .eq('type', 'website')
-      .eq('is_published', true)
-      .order('sort_order', { ascending: true })
-      .order('id', { ascending: true })
-      .abortSignal(AbortSignal.timeout(PROJECT_QUERY_TIMEOUT_MS));
-
-    if (error) {
-      warnProjectQueryFailure('website projects', error);
-      return fallbackProjects;
-    }
-
-    return data.length > 0 ? data : fallbackProjects;
-  } catch (error) {
-    warnProjectQueryFailure('website projects', error);
-    return fallbackProjects;
-  }
+export async function getPublishedClientPartners() {
+  return selectClientPartners(await getPublishedPortfolioProjects());
 }
 
 export async function getPublishedPortfolioProjects(): Promise<PortfolioProject[]> {
   const fallbackProjects = getFallbackPortfolioProjects();
-  const client = createPortalAdminClient() ?? supabase;
+  const client = supabase ?? createPortalAdminClient();
   if (!client) return fallbackProjects;
 
   try {
     const { data, error } = await client
       .from('projects')
       .select(
-        'id, slug, name, type, summary, logo_url, portfolio_image_url, project_url, alt_text, build_platform, status, challenge, solution, features, technologies, integrations, sort_order, is_featured, completed_at',
+        'id, slug, name, type, summary, logo_url, partner_logo_url, metallic_logo_url, show_in_partners, portfolio_image_url, project_url, alt_text, build_platform, status, challenge, solution, features, technologies, integrations, sort_order, is_featured, completed_at',
       )
       .eq('is_published', true)
       .order('is_featured', { ascending: false })
@@ -240,7 +231,7 @@ export async function getPublishedPortfolioProjects(): Promise<PortfolioProject[
       return fallbackProjects;
     }
 
-    return data.length > 0 ? data : fallbackProjects;
+    return data;
   } catch (error) {
     warnProjectQueryFailure('portfolio projects', error);
     return fallbackProjects;

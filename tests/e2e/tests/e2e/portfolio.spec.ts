@@ -28,15 +28,17 @@ test.describe('ROMADI portfolio', () => {
     await expect(page.locator('[data-project-dialog][open]')).toContainText('Diana Hunt');
   });
 
-  test('shows LR Events with a reusable empty-image preview and opens its overview', async ({
-    page,
-  }) => {
+  test('shows the supplied LR Events screenshot and opens its overview', async ({ page }) => {
     await page.goto('/portfolio');
     const card = page
       .locator('.project-card')
       .filter({ has: page.locator('[data-project-slug="lr-events"]') });
     await expect(card).toHaveClass(/project-card--compact/);
-    await expect(card.locator('.project-card__media')).toHaveClass(/project-card__media--logo/);
+    await expect(card.locator('.project-card__media img')).toHaveAttribute(
+      'src',
+      '/images/projects/lr-events-home.webp',
+    );
+    await expect(card.locator('.project-card__media img')).toBeVisible();
     await expect(card.locator('.project-status-badge')).toContainText('Izstrādē');
     await expect(page.locator('[data-portfolio-pagination]')).toHaveCount(0);
     await card.locator('[data-open-project]').click();

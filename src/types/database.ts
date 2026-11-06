@@ -559,6 +559,9 @@ export interface Database {
           features: string[];
           integrations: string[];
           logo_url: string | null;
+          partner_logo_url: string | null;
+          metallic_logo_url: string | null;
+          show_in_partners: boolean;
           name: string;
           portfolio_image_url: string | null;
           project_url: string | null;
@@ -583,6 +586,9 @@ export interface Database {
           features?: string[];
           integrations?: string[];
           logo_url?: string | null;
+          partner_logo_url?: string | null;
+          metallic_logo_url?: string | null;
+          show_in_partners?: boolean;
           name: string;
           portfolio_image_url?: string | null;
           project_url?: string | null;
@@ -607,6 +613,9 @@ export interface Database {
           features?: string[];
           integrations?: string[];
           logo_url?: string | null;
+          partner_logo_url?: string | null;
+          metallic_logo_url?: string | null;
+          show_in_partners?: boolean;
           name?: string;
           portfolio_image_url?: string | null;
           project_url?: string | null;

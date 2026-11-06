@@ -180,9 +180,15 @@ const homeStructuredData = {
 
     <GoogleTag />
 
-    {isHomePage && (
-      <script is:inline type="application/ld+json" set:html={JSON.stringify(homeStructuredData)} />
-    )}
+    {
+      isHomePage && (
+        <script
+          is:inline
+          type="application/ld+json"
+          set:html={JSON.stringify(homeStructuredData)}
+        />
+      )
+    }
 
     <script is:inline>
       document.documentElement.dataset.motionReady = 'true';
@@ -191,7 +197,7 @@ const homeStructuredData = {
     <ClientRouter />
   </head>
 
-  <body>
+  <body data-page-reveals={isHomePage ? 'false' : 'true'}>
     <a
       href="#main-content"
       class="fixed top-4 left-4 z-[100] -translate-y-24 rounded-full bg-white px-5 py-3 text-sm font-semibold text-black transition-transform focus:translate-y-0"
