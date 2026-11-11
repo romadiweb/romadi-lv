@@ -1,3 +1,4 @@
+import { initPortalCalendar } from './calendar';
 import type {
   PortalLead,
   PortalPricingItem,
@@ -2781,7 +2782,27 @@ export function initPortalDashboard(): void {
     }
   };
 
+  const calendar = initPortalCalendar(root, request, () => [
+    ...portalTasks.flatMap((task) =>
+      task.due_date && task.status !== 'done'
+        ? [{ title: task.title, date: task.due_date, kind: 'task' as const }]
+        : [],
+    ),
+    ...quotaTargets
+      .filter((target) => target.is_active)
+      .map((target) => {
+        const end = new Date(target.week_start + 'T12:00:00Z');
+        end.setUTCDate(end.getUTCDate() + 6);
+        return {
+          title: target.label || getQuotaMetricLabel(target),
+          date: end.toISOString().slice(0, 10),
+          kind: 'quota' as const,
+        };
+      }),
+  ]);
+
   const renderDashboard = () => {
+    calendar.render();
     renderCompletedTasks();
     renderNotifications();
     const currentWeek = getWeekStart();

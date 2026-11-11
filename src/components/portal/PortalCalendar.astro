@@ -1,0 +1,200 @@
+---
+const { full = false } = Astro.props;
+---
+
+{
+  full ? (
+    <dialog class="portal-calendar-dialog" data-calendar-dialog aria-labelledby="calendar-title">
+      <header>
+        <>
+          <h2 id="calendar-title">Notikumu kalendārs</h2>
+          <form method="dialog">
+            <button aria-label="Aizvērt">×</button>
+          </form>
+        </>
+      </header>
+      <div class="portal-calendar-toolbar">
+        <input
+          type="search"
+          data-calendar-search
+          placeholder="Meklēt šajā mēnesī"
+          aria-label="Meklēt šajā mēnesī"
+        />
+        <button type="button" data-calendar-add>
+          Pievienot notikumu
+        </button>
+      </div>
+      <ul class="portal-calendar-legend" aria-label="Ierakstu veidi">
+        <li data-kind="event">Notikumi</li>
+        <li data-kind="social">Sociālie tīkli</li>
+        <li data-kind="quota">Kvotas</li>
+        <li data-kind="task">Uzdevumi</li>
+      </ul>
+      <div data-calendar-grid="full" />
+      <form data-calendar-form hidden>
+        <h3>Jauns notikums</h3>
+        <label>
+          Nosaukums
+          <input name="title" required maxlength="160" />
+        </label>
+        <label>
+          Datums
+          <input name="event_date" type="date" required />
+        </label>
+        <label>
+          Veids
+          <select name="event_type">
+            <>
+              <option value="event">Notikums</option>
+              <option value="social">Sociālie tīkli</option>
+            </>
+          </select>
+        </label>
+        <label>
+          Tags
+          <input name="tag" maxlength="80" />
+        </label>
+        <label>
+          Teksts
+          <textarea name="notes" maxlength="4000" />
+        </label>
+        <button type="submit">Saglabāt</button>
+        <button type="button" data-calendar-cancel>
+          Atcelt
+        </button>
+      </form>
+      <p data-calendar-status role="status" />
+      <article data-calendar-detail hidden />
+    </dialog>
+  ) : (
+    <section class="portal-calendar-card" aria-labelledby="dashboard-calendar-title">
+      <header>
+        <>
+          <h2 id="dashboard-calendar-title">Kalendārs</h2>
+          <button type="button" data-calendar-open>
+            Atvērt kalendāru
+          </button>
+        </>
+      </header>
+      <div data-calendar-grid="mini" />
+      <ul data-calendar-agenda />
+    </section>
+  )
+}
+<style is:global>
+  .portal-calendar-card,
+  .portal-calendar-dialog {
+    margin: auto;
+    border: 1px solid color-mix(in srgb, currentColor 17%, transparent);
+    border-radius: 12px;
+    padding: 1rem;
+  }
+  .portal-calendar-dialog {
+    background: Canvas;
+    color: CanvasText;
+    width: min(96vw, 76rem);
+    max-height: 90dvh;
+  }
+  .portal-calendar-dialog::backdrop {
+    background: rgb(0 0 0 / 55%);
+  }
+  .portal-calendar-card header,
+  .portal-calendar-dialog header,
+  .portal-calendar-toolbar,
+  .portal-calendar-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+  .portal-calendar-dialog button,
+  .portal-calendar-card button {
+    cursor: pointer;
+  }
+  .portal-calendar-toolbar,
+  .portal-calendar-nav {
+    margin-block: 0.75rem;
+  }
+  .portal-calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.25rem;
+  }
+  .portal-calendar-day {
+    min-width: 0;
+    min-height: 2rem;
+    border: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+    border-radius: 6px;
+    padding: 0.2rem;
+  }
+  .portal-calendar-day[data-today] {
+    border-color: currentColor;
+  }
+  .portal-calendar-day[data-selected] {
+    background: color-mix(in srgb, currentColor 10%, transparent);
+  }
+  [data-calendar-grid='full'] .portal-calendar-day {
+    min-height: clamp(3rem, 8vw, 6.5rem);
+  }
+  .portal-calendar-entry {
+    display: block;
+    width: 100%;
+    text-align: start;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.8rem;
+    border-inline-start: 3px solid #668f80;
+    padding-inline: 0.25rem;
+  }
+  .portal-calendar-entry[data-kind='social'] {
+    border-color: #479cca;
+  }
+  .portal-calendar-entry[data-kind='quota'] {
+    border-color: #a875c0;
+  }
+  .portal-calendar-entry[data-kind='task'] {
+    border-color: #cb844d;
+  }
+  .portal-calendar-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    padding: 0;
+    list-style: none;
+    font-size: 0.8rem;
+  }
+  .portal-calendar-legend li {
+    border-inline-start: 3px solid #668f80;
+    padding-inline-start: 0.35rem;
+  }
+  .portal-calendar-legend [data-kind='social'] {
+    border-color: #479cca;
+  }
+  .portal-calendar-legend [data-kind='quota'] {
+    border-color: #a875c0;
+  }
+  .portal-calendar-legend [data-kind='task'] {
+    border-color: #cb844d;
+  }
+  [data-calendar-form]:not([hidden]) {
+    display: grid;
+    gap: 0.6rem;
+    max-width: 36rem;
+    margin-block: 1rem;
+  }
+  [data-calendar-form] label {
+    display: grid;
+    gap: 0.2rem;
+  }
+  [data-calendar-detail] {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .portal-calendar-dashboard-tasks {
+    display: grid;
+    gap: 1rem;
+    min-width: 0;
+  }
+</style>

@@ -1,4 +1,5 @@
 ---
+import PortalCalendar from '@/components/portal/PortalCalendar.astro';
 import PortalLayout from '@/layouts/PortalLayout.astro';
 import { LEAD_SOURCE_OPTIONS, OTHER_LEAD_SOURCE } from '@/lib/portal/lead-sources';
 
@@ -239,6 +240,7 @@ if (!existingCsrf) {
             >
             <span>Mājaslapa</span>
           </h2>
+          <button type="button" data-calendar-open><span>Kalendārs</span></button>
           <button type="button" data-resource="projects">
             <span class="portal-nav-signal"></span>
             <svg class="portal-nav-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -382,6 +384,7 @@ if (!existingCsrf) {
         </button>
       </header>
 
+      <PortalCalendar full />
       <div class="portal-home" data-dashboard-home-view>
         <section class="portal-home-summary" aria-label="Darba kopsavilkums">
           <article>
@@ -414,25 +417,28 @@ if (!existingCsrf) {
         </section>
 
         <div class="portal-home-columns">
-          <section class="portal-home-tasks" aria-labelledby="home-tasks-title">
-            <header>
-              <div>
-                <h2 id="home-tasks-title">Šodienas uzdevumi</h2>
-                <p>Tev piešķirtie darbi, termiņi un svarīgākie follow-up.</p>
-              </div>
-              <button type="button" data-home-action="tasks">Atvērt uzdevumus</button>
-            </header>
-            <div class="portal-home-task-list" data-home-task-list aria-live="polite"></div>
-          </section>
+          <PortalCalendar />
+          <div class="portal-calendar-dashboard-tasks">
+            <section class="portal-home-tasks" aria-labelledby="home-tasks-title">
+              <header>
+                <div>
+                  <h2 id="home-tasks-title">Šodienas uzdevumi</h2>
+                  <p>Tev piešķirtie darbi, termiņi un svarīgākie follow-up.</p>
+                </div>
+                <button type="button" data-home-action="tasks">Atvērt uzdevumus</button>
+              </header>
+              <div class="portal-home-task-list" data-home-task-list aria-live="polite"></div>
+            </section>
 
-          <aside class="portal-home-completed" aria-labelledby="completed-tasks-title">
-            <header>
-              <h2 id="completed-tasks-title">Izpildītie uzdevumi</h2><p>
-                Komandas pabeigtie darbi — kas un kad tos izpildīja.
-              </p>
-            </header>
-            <div class="portal-home-task-list" data-home-completed-list aria-live="polite"></div>
-          </aside>
+            <aside class="portal-home-completed" aria-labelledby="completed-tasks-title">
+              <header>
+                <h2 id="completed-tasks-title">Izpildītie uzdevumi</h2><p>
+                  Komandas pabeigtie darbi — kas un kad tos izpildīja.
+                </p>
+              </header>
+              <div class="portal-home-task-list" data-home-completed-list aria-live="polite"></div>
+            </aside>
+          </div>
         </div>
       </div>
 

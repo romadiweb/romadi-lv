@@ -201,6 +201,25 @@ export interface Database {
         };
         Relationships: [];
       };
+      portal_calendar_events: {
+        Row: {
+          id: number;
+          title: string;
+          event_date: string;
+          event_type: 'event' | 'social';
+          tag: string;
+          notes: string;
+        };
+        Insert: {
+          title: string;
+          event_date: string;
+          event_type: 'event' | 'social';
+          tag: string;
+          notes: string;
+        };
+        Update: never;
+        Relationships: [];
+      };
       portal_quota_targets: {
         Row: {
           created_at: string;
