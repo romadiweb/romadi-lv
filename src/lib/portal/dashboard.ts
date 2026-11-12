@@ -15,6 +15,7 @@ type Resource = 'projects' | 'reviews' | 'pricing_plans';
 type View =
   | Resource
   | 'audit'
+  | 'calendar'
   | 'calculator'
   | 'dashboard'
   | 'leads'
@@ -749,6 +750,7 @@ export function initPortalDashboard(): void {
   };
 
   const hideWorkspaceViews = () => {
+    root.querySelector<HTMLElement>('[data-calendar-view]')!.hidden = true;
     notificationView.hidden = true;
     calculatorGrid.hidden = true;
     homeView.hidden = true;
@@ -2800,6 +2802,23 @@ export function initPortalDashboard(): void {
         };
       }),
   ]);
+
+  const showCalendar = () => {
+    setDirty(false);
+    activeView = 'calendar';
+    setNavState('calendar');
+    hideWorkspaceViews();
+    root.querySelector<HTMLElement>('[data-calendar-view]')!.hidden = false;
+    sectionTitle.textContent = 'Notikumu kalendārs';
+    sectionDescription.textContent = 'Notikumi, kvotu termiņi un uzdevumi.';
+    createButton.hidden = true;
+    calendar.render();
+    void calendar.refresh();
+    window.scrollTo({ top: 0 });
+  };
+  root.querySelectorAll('[data-calendar-open]').forEach((button) => {
+    button.addEventListener('click', () => void afterDiscard(showCalendar));
+  });
 
   const renderDashboard = () => {
     calendar.render();

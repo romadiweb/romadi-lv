@@ -28,11 +28,11 @@ export function initPortalCalendar(
   let events: Event[] = [];
   let revision = 0;
   let saving = false;
-  const dialog = root.querySelector<HTMLDialogElement>('[data-calendar-dialog]')!;
-  const form = dialog.querySelector<HTMLFormElement>('[data-calendar-form]')!;
-  const search = dialog.querySelector<HTMLInputElement>('[data-calendar-search]')!;
-  const status = dialog.querySelector<HTMLElement>('[data-calendar-status]')!;
-  const detail = dialog.querySelector<HTMLElement>('[data-calendar-detail]')!;
+  const page = root.querySelector<HTMLElement>('[data-calendar-view]')!;
+  const form = page.querySelector<HTMLFormElement>('[data-calendar-form]')!;
+  const search = page.querySelector<HTMLInputElement>('[data-calendar-search]')!;
+  const status = page.querySelector<HTMLElement>('[data-calendar-status]')!;
+  const detail = page.querySelector<HTMLElement>('[data-calendar-detail]')!;
   const agenda = root.querySelector<HTMLElement>('[data-calendar-agenda]')!;
   const grids = root.querySelectorAll<HTMLElement>('[data-calendar-grid]');
 
@@ -97,7 +97,15 @@ export function initPortalCalendar(
       days.className = 'portal-calendar-days';
       for (const name of ['Pr', 'Ot', 'Tr', 'Ce', 'Pk', 'Se', 'Sv'])
         days.append(node('span', name));
-      for (let offset = 0; offset < leading; offset++) days.append(node('div', ''));
+      const appendOutsideDay = (day: number) => {
+        const date = new Date(first);
+        date.setUTCDate(day);
+        const cell = node('div', String(date.getUTCDate()));
+        cell.className = 'portal-calendar-day portal-calendar-day--outside';
+        cell.setAttribute('aria-hidden', 'true');
+        days.append(cell);
+      };
+      for (let offset = leading; offset > 0; offset--) appendOutsideDay(1 - offset);
       const query = full ? search.value.trim().toLocaleLowerCase('lv') : '';
       for (let day = 1; day <= length; day++) {
         const date = month + '-' + String(day).padStart(2, '0');
@@ -115,7 +123,13 @@ export function initPortalCalendar(
         cell.toggleAttribute('data-today', date === today());
         cell.toggleAttribute('data-selected', date === selected);
         if (full) {
-          cell.append(button(String(day), () => add(date), 'Pievienot notikumu ' + date));
+          const dayHeader = node('div', '');
+          dayHeader.className = 'portal-calendar-day-header';
+          dayHeader.append(
+            node('span', date === today() ? day + ' · Šodien' : String(day)),
+            button('+', () => add(date), 'Pievienot notikumu ' + date),
+          );
+          cell.append(dayHeader);
           for (const entry of items) {
             const chip = button(
               entry.title,
@@ -145,7 +159,23 @@ export function initPortalCalendar(
         }
         days.append(cell);
       }
-      grid.replaceChildren(nav, days);
+      const trailing = (7 - ((leading + length) % 7)) % 7;
+      for (let offset = 1; offset <= trailing; offset++) appendOutsideDay(length + offset);
+      grid.replaceChildren(nav);
+      if (full) {
+        const months = node('div', '');
+        months.className = 'portal-calendar-months';
+        const format = new Intl.DateTimeFormat('lv-LV', { month: 'long', timeZone: 'UTC' });
+        for (let index = 0; index < 12; index++) {
+          const date = new Date(first);
+          date.setUTCMonth(index);
+          const monthButton = button(format.format(date), () => choose(dateKey(date)));
+          monthButton.setAttribute('aria-pressed', String(index === first.getUTCMonth()));
+          months.append(monthButton);
+        }
+        grid.append(months);
+      }
+      grid.append(days);
     }
     const items = entries.filter((entry) => entry.date === selected);
     agenda.replaceChildren(
@@ -182,16 +212,9 @@ export function initPortalCalendar(
     choose(dateKey(next));
   }
 
-  for (const open of root.querySelectorAll('[data-calendar-open]')) {
-    open.addEventListener('click', () => {
-      render();
-      dialog.showModal();
-      void refresh();
-    });
-  }
   search.addEventListener('input', render);
-  dialog.querySelector('[data-calendar-add]')?.addEventListener('click', () => add(selected));
-  dialog.querySelector('[data-calendar-cancel]')?.addEventListener('click', () => {
+  page.querySelector('[data-calendar-add]')?.addEventListener('click', () => add(selected));
+  page.querySelector('[data-calendar-cancel]')?.addEventListener('click', () => {
     form.hidden = true;
   });
   form.addEventListener('submit', async (event) => {
@@ -219,5 +242,5 @@ export function initPortalCalendar(
 
   render();
   void refresh();
-  return { render };
+  return { render, refresh };
 }

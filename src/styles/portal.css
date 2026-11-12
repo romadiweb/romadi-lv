@@ -829,7 +829,7 @@
 
 .portal-home-columns {
   display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(18rem, 0.65fr);
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 0.85fr);
   gap: 1rem;
   margin-top: 1rem;
   align-items: start;
@@ -2982,7 +2982,11 @@
   }
 
   .portal-home-columns {
-    grid-template-columns: minmax(0, 1fr) minmax(17rem, 0.6fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .portal-home-columns > .portal-calendar-card {
+    grid-column: 1 / -1;
   }
 
   .portal-home-quota-list,

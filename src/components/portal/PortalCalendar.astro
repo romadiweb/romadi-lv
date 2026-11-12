@@ -4,15 +4,7 @@ const { full = false } = Astro.props;
 
 {
   full ? (
-    <dialog class="portal-calendar-dialog" data-calendar-dialog aria-labelledby="calendar-title">
-      <header>
-        <>
-          <h2 id="calendar-title">Notikumu kalendārs</h2>
-          <form method="dialog">
-            <button aria-label="Aizvērt">×</button>
-          </form>
-        </>
-      </header>
+    <section class="portal-calendar-page" data-calendar-view hidden aria-label="Notikumu kalendārs">
       <div class="portal-calendar-toolbar">
         <input
           type="search"
@@ -65,7 +57,7 @@ const { full = false } = Astro.props;
       </form>
       <p data-calendar-status role="status" />
       <article data-calendar-detail hidden />
-    </dialog>
+    </section>
   ) : (
     <section class="portal-calendar-card" aria-labelledby="dashboard-calendar-title">
       <header>
@@ -83,23 +75,14 @@ const { full = false } = Astro.props;
 }
 <style is:global>
   .portal-calendar-card,
-  .portal-calendar-dialog {
-    margin: auto;
+  .portal-calendar-page {
+    min-width: 0;
     border: 1px solid color-mix(in srgb, currentColor 17%, transparent);
     border-radius: 12px;
     padding: 1rem;
   }
-  .portal-calendar-dialog {
-    background: Canvas;
-    color: CanvasText;
-    width: min(96vw, 76rem);
-    max-height: 90dvh;
-  }
-  .portal-calendar-dialog::backdrop {
-    background: rgb(0 0 0 / 55%);
-  }
   .portal-calendar-card header,
-  .portal-calendar-dialog header,
+  .portal-calendar-page header,
   .portal-calendar-toolbar,
   .portal-calendar-nav {
     display: flex;
@@ -108,7 +91,7 @@ const { full = false } = Astro.props;
     gap: 0.6rem;
     flex-wrap: wrap;
   }
-  .portal-calendar-dialog button,
+  .portal-calendar-page button,
   .portal-calendar-card button {
     cursor: pointer;
   }
@@ -134,8 +117,33 @@ const { full = false } = Astro.props;
   .portal-calendar-day[data-selected] {
     background: color-mix(in srgb, currentColor 10%, transparent);
   }
-  [data-calendar-grid='full'] .portal-calendar-day {
-    min-height: clamp(3rem, 8vw, 6.5rem);
+  .portal-calendar-day--outside {
+    opacity: 0.42;
+  }
+  .portal-calendar-day-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .portal-calendar-day-header button {
+    min-width: 1.75rem;
+    min-height: 1.75rem;
+  }
+  .portal-calendar-months {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-bottom: 1rem;
+  }
+  .portal-calendar-months button {
+    padding: 0.35rem 0.55rem;
+    border-radius: 4px;
+    text-transform: capitalize;
+  }
+  .portal-calendar-months [aria-pressed='true'] {
+    background: #16584b;
+    color: white;
   }
   .portal-calendar-entry {
     display: block;
@@ -192,9 +200,33 @@ const { full = false } = Astro.props;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
   }
-  .portal-calendar-dashboard-tasks {
-    display: grid;
-    gap: 1rem;
-    min-width: 0;
+  .portal-calendar-card .portal-calendar-day {
+    min-height: 2.5rem;
+    text-align: center;
+  }
+  .portal-calendar-card .portal-calendar-day button {
+    width: 100%;
+    min-height: 2rem;
+  }
+  [data-calendar-agenda] {
+    max-height: 6rem;
+    overflow-y: auto;
+    padding-inline-start: 1rem;
+  }
+  .portal-calendar-page [data-calendar-grid='full'] {
+    overflow-x: auto;
+  }
+  .portal-calendar-page .portal-calendar-days {
+    min-width: 38rem;
+  }
+  .portal-calendar-page .portal-calendar-day {
+    padding: 0.5rem;
+    min-height: clamp(6rem, 10vw, 9rem);
+  }
+  .portal-calendar-page .portal-calendar-entry {
+    margin-top: 0.25rem;
+    padding: 0.45rem;
+    border-radius: 4px;
+    background: color-mix(in srgb, currentColor 8%, transparent);
   }
 </style>
