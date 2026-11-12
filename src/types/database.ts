@@ -301,6 +301,12 @@ export interface Database {
         };
         Relationships: [];
       };
+      portal_self_profiles: {
+        Row: { id: string; first_name: string; last_name: string; photo: string | null };
+        Insert: { id: string; first_name: string; last_name: string; photo?: string | null };
+        Update: { first_name?: string; last_name?: string; photo?: string | null };
+        Relationships: [];
+      };
       portal_users: {
         Row: {
           created_at: string;

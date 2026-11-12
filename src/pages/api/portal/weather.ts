@@ -9,7 +9,7 @@ let pending: Promise<Weather> | undefined;
 
 async function fetchWeather(): Promise<Weather> {
   const response = await fetch(
-    'https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=56.95&lon=24.11',
+    'https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=56.51&lon=21.01',
     {
       headers: { 'User-Agent': 'ROMADI CMS/1.0 (+https://romadi.lv)' },
       signal: AbortSignal.timeout(5000),

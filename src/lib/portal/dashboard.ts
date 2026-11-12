@@ -1,3 +1,4 @@
+import { initProfileEditor } from './profile';
 import { initPortalCalendar } from './calendar';
 import type {
   PortalLead,
@@ -751,7 +752,7 @@ export function initPortalDashboard(): void {
 
   const hideWorkspaceViews = () => {
     root.querySelector<HTMLElement>('[data-calendar-view]')!.hidden = true;
-    $<HTMLElement>(root, '[data-riga-widget]').hidden = true;
+    $<HTMLElement>(root, '[data-liepaja-widget]').hidden = true;
     notificationView.hidden = true;
     calculatorGrid.hidden = true;
     homeView.hidden = true;
@@ -2965,14 +2966,14 @@ export function initPortalDashboard(): void {
     homeTaskList.replaceChildren(fragment);
   };
 
-  const rigaWidget = $<HTMLElement>(root, '[data-riga-widget]');
-  const rigaTime = new Intl.DateTimeFormat('lv-LV', {
+  const liepajaWidget = $<HTMLElement>(root, '[data-liepaja-widget]');
+  const liepajaTime = new Intl.DateTimeFormat('lv-LV', {
     timeZone: 'Europe/Riga',
     hour: '2-digit',
     minute: '2-digit',
     hourCycle: 'h23',
   });
-  const rigaDate = new Intl.DateTimeFormat('lv-LV', {
+  const liepajaDate = new Intl.DateTimeFormat('lv-LV', {
     timeZone: 'Europe/Riga',
     weekday: 'long',
     day: 'numeric',
@@ -2981,19 +2982,25 @@ export function initPortalDashboard(): void {
   const updateGreeting = () => {
     if (activeView !== 'dashboard') return;
     const now = new Date();
-    const hour = Number(rigaTime.formatToParts(now).find((part) => part.type === 'hour')?.value);
+    const hour = Number(liepajaTime.formatToParts(now).find((part) => part.type === 'hour')?.value);
     const greeting = hour < 12 ? 'Labrīt' : hour < 18 ? 'Labdien' : 'Labvakar';
-    const name = portalUsers.find((user) => user.id === currentUserId)?.display_name?.trim();
+    const name =
+      profile.firstName() ||
+      portalUsers
+        .find((user) => user.id === currentUserId)
+        ?.display_name?.trim()
+        .split(/\s+/)[0];
     sectionTitle.textContent = name ? greeting + ', ' + name : greeting;
-    $<HTMLElement>(rigaWidget, '[data-riga-time]').textContent = rigaTime.format(now);
-    $<HTMLElement>(rigaWidget, '[data-riga-date]').textContent = rigaDate.format(now);
+    $<HTMLElement>(liepajaWidget, '[data-liepaja-time]').textContent = liepajaTime.format(now);
+    $<HTMLElement>(liepajaWidget, '[data-liepaja-date]').textContent = liepajaDate.format(now);
   };
+  const profile = initProfileEditor(root, request, updateGreeting);
   let nextWeatherRefresh = 0;
   const refreshWeather = async () => {
     if (activeView !== 'dashboard' || Date.now() < nextWeatherRefresh) return;
     nextWeatherRefresh = Date.now() + 30 * 60_000;
-    const temperature = $<HTMLElement>(rigaWidget, '[data-riga-temperature]');
-    const condition = $<HTMLElement>(rigaWidget, '[data-riga-condition]');
+    const temperature = $<HTMLElement>(liepajaWidget, '[data-liepaja-temperature]');
+    const condition = $<HTMLElement>(liepajaWidget, '[data-liepaja-condition]');
     try {
       const weather = await request<{ temperature: number; condition: string }>(
         '/api/portal/weather',
@@ -3017,7 +3024,7 @@ export function initPortalDashboard(): void {
     setNavState('dashboard');
     hideWorkspaceViews();
     homeView.hidden = false;
-    rigaWidget.hidden = false;
+    liepajaWidget.hidden = false;
     updateGreeting();
     void refreshWeather();
     sectionDescription.textContent =

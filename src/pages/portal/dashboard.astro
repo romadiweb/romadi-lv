@@ -361,13 +361,18 @@ if (!existingCsrf) {
           </svg>
           <span>Sakļaut izvēlni</span>
         </button>
-        <div class="portal-user-summary">
-          <span>{identity.email.slice(0, 1).toUpperCase()}</span>
-          <div>
-            <strong>{identity.email}</strong>
-            <small>{identity.role === 'super-admin' ? 'Super-admins' : 'Administrators'}</small>
-          </div>
-        </div>
+        <button
+          type="button"
+          class="portal-user-summary portal-profile-trigger"
+          data-profile-open
+          aria-haspopup="dialog"
+        >
+          <span data-profile-avatar>{identity.email.slice(0, 1).toUpperCase()}</span>
+          <span class="portal-profile-label">
+            <strong data-profile-name>{identity.email}</strong>
+            <small>Rediģēt profilu</small>
+          </span>
+        </button>
         <button type="button" class="portal-logout" data-logout>
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M10 17l5-5-5-5M15 12H3M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"></path>
@@ -386,18 +391,20 @@ if (!existingCsrf) {
           </p>
         </div>
         <aside
-          class="portal-riga-widget"
-          data-riga-widget
-          aria-label="Laiks un laikapstākļi Rīgā"
+          class="portal-liepaja-widget"
+          data-liepaja-widget
+          aria-label="Laiks un laikapstākļi Liepājā"
           hidden
         >
-          <div><span>Rīga</span><time data-riga-time>—</time><small data-riga-date></small></div>
-          <div class="portal-riga-weather">
+          <div>
+            <span>Liepāja</span><time data-liepaja-time>—</time><small data-liepaja-date></small>
+          </div>
+          <div class="portal-liepaja-weather">
             <svg viewBox="0 0 24 24" aria-hidden="true"
               ><path d="M7 17a4 4 0 1 1 .6-8 5 5 0 0 1 9.4 2h1a3 3 0 0 1 0 6Z"></path></svg
             >
-            <strong data-riga-temperature>—</strong>
-            <small data-riga-condition>Ielādē laikapstākļus…</small>
+            <strong data-liepaja-temperature>—</strong>
+            <small data-liepaja-condition>Ielādē laikapstākļus…</small>
             <a href="https://www.met.no/en">MET Norway</a>
           </div>
         </aside>
@@ -406,6 +413,44 @@ if (!existingCsrf) {
           <span>Jauns lead</span>
         </button>
       </header>
+
+      <dialog
+        class="portal-contact-dialog portal-profile-dialog"
+        data-profile-dialog
+        aria-labelledby="portal-profile-title"
+      >
+        <form data-profile-form>
+          <h2 id="portal-profile-title">Mans profils</h2>
+          <label class="portal-field"
+            >Vārds<input
+              name="first_name"
+              autocomplete="given-name"
+              required
+              maxlength="60"
+            /></label
+          >
+          <label class="portal-field"
+            >Uzvārds<input
+              name="last_name"
+              autocomplete="family-name"
+              required
+              maxlength="60"
+            /></label
+          >
+          <label class="portal-field"
+            >Profila foto<input
+              name="photo"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+            /></label
+          >
+          <p role="status" data-profile-status></p>
+          <div class="portal-profile-actions">
+            <button type="submit" class="portal-create-action">Saglabāt</button>
+            <button type="button" class="portal-secondary-action" data-profile-close>Atcelt</button>
+          </div>
+        </form>
+      </dialog>
 
       <PortalCalendar full />
       <div class="portal-home" data-dashboard-home-view>
