@@ -6,12 +6,20 @@ const { full = false } = Astro.props;
   full ? (
     <section class="portal-calendar-page" data-calendar-view hidden aria-label="Notikumu kalendārs">
       <div class="portal-calendar-toolbar">
-        <input
-          type="search"
-          data-calendar-search
-          placeholder="Meklēt šajā mēnesī"
-          aria-label="Meklēt šajā mēnesī"
-        />
+        <label class="portal-calendar-search">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <>
+              <circle cx="10.5" cy="10.5" r="5.5" />
+              <path d="m15 15 4 4" />
+            </>
+          </svg>
+          <input
+            type="search"
+            data-calendar-search
+            placeholder="Meklēt šajā mēnesī"
+            aria-label="Meklēt šajā mēnesī"
+          />
+        </label>
         <button type="button" data-calendar-add>
           Pievienot notikumu
         </button>
@@ -142,7 +150,7 @@ const { full = false } = Astro.props;
     text-transform: capitalize;
   }
   .portal-calendar-months [aria-pressed='true'] {
-    background: #16584b;
+    background: #8f1734;
     color: white;
   }
   .portal-calendar-entry {
@@ -153,11 +161,11 @@ const { full = false } = Astro.props;
     text-overflow: ellipsis;
     white-space: nowrap;
     font-size: 0.8rem;
-    border-inline-start: 3px solid #668f80;
+    border-inline-start: 3px solid #e0234e;
     padding-inline: 0.25rem;
   }
   .portal-calendar-entry[data-kind='social'] {
-    border-color: #479cca;
+    border-color: #f8b1c0;
   }
   .portal-calendar-entry[data-kind='quota'] {
     border-color: #a875c0;
@@ -174,11 +182,11 @@ const { full = false } = Astro.props;
     font-size: 0.8rem;
   }
   .portal-calendar-legend li {
-    border-inline-start: 3px solid #668f80;
+    border-inline-start: 3px solid #e0234e;
     padding-inline-start: 0.35rem;
   }
   .portal-calendar-legend [data-kind='social'] {
-    border-color: #479cca;
+    border-color: #f8b1c0;
   }
   .portal-calendar-legend [data-kind='quota'] {
     border-color: #a875c0;
@@ -228,5 +236,57 @@ const { full = false } = Astro.props;
     padding: 0.45rem;
     border-radius: 4px;
     background: color-mix(in srgb, currentColor 8%, transparent);
+  }
+  .portal-calendar-search {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    width: min(100%, 21rem);
+    padding: 0.55rem 0.75rem;
+    border: 1px solid #5a3843;
+    border-radius: 8px;
+    background: #151015;
+  }
+  .portal-calendar-search:focus-within {
+    outline: 2px solid #e0234e;
+    outline-offset: 2px;
+  }
+  .portal-calendar-search svg {
+    width: 1.125rem;
+    flex: none;
+    fill: none;
+    stroke: #f8b1c0;
+    stroke-width: 1.7;
+  }
+  .portal-calendar-search input {
+    width: 100%;
+    min-width: 0;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    outline: none;
+  }
+  .portal-calendar-day-header button {
+    color: #f8b1c0;
+    background: #35121e;
+    border-radius: 6px;
+  }
+  .portal-calendar-day-header button:hover,
+  .portal-calendar-day-header button:focus-visible {
+    background: #8f1734;
+    color: white;
+  }
+  [data-calendar-add],
+  [data-calendar-form] button[type='submit'] {
+    padding: 0.55rem 0.85rem;
+    border-radius: 8px;
+    color: white;
+    background: #a9183b;
+  }
+  .portal-calendar-day[data-today] {
+    border-color: #e0234e;
+  }
+  .portal-calendar-day[data-selected] {
+    background: #31111c;
   }
 </style>

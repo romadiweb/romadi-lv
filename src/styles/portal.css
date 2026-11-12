@@ -3589,3 +3589,60 @@
 .portal-detail-notes p {
   white-space: pre-wrap;
 }
+
+.portal-riga-widget:not([hidden]) {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.7rem 0.95rem;
+  border: 1px solid #623041;
+  border-radius: 12px;
+  background: radial-gradient(ellipse at top right, #49172b, #171017 78%);
+  color: #fff;
+}
+
+.portal-riga-widget > div {
+  display: grid;
+  align-items: center;
+  gap: 0.16rem 0.35rem;
+}
+
+.portal-riga-widget time,
+.portal-riga-widget strong {
+  font-size: 1.25rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.portal-riga-widget span,
+.portal-riga-widget small,
+.portal-riga-widget a {
+  font-size: 0.72rem;
+  color: #f2bdcb;
+}
+
+.portal-riga-widget .portal-riga-weather {
+  grid-template-columns: auto 1fr;
+  border-inline-start: 1px solid #653343;
+  padding-inline-start: 1rem;
+}
+
+.portal-riga-weather svg {
+  width: 1.4rem;
+  fill: none;
+  stroke: #f8b1c0;
+  stroke-width: 1.5;
+}
+
+.portal-riga-weather small,
+.portal-riga-weather a {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 720px) {
+  .portal-riga-widget:not([hidden]) {
+    align-self: flex-start;
+    flex-wrap: wrap;
+  }
+}

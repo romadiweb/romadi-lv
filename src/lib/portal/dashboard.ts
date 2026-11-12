@@ -751,6 +751,7 @@ export function initPortalDashboard(): void {
 
   const hideWorkspaceViews = () => {
     root.querySelector<HTMLElement>('[data-calendar-view]')!.hidden = true;
+    $<HTMLElement>(root, '[data-riga-widget]').hidden = true;
     notificationView.hidden = true;
     calculatorGrid.hidden = true;
     homeView.hidden = true;
@@ -2964,13 +2965,61 @@ export function initPortalDashboard(): void {
     homeTaskList.replaceChildren(fragment);
   };
 
+  const rigaWidget = $<HTMLElement>(root, '[data-riga-widget]');
+  const rigaTime = new Intl.DateTimeFormat('lv-LV', {
+    timeZone: 'Europe/Riga',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  });
+  const rigaDate = new Intl.DateTimeFormat('lv-LV', {
+    timeZone: 'Europe/Riga',
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  });
+  const updateGreeting = () => {
+    if (activeView !== 'dashboard') return;
+    const now = new Date();
+    const hour = Number(rigaTime.formatToParts(now).find((part) => part.type === 'hour')?.value);
+    const greeting = hour < 12 ? 'Labrīt' : hour < 18 ? 'Labdien' : 'Labvakar';
+    const name = portalUsers.find((user) => user.id === currentUserId)?.display_name?.trim();
+    sectionTitle.textContent = name ? greeting + ', ' + name : greeting;
+    $<HTMLElement>(rigaWidget, '[data-riga-time]').textContent = rigaTime.format(now);
+    $<HTMLElement>(rigaWidget, '[data-riga-date]').textContent = rigaDate.format(now);
+  };
+  let nextWeatherRefresh = 0;
+  const refreshWeather = async () => {
+    if (activeView !== 'dashboard' || Date.now() < nextWeatherRefresh) return;
+    nextWeatherRefresh = Date.now() + 30 * 60_000;
+    const temperature = $<HTMLElement>(rigaWidget, '[data-riga-temperature]');
+    const condition = $<HTMLElement>(rigaWidget, '[data-riga-condition]');
+    try {
+      const weather = await request<{ temperature: number; condition: string }>(
+        '/api/portal/weather',
+      );
+      temperature.textContent = Math.round(weather.temperature) + ' °C';
+      condition.textContent = weather.condition;
+    } catch {
+      temperature.textContent = '—';
+      condition.textContent = 'Laikapstākļi nav pieejami';
+      nextWeatherRefresh = Date.now() + 5 * 60_000;
+    }
+  };
+  window.setInterval(() => {
+    updateGreeting();
+    void refreshWeather();
+  }, 30_000);
+
   const showDashboard = () => {
     setDirty(false);
     activeView = 'dashboard';
     setNavState('dashboard');
     hideWorkspaceViews();
     homeView.hidden = false;
-    sectionTitle.textContent = 'Pārskats';
+    rigaWidget.hidden = false;
+    updateGreeting();
+    void refreshWeather();
     sectionDescription.textContent =
       'Dienas uzdevumi, aktīvie kontakti un komandas paveiktais vienuviet.';
     createButton.hidden = true;

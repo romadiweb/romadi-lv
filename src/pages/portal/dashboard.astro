@@ -385,6 +385,22 @@ if (!existingCsrf) {
             Dienas uzdevumi, aktīvie kontakti un komandas paveiktais vienuviet.
           </p>
         </div>
+        <aside
+          class="portal-riga-widget"
+          data-riga-widget
+          aria-label="Laiks un laikapstākļi Rīgā"
+          hidden
+        >
+          <div><span>Rīga</span><time data-riga-time>—</time><small data-riga-date></small></div>
+          <div class="portal-riga-weather">
+            <svg viewBox="0 0 24 24" aria-hidden="true"
+              ><path d="M7 17a4 4 0 1 1 .6-8 5 5 0 0 1 9.4 2h1a3 3 0 0 1 0 6Z"></path></svg
+            >
+            <strong data-riga-temperature>—</strong>
+            <small data-riga-condition>Ielādē laikapstākļus…</small>
+            <a href="https://www.met.no/en">MET Norway</a>
+          </div>
+        </aside>
         <button type="button" class="portal-create-action" data-create hidden>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
           <span>Jauns lead</span>
